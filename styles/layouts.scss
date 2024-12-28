@@ -1,0 +1,33 @@
+
+@import './mixins.scss';
+
+.layout1{
+
+    &__head{
+        padding-bottom: 15px;
+        padding-inline: 30px;
+        @include head(151px); // Use the mixin
+        @include location;
+        background-image:none;
+      }
+      &__body {
+        @include body(100px); // Use the mixin
+    padding-bottom: 100px;
+    gap:20px;
+        .logo {
+          width: 100%;
+          padding: 0px 16px;
+          background: #fff;
+    
+          display: flex;
+          justify-content: center;
+          gap: 24px;
+          padding: 10px;
+          z-index: 1000;
+          img {
+            max-width: 100px;
+          }
+        }
+      }
+
+    }

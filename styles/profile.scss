@@ -1,0 +1,42 @@
+@import "./mixins.scss";
+
+.profile {
+  &__header {
+    @include head(291px);
+  }
+  &__body {
+    @include body(250px); // Use the mixin
+    ul {
+      padding-top: 25px;
+      li {
+        padding-inline: 25px;
+        padding-block: 9px;
+        a,button {
+
+          gap: 25px;
+          span {
+            color: #2e3a59;
+
+            /* Subtitle/S1-M */
+            font-family: "Montserrat", sans-serif;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 24px; /* 150% */
+            letter-spacing: 0.024px;
+          }
+          p {
+            color: #8f9bb3;
+
+            /* Button/Aa/Small */
+            font-family: "Montserrat", sans-serif;
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 16px; /* 133.333% */
+          }
+        }
+      }
+    }
+  }
+}

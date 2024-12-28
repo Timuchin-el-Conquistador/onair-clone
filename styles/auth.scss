@@ -1,0 +1,72 @@
+@import "./mixins.scss";
+
+
+
+
+.login,
+.signup,
+.restore-password {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+
+.header{
+@include header(342px,default, 32px);
+}
+  form {
+    width: 343px;
+    .form-group {
+      width: 100%;
+      margin: 16px 0;
+
+      a {
+        color: #2f80ed;
+        font-family: "Arimo", sans-serif;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 20px; /* 142.857% */
+      }
+    }
+  }
+
+  p {
+    color: #2e3a59;
+    font-family: "Arimo", sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px; /* 142.857% */
+
+  }
+
+  .link {
+    color: #2f80ed;
+    font-family: "Arimo", sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+    text-decoration-line: underline;
+  }
+
+  /* Mobile view (up to 480px) */
+  @media screen and (max-width: 480px) {
+    > div:not(.splash-screen) {
+      width: 100vw;
+    }
+  }
+
+  /* Tablet view (481px to 768px) */
+  @media screen and (min-width: 481px) {
+    > div:not(.splash-screen) {
+      width: 80vw;
+
+      form {
+
+          width: 543px;
+        
+      }
+    }
+  }
+}

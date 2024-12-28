@@ -1,0 +1,381 @@
+import { createStore } from "zustand/vanilla";
+
+import { fakeBackend } from "@/lib/axios";
+
+import { verifySession } from "@/lib/dal";
+
+import { type EditUser, type NewUser, type User } from "@/lib/dtos/user";
+
+import { createSession, deleteSession } from "@/lib/session";
+
+const path = "/api/v1/test-app/user";
+
+export type UserState = {
+  loading: boolean;
+  error: Error | null;
+  user: User | null;
+  message: string | null;
+  resetPasswordToken: string | null;
+  token: string | null;
+};
+
+export type UserActions = {
+  //auth
+  signup: (user: NewUser, router: any) => void;
+  login: (user: { email: string; password: string }, router: any) => void;
+  logout: (router: any) => void;
+  forgotPassword: (email: string, router: any) => void;
+  submitOTP: (otp: string, router: any) => void;
+  resendToEmailOTP: () => void;
+  resetPassword: (
+    newPassword: string | null,
+    confirmPassword: string | null,
+    router: any
+  ) => void;
+  //private
+  getUser: () => void;
+  editProfilePicture: (file: File, router: any) => void;
+  editProfile: (user: {
+    fullName: string;
+    phoneNumber: string;
+    password: string | null;
+  }) => void;
+
+  reset: () => void;
+};
+
+export type UserStore = UserState & UserActions;
+
+export const defaultInitState: UserState = {
+  loading: false,
+  error: null,
+  user: null,
+  message: null,
+  resetPasswordToken: null,
+  token: null,
+};
+
+export const createUserStore = (initState: UserState = defaultInitState) => {
+  return createStore<UserStore>()((set, getState) => ({
+    ...initState,
+    signup: async (user, router) => {
+      set((prevState) => ({
+        ...prevState,
+        loading: true,
+        error: null,
+        message: null,
+      }));
+      try {
+        await fakeBackend.post(path + "/signup", {
+          ...user,
+          country: "Azerbaijan",
+          city: "Baku",
+        });
+        // await createSession(response.response._id, response.response.email);
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          message: "Success",
+        }));
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+    login: async (user, router) => {
+      set((prevState) => ({
+        ...prevState,
+        loading: true,
+        error: null,
+        message: null,
+      }));
+      try {
+        const response: User = await fakeBackend.post(path + "/login", user);
+
+        await createSession({
+          userId: response.id,
+          email: response.email,
+          phoneNumber: response.phoneNumber,
+          fullName: response.fullName,
+        });
+
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          user: response,
+        }));
+        router.replace("/home");
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+    logout: async (router) => {
+      await deleteSession();
+      router.replace("/login");
+    },
+    forgotPassword: async (email, router) => {
+      try {
+        set((prevState) => ({
+          ...prevState,
+          loading: true,
+          error: null,
+          message: null,
+        }));
+        const path = `api/v1/test-app/user/forgot-password`;
+        const response: { message: string } = await fakeBackend.post(path, {
+          email,
+        });
+
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          message: response.message,
+          //  token:response.token
+        }));
+        sessionStorage.setItem("email", email);
+        setTimeout(() => {
+          router.replace("/otp");
+        }, 700);
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+    submitOTP: async (otp, router) => {
+      sessionStorage.removeItem("email");
+      try {
+        set((prevState) => ({
+          ...prevState,
+          loading: true,
+          error: null,
+          message: null,
+        }));
+        const path = `api/v1/test-app/user/confirm-otp`;
+        const response: { message: string; token: string } =
+          await fakeBackend.post(path, { OTP: otp });
+        console.log(response);
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          message: response.message,
+          token: response.token,
+        }));
+
+        sessionStorage.setItem("reset-passord-token", response.token);
+        setTimeout(() => {
+          router.replace("/reset-password");
+        }, 700);
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+
+    resendToEmailOTP: async () => {
+      const email = sessionStorage.getItem("email") || "";
+
+      try {
+        set((prevState) => ({
+          ...prevState,
+          loading: true,
+          error: null,
+          message: null,
+        }));
+        const path = `api/v1/test-app/user/forgot-password`;
+        const response: { message: string } = await fakeBackend.post(path, {
+          email,
+        });
+
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          message: response.message,
+          //  token:response.token
+        }));
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+
+    resetPassword: async (password, confirmPassword, router) => {
+      try {
+        if (password != confirmPassword) {
+          return set((prevState) => ({
+            ...prevState,
+            error: new Error("Şifrə və şifrə təsdiqi eyni olmalıdır."),
+          }));
+        }
+
+        if (password == null) {
+          return set((prevState) => ({
+            ...prevState,
+            error: new Error("Yeni şifrə yaradılmayıb."),
+          }));
+        }
+        if (confirmPassword == null) {
+          return set((prevState) => ({
+            ...prevState,
+            error: new Error("Şifrə və təsdiq şifrəsi uyğun deyil."),
+          }));
+        }
+        set((prevState) => ({
+          ...prevState,
+          loading: true,
+          error: null,
+          message: null,
+        }));
+        const token = sessionStorage.getItem("reset-passord-token");
+        sessionStorage.removeItem("reset-passord-token");
+
+        const path = `api/v1/test-app/user/reset-password`;
+        const response: { message: string } = await fakeBackend.post(
+          path + "/" + token,
+          {
+            password,
+          }
+        );
+
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          message: response.message,
+        }));
+        setTimeout(() => {
+          router.replace("/reset-password-success");
+        }, 700);
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+    getUser: async () => {
+      try {
+        const session = await verifySession();
+        if (!session) return null;
+        set((prevState) => ({
+          ...prevState,
+          loading: true,
+          error: null,
+          message: null,
+        }));
+        const path = `api/v1/test-app/user/${session?.email}`;
+        const user: User = await fakeBackend.get(path);
+
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          user,
+        }));
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+    editProfilePicture: async (file, router) => {
+      try {
+        const session = await verifySession();
+        if (!session) return null;
+        set((prevState) => ({
+          ...prevState,
+          loading: true,
+          error: null,
+          message: null,
+        }));
+        const form = new FormData();
+        form.append("file", file);
+
+        const response: { message: string; url: string } =
+          await fakeBackend.post(path + "/avatar/" + session?.userId, form, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          message: response.message,
+          user: prevState.user
+            ? { ...prevState.user, profilePhoto: response.url }
+            : null,
+        }));
+
+        router.push("/profile");
+      } catch (error) {
+        console.log(error);
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+    editProfile: async (user) => {
+      try {
+        const session = await verifySession();
+        if (!session) return null;
+
+        set((prevState) => ({
+          ...prevState,
+          loading: true,
+          error: null,
+          message: null,
+        }));
+
+        const data: EditUser = {
+          fullName: user.fullName,
+          phoneNumber: user.phoneNumber,
+        };
+
+        if (user.password != null) {
+          data["password"] = user.password;
+        }
+
+        await fakeBackend.put(path + "/update/" + session?.email, data);
+
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          message: "Uğur",
+        }));
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+
+    reset: () => {
+      set((prevState) => ({
+        ...prevState,
+        error: null,
+        message: null,
+      }));
+    },
+  }));
+};

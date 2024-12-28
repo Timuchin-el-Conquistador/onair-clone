@@ -1,0 +1,45 @@
+
+
+
+
+#dashboard-sidebar .dashboard-button
+{
+    line-height: 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    align-items: center;
+    display: flex;
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+    color: #161e2e;
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+#dashboard-sidebar .dashboard-button:hover,
+#dashboard-sidebar .dashboard-button.selected
+{
+    background-color: #EEE;
+    color: #444;
+}
+
+.dashboard-sidebar-icon
+{
+    margin-right: 1rem;
+    color: #999;
+}
+
+#dashboard-sidebar .advanced-buttons {
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    color: rgba(75, 85, 99, 1);
+}
+
+#dashboard-sidebar .advanced-buttons.selected {
+    font-weight: 700;
+}

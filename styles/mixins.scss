@@ -1,0 +1,54 @@
+@mixin head($height) {
+  flex-shrink: 0;
+  height: $height;
+  background-image: url("../public/backgroud.svg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: #7356c0;
+  mix-blend-mode: soft-light;
+}
+
+@mixin body($height) {
+  position: relative;
+  top: $height; //locate 250 below headrcontainer and make it top layer
+  min-height: calc(100vh - $height);
+  padding-bottom: 50px;
+  border-radius: 16px;
+  background-color: white;
+  z-index: 99;
+}
+
+@mixin location {
+  a {
+    position: absolute;
+  }
+  span {
+    margin: 0 auto;
+    color: #fff;
+
+    /* Headline/Medium/H6-M */
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px; /* 140% */
+    letter-spacing: 0.03px;
+  }
+}
+
+
+
+@mixin header($width,$margin-top,$margin-bottom){
+  color: #2a1b6e;
+  /* Headline/Medium/H6-M */
+  font-family: "Montserrat", sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px; /* 140% */
+  letter-spacing: 0.03px;
+  width: $width;
+  margin-bottom: $margin-bottom;
+  margin-top: $margin-top;
+}

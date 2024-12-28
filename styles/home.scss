@@ -1,0 +1,25 @@
+.home {
+  .logo {
+    padding-top: 50px;
+    padding-bottom: 25px;
+    z-index: 100;
+  }
+  ul {
+    padding: 150px 0 100px; /*this one controls space between bottom navigation fixed container and top logo fixed container*/
+    li {
+      img {
+        width: 89px;
+        height: 89px;
+        border-radius: 6px;
+      }
+      p{
+        white-space: nowrap;
+        max-width: calc(100% - 89px);
+      }
+
+      &>div{
+        width: calc(100% - 89px);
+      }
+    }
+  }
+}

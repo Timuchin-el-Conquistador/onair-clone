@@ -1,0 +1,53 @@
+@import "../mixins.scss";
+.edit {
+  &__header {
+    padding-bottom: 15px;
+    padding-inline: 10px;
+    @include head(151px); // Use the mixin
+    @include location;
+    background-image:none;
+    .upload {
+      width: 20px;
+      height: 20px;
+      overflow: hidden;
+      position: relative;
+      pointer-events: none;
+
+      svg {
+        background-color: transparent;
+        position: absolute;
+        top: 0;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      input {
+        position: absolute;
+        background-color: #7356c0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: all;
+        opacity: 0; /* Standard CSS */
+        -moz-opacity: 0; /* Older Firefox */
+        -khtml-opacity: 0; /* Older Safari */
+        -o-opacity: 0; /* Older Opera */
+        filter: alpha(opacity=0); /* IE 8 and earlier */
+        zoom: 1; /* Trigger "hasLayout" in IE */
+      }
+    }
+  }
+  &__body {
+    @include body(100px); // Use the mixin
+
+ 
+
+      img {
+        object-fit: contain;
+        max-width: 70vw;
+        width: 100%;
+         height: auto
+      }
+    
+  }
+}

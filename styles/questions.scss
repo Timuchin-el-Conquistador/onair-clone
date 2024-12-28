@@ -1,0 +1,91 @@
+@import "./mixins.scss";
+
+.questions {
+  background: #e6e2e1;
+
+  height: 100vh;
+  position: relative;
+
+  &__question {
+    padding: 50px 15px 30px;
+    height: 100%;
+    &__counter {
+      background-color: #f7f9fc;
+      height: 28px;
+      width: fit-content;
+      border-radius: 8px;
+      padding: 0 21px;
+      border: 2px solid #f7f9fc;
+      font-family: "Montserrat", sans-serif;
+    }
+
+    &__header {
+      height: 28px;
+      width: fit-content;
+      border-radius: 8px;
+      padding: 0 21px;
+      font-family: "Montserrat", sans-serif;
+      font-weight: 500;
+      color: black;
+      padding: 0;
+      margin: 30px 0 15px;
+    }
+
+    &__options {
+      gap: 12px;
+      max-height: calc(100% - 200px);
+      overflow: hidden;
+      overflow-y: scroll;
+      .option {
+        width: 100%;
+        background: #f7f9fc;
+        border-radius: 12px;
+        text-align: left;
+        padding: 9px 12px;
+
+        &--correct {
+          background-color: green;
+          color: #f7f9fc;
+        }
+        &--incorrect {
+          background-color: red;
+          color: #f7f9fc;
+        }
+      }
+    }
+    .next-btn {
+      position: absolute;
+    }
+  }
+}
+
+.results {
+  height: 100%;
+  background-color: white;
+
+  & > div {
+    width: 100%;
+    padding: 30px;
+    h1 {
+      color: #2e3a59;
+
+      /* Headline/Medium/H5-M */
+      font-family: "Montserrat", sans-serif;
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 32px; /* 133.333% */
+    }
+    p {
+      color: #8f9bb3;
+
+      /* Headline/Medium/H6-M */
+      font-family: "Montserrat", sans-serif;
+      font-size: 20px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 28px; /* 140% */
+      letter-spacing: 0.03px;
+    }
+  }
+}

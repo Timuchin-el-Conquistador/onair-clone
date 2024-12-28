@@ -1,0 +1,79 @@
+@import './auth.scss';
+
+
+
+.authenticate-page .social-sign-in-button {
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    text-align: center;
+    color: white;
+    border-radius: 3px;
+}
+
+.authenticate-page .social-sign-in-button img {
+    border-radius: 3px;
+}
+
+.authenticate-page .social-sign-in-button:hover {
+    filter: brightness(85%);
+}
+
+
+
+
+
+.authenticate-page {
+    width: 50%;
+    margin: auto;
+}
+
+.authenticate-page .main-panel {
+    border: solid 1px #CCC;
+    margin-top: 2rem;
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.authenticate-page .left-panel {
+    position: relative;
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+}
+
+.authenticate-page .left-panel::after {
+    content: " ";
+    position: absolute;
+    height: calc(100% - 8rem);
+    border-right: 1px solid lightgray;
+    right: 0;
+    top: 4rem;
+}
+
+@media(max-width: 480px) {
+    .authenticate-page {
+        width: 100%;
+    }
+
+    .authenticate-page .main-panel {
+        box-shadow: none;
+        margin-top: 0;
+        border-width: 0px;
+    }
+    .authenticate-page .left-panel::after {
+        border-width: 0px;
+    }
+}
+
+.login-methods-or-space {
+    width: 100%; 
+    border-bottom: 1px solid #9b9b9b; 
+    line-height: 0.1em;
+    color: #9b9b9b;
+    text-align: center;
+    margin: 19px 0 18px;
+}
+
+.login-methods-or-space span {
+    background-color: #fff;
+    padding: 0 15px;
+}

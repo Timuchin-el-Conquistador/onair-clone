@@ -1,0 +1,219 @@
+
+
+//should be global
+.pulse-effect {
+    border-radius: 25px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(146, 204, 113, 1);
+    }
+    100% {
+        box-shadow: 0 0 0 10px rgba(146, 204, 113, 0);
+    }
+}
+
+
+
+    //items
+
+	.index-card-grid {
+		display: flex;
+		flex-wrap: wrap;
+		align-content: flex-start;
+		margin-bottom: 10rem;
+	}
+
+	.index-card {
+		display: grid;
+		grid-template-columns: 17% 83%;
+		grid-template-rows: auto auto 1fr auto;
+		background-color: #FFF;
+		width: 20rem;
+		height: 20rem;
+		margin: 1.5rem 0rem 0 1.5rem;
+		padding: 1.5rem;
+		border-top: solid 2px #0056FF;
+		border-radius: 0px 0px 0.5rem 0.5rem;
+		box-shadow: 0px 0px 1px #333;
+		overflow: hidden;
+	}
+
+	@media (max-width: 680px) {
+		.index-card-grid {
+			justify-content: center;
+		}
+	}
+	@media (max-width: 640px) {
+		.index-card {
+			margin-left: 0rem;
+		}
+	}
+
+	.index-card.bordered {
+		display: block;
+		border: dashed 3px #DDD;
+		background-color: transparent;
+		box-shadow: none;
+		border-radius: 0.5rem;
+		text-align: center;
+	}
+
+	/* Expandable section */
+	.index-card.item-overflow-visible {
+		overflow: visible;
+	}
+	.index-card .expandable-section-menu {
+		position: absolute; 
+		left: -1px;
+		z-index: 99;
+		width: 14rem; 
+		border-radius: 0.375rem;
+		background-color: white;
+		box-shadow: 0px 0px 1px #333;
+	}
+	
+	.index-card .expandable-section-menu-item {
+		display: block;
+		padding: 0.5rem 1rem ;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		color: #222;
+		cursor: pointer;
+		background: white;
+	}
+	
+	.index-card .expandable-section-menu-item:hover {
+		background: #F5F9FA;
+	}
+
+	/* Content */
+
+	.index-card .index-card-header h4 {
+		font-size: 1rem;
+		color: #222;
+		display: block;
+	}
+	
+	.index-card .index-card-header h3 {
+		font-size: 0.75rem;
+		color: #AAA;
+		display: block;
+		margin-top: -0.1rem;
+	}
+	
+	.index-card .index-card-footer {
+		display: flex;
+		flex-wrap: nowrap;
+		grid-column: span 2;
+		border-top: solid 1px #DDD;
+		margin: 0rem -1.5rem -1.5rem -1.5rem;
+	}
+	
+	.index-card .index-card-footer-button {
+		display: block;
+		align-items: stretch;
+		width: 50%;
+		padding: 1rem;
+		color: #222;
+		font-size: 0.85rem;
+		text-align: center;
+	}
+	
+	.index-card .index-card-footer-button:hover {
+		background-color: #F5F9FA;
+	}
+	
+	.index-card .index-card-footer-button:first-child {
+		border-right: solid 1px #DDD;
+	}
+	
+	.index-card .index-card-footer-button.full-button {
+		width: 100%;
+		border-right-width:0px;
+	}
+	
+	.index-card .index-card-footer-button svg {
+		position: relative;
+		display: inline-block;
+		margin-right: 0.2rem;
+		margin-top: -0.1rem;
+	}
+
+	/* Top Right */
+
+	.index-card-top-right {
+		display: block;
+		position: absolute;
+		right: 0px;
+		top: 0px;
+	}
+
+	/* Badges */
+
+	.index-card .badge {
+		border: solid 1px #0056FF;
+		border-radius: 3px;
+		color: #222;
+		font-size: 10px;
+		padding: 2px 5px 2px 5px;
+		margin-right: 5px;
+	}
+
+	.index-card .badge.error {
+		background-color: #e74c3c;
+		border-color: #e74c3c;
+		color: #FFF;
+	}
+	.index-card .badge.warning {
+		background-color: #e67e22;
+		border-color: #e67e22;
+		color: #FFF;
+	}
+	.index-card .badge.success {
+		background-color: #2ecc71;
+		border-color: #2ecc71;
+		color: #FFF;
+	}
+	
+
+
+
+
+
+    #pages-grid .index-card-footer-button:first-child {
+        border-radius: 0px 0px 0rem 0.5rem;
+    }
+    #pages-grid .index-card-footer-button:nth-child(2) {
+        border-radius: 0px 0px 0.5rem 0rem;
+    }
+    #pages-grid .expandable-section-menu {
+        bottom: -44%;
+    }
+    #pages-grid .expandable-section-menu.not-editable {
+        bottom: -15.5%;
+    }
+    #pages-grid .expandable-section-menu-item.delete-button {
+        color: red;
+    }
+    
+    .index-card .index-card-top-right {
+        display: none;
+        align-items: center;
+    }
+    
+    .index-card:hover .index-card-top-right {
+        display: flex;
+    }
+    
+    sl-badge::part(base) {
+        font-size: 10px;
+    }
+    
+    @media (max-width: 480px) {
+        .index-card .index-card-top-right {
+            display: flex;
+        }
+    }

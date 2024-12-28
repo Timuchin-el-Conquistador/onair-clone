@@ -1,0 +1,36 @@
+.li {
+  width: 343px;
+  height: 121px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #f7f9fc;
+  margin: 15px 0;
+
+
+  p {
+    color: #2e3a59;
+    /* Body/B1-M */
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px; /* 150% */
+    letter-spacing: 0.024px;
+  }
+
+  a {
+    color: #7356c0;
+    /* Button/Aa/Medium */
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px; /* 114.286% */
+
+  }
+
+  img {
+    width: auto;
+    height: auto;
+  }
+}
