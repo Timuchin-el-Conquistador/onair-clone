@@ -4,7 +4,7 @@ import Card from "@/components/cards";
 
 import "@/styles/dashboard.scss";
 
-import { type Link } from "@/lib/dtos/links";
+import { type Link } from "@/lib/types/links";
 
 type PageProps = {
   links: Link[];

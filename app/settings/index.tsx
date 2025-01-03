@@ -1,4 +1,12 @@
+"use client";
+
 import dynamic from "next/dynamic";
+
+import "@/styles/settings.scss";
+
+import { type Settings as ISettings } from "@/lib/types/settings";
+import { useState } from "react";
+import { type User } from "@/lib/types/user";
 
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
@@ -23,47 +31,128 @@ const SlDialog = dynamic(
   }
 );
 
-function Settings() {
+type PageProps = {
+  initialSettings: ISettings;
+};
+
+function Settings(props: PageProps) {
+  const [user, updateUser] = useState<Omit<User, "subscription">>({
+    name: props.initialSettings.user.name,
+    email: props.initialSettings.user.email,
+  });
+  const [notificationsState, setNotificationsState] = useState<boolean>(
+    props.initialSettings.browserNotifications
+  );
+  const [editableFields, setEditableFields] = useState<string[]>([]);
   return (
     <div id="settings" className="p-6 mb-24">
       <h3 className="font-semibold text-lg mb-1">Profile</h3>{" "}
       <div className="bg-white p-6">
         <dl style={{ marginTop: "-1rem" }}>
-          <div>
-            <dt>Name</dt>{" "}
-            <dd className="group relative">
-              Cingiz Hemidov
-              <SlButton
-                size="small"
-                variant="default"
-                data-optional=""
-                data-valid=""
-                className="edit-btn"
-              >
-                Edit
-              </SlButton>
-            </dd>
-          </div>{" "}
-          <div>
-            <dt>Email</dt>{" "}
-            <dd className="flex flex-start w-full group items-center relative">
-              <span
-                id="user-email"
-                className="block mr-0 break-words text-xs lg:text-sm"
-              >
-                hemidovcingiz183@gmail.com
-              </span>{" "}
-              <SlButton
-                size="small"
-                variant="default"
-                data-optional=""
-                data-valid=""
-                className="edit-btn"
-              >
-                Edit
-              </SlButton>
-            </dd>
-          </div>{" "}
+          {editableFields.includes("name") ? (
+            <form method="post">
+              <div className="sm:flex block w-full">
+                <div className="sm:w-80 w-full">
+                  <span>First Name</span>{" "}
+                  <input
+                    name="first_name"
+                    type="text"
+                    placeholder="First Name"
+                    value={user.name.split(" ")[0]}
+                    className="p-1.5 rounded w-full block"
+                  />
+                </div>{" "}
+                <div className="sm:ml-3 ml-0 sm:mt-0 mt-3 sm:w-80 w-full">
+                  <span>Last Name</span>{" "}
+                  <input
+                    name="last_name"
+                    type="text"
+                    placeholder="Last Name"
+                    value={user.name.split(" ")[1]}
+                    className="p-1.5 rounded block w-full"
+                  />
+                </div>{" "}
+                <div className="items-left sm:ml-3 sm:mt-6  ml-0 sm:mt-0  flex items-end">
+                  <input
+                    type="submit"
+                    value="Save"
+                    className="btn btn-blue mb-1 !leading-none"
+                  />
+                </div>
+              </div>
+            </form>
+          ) : (
+            <div>
+              <dt>Name</dt>{" "}
+              <dd className="group relative">
+                {user.name}
+                <SlButton
+                  size="small"
+                  variant="default"
+                  data-optional=""
+                  data-valid=""
+                  className="edit-btn"
+                  onClick={() => {
+                    setEditableFields((state) => [...state, "name"]);
+                  }}
+                >
+                  Edit
+                </SlButton>
+              </dd>
+            </div>
+          )}
+          {editableFields.includes("email") ? (
+            <form method="post">
+              <div className="sm:flex block w-full">
+                <div className="sm:w-80 w-full">
+                  <span>First Name</span>{" "}
+                  <input
+                    name="first_name"
+                    type="text"
+                    placeholder="First Name"
+                    value={user.name.split(" ")[0]}
+                    className="p-1.5 rounded w-full block"
+                  />
+                </div>{" "}
+                <div className="sm:ml-3 ml-0 sm:mt-0 mt-3 sm:w-80 w-full">
+                  <span>Last Name</span>{" "}
+                  <input
+                    name="last_name"
+                    type="text"
+                    placeholder="Last Name"
+                    value={user.name.split(" ")[1]}
+                    className="p-1.5 rounded block w-full"
+                  />
+                </div>{" "}
+                <div className="items-left sm:ml-3 sm:mt-6  ml-0 sm:mt-0  flex items-end">
+                  <input
+                    type="submit"
+                    value="Save"
+                    className="btn btn-blue mb-1 !leading-none"
+                  />
+                </div>
+              </div>
+            </form>
+          ) : (
+            <div>
+              <dt>Name</dt>{" "}
+              <dd className="group relative">
+                {user.name}
+                <SlButton
+                  size="small"
+                  variant="default"
+                  data-optional=""
+                  data-valid=""
+                  className="edit-btn"
+                  onClick={() => {
+                    setEditableFields((state) => [...state, "email"]);
+                  }}
+                >
+                  Edit
+                </SlButton>
+              </dd>
+            </div>
+          )}
           <div>
             <dt>Subscription Plan</dt>{" "}
             <dd className="group relative">
@@ -117,6 +206,11 @@ function Settings() {
                 form=""
                 data-optional=""
                 data-valid=""
+                checked={notificationsState}
+                onSlChange={(event) => {
+                  const checked = (event.target as HTMLInputElement).checked;
+                  setNotificationsState(checked);
+                }}
               ></SlSwitch>
             </dd>
           </div>

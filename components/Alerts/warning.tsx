@@ -19,13 +19,16 @@ const SlIcon = dynamic(
   }
 );
 
-function Warning() {
+type PageProps = {
+  children?:React.ReactNode
+}
+
+function Warning(props:PageProps) {
   return (
     <SlAlert className="p-4 border-l-4 mx-6 mb-0 mt-6 bg-yellow-50 border-yellow-400 " variant="warning" open>
       <SlIcon slot="icon" name="exclamation-triangle"></SlIcon>
-      <strong>Your session has ended</strong>
-      <br />
-      Please login again to continue.
+
+      {props.children}
     </SlAlert>
   );
 }

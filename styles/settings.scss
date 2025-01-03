@@ -1,0 +1,63 @@
+
+#settings {
+    font-size: 0.85rem;
+}
+
+input {
+    font-size: 0.85rem !important;
+}
+
+#settings dl > div {
+    display: grid;
+    grid-template-columns: 30% 30% 30%;
+    grid-gap: 1rem;
+    padding: 1.2rem;
+    border-bottom: solid 1px #EEE;
+}
+
+form {
+    padding: 1.2rem;
+    border-bottom: solid 1px #EEE;
+}
+
+#settings dl > div:last-child {
+    border-bottom-width: 0px;
+    padding-bottom: 0.25rem;
+}
+
+div > span {
+    color: #AAA;
+}
+
+#settings dt {
+    color: #888;
+}
+
+#settings dd {
+    color: #444;
+    grid-column: span 2;
+}
+
+#settings .edit-btn {
+    display: block;
+    position: absolute;
+    top: -8px;
+    right: 0px;
+}
+
+@media (max-width: 480px) {
+    #user-email {
+        display: inline-block;
+        width: fit-content;
+        max-width: 80%;
+    }
+
+    #settings dl > div, form { 
+        padding-left: 0 !important;
+    }
+    
+    #settings dl > div {
+        display: block;
+        padding-right: 0 !important;
+    }
+}

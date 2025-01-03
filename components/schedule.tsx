@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Schedule } from "@/utils/dtos/availability";
 import TimeSelect from "./Dropdown/time-select";
@@ -31,7 +31,13 @@ const SlTooltip = dynamic(
   }
 );
 
-function ScheduleComponent({ availability }: { availability: string }) {
+
+type PageProps = {
+  availability: string,
+  changeAvailability:(availability:string) => void
+}
+
+function ScheduleComponent(props:PageProps) {
   const [isAvailabilityDopdownVisible, setAvailabilityDropdownVisibility] =
     useState(false);
   const [schedule, setSchedule] = useState<Schedule>({
@@ -64,6 +70,25 @@ function ScheduleComponent({ availability }: { availability: string }) {
       isActive: false,
     },
   });
+
+
+    const elementRef = useRef<HTMLUListElement|null>(null)
+  
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (elementRef.current && !elementRef.current.contains(event.target as Node)) {
+        setAvailabilityDropdownVisibility(false); // Close or perform an action
+      }
+    };
+  
+    useEffect(() => {
+      // Add event listener to detect clicks
+      document.addEventListener("mousedown", handleOutsideClick);
+  
+      // Cleanup the event listener
+      return () => {
+        document.removeEventListener("mousedown", handleOutsideClick);
+      };
+    }, []);
 
   const toggleDayActivation = (
     day: keyof Schedule, // Ensures the day is one of the keys of Schedule (monday, tuesday, etc.)
@@ -129,17 +154,17 @@ function ScheduleComponent({ availability }: { availability: string }) {
                 <span className="flex items-center">
                   <span
                     className={`status-dot mr-3 ${
-                      availability == "always online"
+                      props.availability == "always online"
                         ? "online"
-                        : availability == "scheduled"
+                        : props.availability == "scheduled"
                         ? "auto"
                         : "offline"
                     }`}
                   ></span>{" "}
                   <span className="text-gray-600 leading-none text-sm">
-                    {      availability == "always online"
+                    {      props.availability == "always online"
                         ? "Always Online"
-                        : availability == "scheduled"
+                        : props.availability == "scheduled"
                         ? "Scheduled"
                         : "Always Offline"}
                   </span>
@@ -168,12 +193,17 @@ function ScheduleComponent({ availability }: { availability: string }) {
                   maxHeight: "225px;",
                   display: isAvailabilityDopdownVisible ? "block" : "none",
                 }}
+                ref={elementRef}
               >
                 <li
                   id="option1"
                   role="option"
                   className="relative flex items-center select-none py-2 pr-4 hover:bg-gray-100 text-gray-900 cursor-pointer pl-3"
                   style={{ fontSize: "14px" }}
+                  onClick={() =>{
+                    setAvailabilityDropdownVisibility(false)
+                    props.changeAvailability('always online')
+                  }}
                 >
                   <span className="status-dot online mr-3"></span>{" "}
                   <span className="block truncate">Always Online</span>{" "}
@@ -183,6 +213,10 @@ function ScheduleComponent({ availability }: { availability: string }) {
                   role="option"
                   className="relative flex items-center select-none py-2 pr-4 hover:bg-gray-100 text-gray-900 cursor-pointer pl-3"
                   style={{ fontSize: "14px" }}
+                  onClick={() =>{
+                    setAvailabilityDropdownVisibility(false)
+                    props.changeAvailability('always offline')
+                  }}
                 >
                   <span className="status-dot offline mr-3"></span>{" "}
                   <span className="block truncate">Always Offline</span>{" "}
@@ -192,6 +226,10 @@ function ScheduleComponent({ availability }: { availability: string }) {
                   role="option"
                   className="relative flex items-center select-none py-2 pr-4 hover:bg-gray-100 text-gray-900 cursor-pointer pl-3"
                   style={{ fontSize: "14px" }}
+                  onClick={() =>{
+                    setAvailabilityDropdownVisibility(false)
+                    props.changeAvailability('scheduled')
+                  }}
                 >
                   <span className="status-dot auto mr-3"></span>{" "}
                   <span className="block truncate">Scheduled</span>{" "}
@@ -202,7 +240,7 @@ function ScheduleComponent({ availability }: { availability: string }) {
         </div>{" "}
         <br />
         <br />{" "}
-        <div>
+        {props.availability == 'scheduled' &&   <div>
           {/*} <div className="mb-2 mt-6 flex items-center text-xs">
             <p className="text-gray-800">Timezone:</p>{" "}
             <div
@@ -300,11 +338,11 @@ function ScheduleComponent({ availability }: { availability: string }) {
                 </div>
               </li>
             ))}
-          </ul>{" "}
+          </ul>
           <a className="text-blue-700 mt-2 text-sm cursor-pointer">
             + Add daily break
           </a>
-        </div>
+        </div>}
       </div>
     </div>
   );

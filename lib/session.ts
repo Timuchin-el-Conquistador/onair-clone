@@ -1,7 +1,7 @@
 "use server";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { SessionUser } from "./dtos/user";
+import { SessionUser } from "./types/user";
 
 const secretKey = process.env.SESSION_SECRET;
 const encodedKey = new TextEncoder().encode(secretKey);

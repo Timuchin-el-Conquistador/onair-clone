@@ -1,7 +1,7 @@
 
 import dynamic from "next/dynamic"
 
-import { type Integration } from "@/lib/dtos/links";
+import { type Integration } from "@/lib/types/links";
 
 const SlTooltip = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/tooltip/index.js"),

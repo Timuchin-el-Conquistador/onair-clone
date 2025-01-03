@@ -3,8 +3,8 @@
 import { fakeBackend } from "./axios";
 import { verifySession } from "./dal";
 
-import { type Test, type Question } from "./dtos/home";
-import { type TestSubmitForm } from "./dtos/answers";
+import { type Test, type Question } from "./types/home";
+import { type TestSubmitForm } from "./types/answers";
 
 
 

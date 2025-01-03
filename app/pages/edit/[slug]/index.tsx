@@ -7,7 +7,7 @@ import ScheduleComponent from "@/components/schedule";
 
 import useLinkForm from "@/hooks/useLinkForm";
 
-import { type Link } from "@/lib/dtos/links";
+import { type Link } from "@/lib/types/links";
 import Integration from "@/components/integration";
 
 const SlButton = dynamic(
@@ -30,7 +30,7 @@ type PageProps = {
 };
 
 function EditLink(props: PageProps) {
-  const { form, removeIntegration, handleSlugChange } = useLinkForm(props.link);
+  const { form, removeIntegration, handleSlugChange,changeAvailability } = useLinkForm(props.link);
 
   return (
     <div id="main" className="p-6 mb-20">
@@ -215,7 +215,7 @@ function EditLink(props: PageProps) {
             </div>
           </div>
           <hr />
-          <ScheduleComponent availability={form.link.availability} />
+          <ScheduleComponent availability={form.link.availability} changeAvailability={changeAvailability}/>
           <hr />{" "}
           {/*   <label className="font-medium text-md">Advanced Settings</label>
           <label className="advanced-options-label">

@@ -7,7 +7,7 @@ import "@/styles/dashboard.scss";
 
 import Dashboard from ".";
 
-import { type Link } from "@/lib/dtos/links";
+import { type Link } from "@/lib/types/links";
 
 function DashboardPage() {
   const links: Link[] = [

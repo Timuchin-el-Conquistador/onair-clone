@@ -4,7 +4,7 @@ import { fakeBackend } from "@/lib/axios";
 
 import { verifySession } from "@/lib/dal";
 
-import { type EditUser, type NewUser, type User } from "@/lib/dtos/user";
+import { type EditUser, type NewUser, type User } from "@/lib/types/user";
 
 import { createSession, deleteSession } from "@/lib/session";
 

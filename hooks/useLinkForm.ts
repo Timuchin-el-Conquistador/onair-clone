@@ -1,6 +1,6 @@
 import { useReducer } from "react";
 
-import { type Link } from "@/lib/dtos/links";
+import { type Link } from "@/lib/types/links";
 
 type State = {
   link: Omit<Link, "timeLength">;
@@ -12,7 +12,8 @@ type State = {
 type Action =
   | { type: "SLUG"; payload: string }
   | { type: "NAME"; payload: string }
-  | { type: "REMOVE_INTEGRATION"; payload: string };
+  | { type: "REMOVE_INTEGRATION"; payload: string }
+  | { type: "AVAILABILITY"; payload: string };
 
 const formReducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -33,6 +34,15 @@ const formReducer = (state: State, action: Action): State => {
           integrations: state.link.integrations.filter(
             (el) => el._id !== action.payload
           ),
+        },
+      };
+    case "AVAILABILITY":
+
+      return {
+        ...state,
+        link: {
+          ...state.link,
+          availability: action.payload,
         },
       };
 
@@ -57,10 +67,16 @@ const useLinkForm = (initialLink: Omit<Link, "timeLength">) => {
     setForm({ type: "REMOVE_INTEGRATION", payload: integrationId });
   };
 
+  const changeAvailability = (availability: string) => {
+    setForm({ type: "AVAILABILITY", payload: availability });
+  };
+
+
   return {
     form,
     handleSlugChange,
     removeIntegration,
+    changeAvailability
   };
 };
 
