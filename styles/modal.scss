@@ -1,0 +1,26 @@
+@media (min-width: 750px) {
+    #visitor-dialog {
+        min-width: 450px;
+    }
+}
+.modal-dialog.visible {
+    top: 50%;
+}
+.modal-dialog.no-transition {
+    transition: none;
+}
+.modal-dialog {
+    position: fixed;
+    top: -1000px;
+    left: 50%;
+    z-index: 1000;
+    transition: top 500ms;
+    background-color: #FFFFFF;
+    padding: 1.25rem;
+    border-radius: 0.25rem;
+}
+.visible {
+    visibility: visible;
+}
+
+

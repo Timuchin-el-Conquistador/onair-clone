@@ -1,7 +1,5 @@
-"use client";
 
 import Layout from "@/components/layouts/Layout";
-import Card from "@/components/cards";
 
 import "@/styles/dashboard.scss";
 
@@ -9,8 +7,17 @@ import Dashboard from ".";
 
 import { type Link } from "@/lib/types/links";
 
-function DashboardPage() {
-  const links: Link[] = [
+import { retrieveUrls } from "@/lib/actions/link";
+
+async function DashboardPage() {
+
+
+
+  const response = await retrieveUrls();
+  const links  = response instanceof Error || response == null ? [] : response;
+  
+  
+  /*const links: Link[] = [
     {
       _id: "11",
       slug:'timuchin',
@@ -51,7 +58,7 @@ function DashboardPage() {
       integrations: [{_id:'05',type:'mobile', name:"Chingiz's Android" }],
       timeLength: 0,
     },
-  ];
+  ];*/
 
   return (
     <Layout page="dashboard">

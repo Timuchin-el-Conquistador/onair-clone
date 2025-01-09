@@ -1,5 +1,5 @@
 "use server";
-import { redirect } from "next/navigation";
+
 import { cookies } from "next/headers";
 import { decrypt } from "./session";
 import { cache } from "react";
@@ -9,7 +9,7 @@ export const verifySession = cache(async () => {
   const session = await decrypt(cookie);
 
   if (!session?.userId) {
-    redirect("/login");
+    return null;
   }
 
   return {
@@ -17,6 +17,6 @@ export const verifySession = cache(async () => {
     userId: session.userId,
     email: session.email,
     fullName: session.fullName,
-    phoneNumber: session.phoneNumber,
+    subscriptionId:session.subscriptionId
   };
 });

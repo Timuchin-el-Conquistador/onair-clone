@@ -5,10 +5,19 @@ export type Integration = {
 };
 
 export interface Link {
-  _id: string;
+  _id?: string;
   slug: string;
   availability: string;
   linkName: string;
   integrations: Integration[];
-  timeLength: number;
+  timeLength?: number;
+  settings?:Settings
+}
+
+
+export interface Settings{
+  visitorForm: string[]
+  onlineMessage: string
+  offlineMessage: string
+  recording: boolean
 }

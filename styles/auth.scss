@@ -1,72 +1,75 @@
-@import "./mixins.scss";
-
-
-
-
-.login,
-.signup,
-.restore-password {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-
-.header{
-@include header(342px,default, 32px);
+.authenticate-page .social-sign-in-button {
+  display: flex;
+  padding: 5px;
+  align-items: center;
+  text-align: center;
+  color: white;
+  border-radius: 3px;
 }
-  form {
-    width: 343px;
-    .form-group {
+
+.authenticate-page .social-sign-in-button img {
+  border-radius: 3px;
+}
+
+.authenticate-page .social-sign-in-button:hover {
+  filter: brightness(85%);
+}
+
+
+
+
+
+.authenticate-page {
+  width: 50%;
+  margin: auto;
+}
+
+.authenticate-page .main-panel {
+  border: solid 1px #CCC;
+  margin-top: 2rem;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.authenticate-page .left-panel {
+  position: relative;
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+}
+
+.authenticate-page .left-panel::after {
+  content: " ";
+  position: absolute;
+  height: calc(100% - 8rem);
+  border-right: 1px solid lightgray;
+  right: 0;
+  top: 4rem;
+}
+
+@media(max-width: 480px) {
+  .authenticate-page {
       width: 100%;
-      margin: 16px 0;
-
-      a {
-        color: #2f80ed;
-        font-family: "Arimo", sans-serif;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 700;
-        line-height: 20px; /* 142.857% */
-      }
-    }
   }
 
-  p {
-    color: #2e3a59;
-    font-family: "Arimo", sans-serif;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 20px; /* 142.857% */
-
+  .authenticate-page .main-panel {
+      box-shadow: none;
+      margin-top: 0;
+      border-width: 0px;
   }
-
-  .link {
-    color: #2f80ed;
-    font-family: "Arimo", sans-serif;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 20px;
-    text-decoration-line: underline;
+  .authenticate-page .left-panel::after {
+      border-width: 0px;
   }
+}
 
-  /* Mobile view (up to 480px) */
-  @media screen and (max-width: 480px) {
-    > div:not(.splash-screen) {
-      width: 100vw;
-    }
-  }
+.login-methods-or-space {
+  width: 100%; 
+  border-bottom: 1px solid #9b9b9b; 
+  line-height: 0.1em;
+  color: #9b9b9b;
+  text-align: center;
+  margin: 19px 0 18px;
+}
 
-  /* Tablet view (481px to 768px) */
-  @media screen and (min-width: 481px) {
-    > div:not(.splash-screen) {
-      width: 80vw;
-
-      form {
-
-          width: 543px;
-        
-      }
-    }
-  }
+.login-methods-or-space span {
+  background-color: #fff;
+  padding: 0 15px;
 }

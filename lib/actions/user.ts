@@ -1,13 +1,13 @@
 "use server"; // ill import in home page to load tests on prerender stage
 
-import { fakeBackend } from "./axios";
-import { verifySession } from "./dal";
+import { fakeBackend } from "../axios";
+import { verifySession } from "../dal";
 
-import { type Test, type Question } from "./types/home";
-import { type TestSubmitForm } from "./types/answers";
-
+import { redirect } from "next/navigation";
 
 
+
+/*
 export async function loadTests() {
   try {
     const session = await verifySession();
@@ -55,12 +55,16 @@ export async function submitTestAnswers(testId: string, form: TestSubmitForm) {
     return error instanceof Error ? error : new Error(String(error));
   }
 }
+*/
 
 
-export async function loadPlans() {
+
+export async function retrievePlans() {
   try {
     const session = await verifySession();
-    if (!session) return null
+
+    
+    if (!session)   return  redirect("/users/sign_in");
     const path = `api/v1/test-app/user/subscriptions/${session.userId}`;
     const response:{subscriptions:any[], stripeCustomerId:string} = await fakeBackend.get(
       path,

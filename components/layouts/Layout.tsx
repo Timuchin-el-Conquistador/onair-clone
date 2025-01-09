@@ -1,9 +1,16 @@
+'use client'
+
 import Link from "next/link";
 
 import "@/styles/layouts.scss";
 import Sidebar from "../sidebar";
 
 import Warning from "../Alerts/warning";
+
+  import { socket } from "@/socket";
+
+import { useEffect,useState } from "react";
+ 
 
 function Layout({
   children,
@@ -12,6 +19,35 @@ function Layout({
   children: React.ReactNode;
   page: string;
 }) {
+
+
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [fooEvents, setFooEvents] = useState<string[]>([]);
+  const [peerConnection, setPeerConnection] =
+    useState<RTCPeerConnection | null>(null);
+
+  useEffect(() => {
+
+ 
+    function onConnect() {
+      console.log("connected");
+
+      socket.emit("register");
+      setIsConnected(true);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+    };
+  }, [socket]);
   return (
     <div className="flex overflow-hidden bg-gray-100 h-screen">
       <Sidebar page={page} />

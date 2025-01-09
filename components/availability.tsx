@@ -37,10 +37,10 @@ type PageProps = {
   changeAvailability:(availability:string) => void
 }
 
-function ScheduleComponent(props:PageProps) {
+function DailyAvailability(props:PageProps) {
   const [isAvailabilityDopdownVisible, setAvailabilityDropdownVisibility] =
     useState(false);
-  const [schedule, setSchedule] = useState<Schedule>({
+  /*const [schedule, setSchedule] = useState<Schedule>({
     monday: {
       availability: { start: "09:00 AM", end: "04:00 PM" },
       isActive: true,
@@ -69,7 +69,7 @@ function ScheduleComponent(props:PageProps) {
       availability: { start: "09:00 AM", end: "04:00 PM" },
       isActive: false,
     },
-  });
+  });*/
 
 
     const elementRef = useRef<HTMLUListElement|null>(null)
@@ -90,7 +90,7 @@ function ScheduleComponent(props:PageProps) {
       };
     }, []);
 
-  const toggleDayActivation = (
+ /* const toggleDayActivation = (
     day: keyof Schedule, // Ensures the day is one of the keys of Schedule (monday, tuesday, etc.)
     checked: boolean // The value will be a string representing the time
   ) => {
@@ -128,7 +128,7 @@ function ScheduleComponent(props:PageProps) {
       return startTime <= endTime;
     }
     return false;
-  };
+  };*/
 
   return (
     <div className="lg:flex w-full">
@@ -154,19 +154,19 @@ function ScheduleComponent(props:PageProps) {
                 <span className="flex items-center">
                   <span
                     className={`status-dot mr-3 ${
-                      props.availability == "always online"
+                      props.availability == "online"
                         ? "online"
-                        : props.availability == "scheduled"
-                        ? "auto"
+                        //: props.availability == "scheduled"
+                      //  ? "auto"
                         : "offline"
                     }`}
                   ></span>{" "}
                   <span className="text-gray-600 leading-none text-sm">
-                    {      props.availability == "always online"
-                        ? "Always Online"
-                        : props.availability == "scheduled"
-                        ? "Scheduled"
-                        : "Always Offline"}
+                    {      props.availability == "online"
+                        ? "Online"
+                        //: props.availability == "scheduled"
+                      //  ? "Scheduled"
+                        : "Offline"}
                   </span>
                 </span>{" "}
                 <span className="absolute inset-y-0 right-0 flex items-center pr-2">
@@ -190,7 +190,7 @@ function ScheduleComponent(props:PageProps) {
                 role="listbox"
                 className="absolute z-30 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white shadow-lg text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm py-1"
                 style={{
-                  maxHeight: "225px;",
+                  maxHeight: "225px",
                   display: isAvailabilityDopdownVisible ? "block" : "none",
                 }}
                 ref={elementRef}
@@ -202,11 +202,11 @@ function ScheduleComponent(props:PageProps) {
                   style={{ fontSize: "14px" }}
                   onClick={() =>{
                     setAvailabilityDropdownVisibility(false)
-                    props.changeAvailability('always online')
+                    props.changeAvailability('online')
                   }}
                 >
                   <span className="status-dot online mr-3"></span>{" "}
-                  <span className="block truncate">Always Online</span>{" "}
+                  <span className="block truncate">Online</span>{" "}
                 </li>
                 <li
                   id="option2"
@@ -215,13 +215,13 @@ function ScheduleComponent(props:PageProps) {
                   style={{ fontSize: "14px" }}
                   onClick={() =>{
                     setAvailabilityDropdownVisibility(false)
-                    props.changeAvailability('always offline')
+                    props.changeAvailability('offline')
                   }}
                 >
                   <span className="status-dot offline mr-3"></span>{" "}
-                  <span className="block truncate">Always Offline</span>{" "}
+                  <span className="block truncate">Offline</span>{" "}
                 </li>
-                <li
+                {/*<li
                   id="option3"
                   role="option"
                   className="relative flex items-center select-none py-2 pr-4 hover:bg-gray-100 text-gray-900 cursor-pointer pl-3"
@@ -233,7 +233,7 @@ function ScheduleComponent(props:PageProps) {
                 >
                   <span className="status-dot auto mr-3"></span>{" "}
                   <span className="block truncate">Scheduled</span>{" "}
-                </li>
+                </li>*/}
               </ul>
             </div>
           </div>
@@ -278,7 +278,7 @@ function ScheduleComponent(props:PageProps) {
               </div>
             </div>
           </div>{" "}*/}
-          <ul>
+         {/*} <ul>
             {Object.keys(schedule).map((el: string, i: number) => (
               <li id="availability-item" className="items-center mb-2" key={i}>
                 <div className="flex items-center w-24 lg:w-full">
@@ -341,11 +341,11 @@ function ScheduleComponent(props:PageProps) {
           </ul>
           <a className="text-blue-700 mt-2 text-sm cursor-pointer">
             + Add daily break
-          </a>
+          </a>*/}
         </div>}
       </div>
     </div>
   );
 }
 
-export default ScheduleComponent;
+export default DailyAvailability;

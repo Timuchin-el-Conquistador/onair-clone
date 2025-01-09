@@ -141,7 +141,8 @@ const url =
     ? process.env.NEXT_PUBLIC_PRODUCTION_URL || "http://localhost:4000"
     : process.env.PRODUCTION_URL || "http://localhost:4000";
 
-    
+
+console.log(url)
 const fakeBackend = FakeBackend.getInstance(url);
 //const axiosInstance = backend.getAxiosInstance();
 

@@ -37,7 +37,7 @@ function Integration(props:PageProps){
             strokeLinejoin="round"
             id=""
             className="h-4 w-4 text-gray-500 mr-3"
-            style={{ display: "inline-block;" }}
+            style={{ display: "inline-block" }}
           >
             <use xlinkHref="/feather-sprite.svg#more-vertical"></use>
           </svg>

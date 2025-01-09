@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 
 import "@/styles/globals.scss";
@@ -23,6 +24,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
 
+
   return (
     <html lang="en">
       <head>
@@ -37,6 +39,7 @@ export default async function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
           rel="stylesheet"
         />
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
   
       </head>

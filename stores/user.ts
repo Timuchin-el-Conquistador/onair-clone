@@ -4,11 +4,11 @@ import { fakeBackend } from "@/lib/axios";
 
 import { verifySession } from "@/lib/dal";
 
-import { type EditUser, type NewUser, type User } from "@/lib/types/user";
+import {  type NewUser, type User } from "@/lib/types/user";
 
 import { createSession, deleteSession } from "@/lib/session";
 
-const path = "/api/v1/test-app/user";
+const path = "/api/v1/user";
 
 export type UserState = {
   loading: boolean;
@@ -34,12 +34,12 @@ export type UserActions = {
   ) => void;
   //private
   getUser: () => void;
-  editProfilePicture: (file: File, router: any) => void;
+ /* editProfilePicture: (file: File, router: any) => void;
   editProfile: (user: {
     fullName: string;
     phoneNumber: string;
     password: string | null;
-  }) => void;
+  }) => void;*/
 
   reset: () => void;
 };
@@ -59,6 +59,26 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
   return createStore<UserStore>()((set, getState) => ({
     ...initState,
     signup: async (user, router) => {
+
+      if (user.password != user.confirmPassword) {
+        return set((prevState) => ({
+          ...prevState,
+          error: new Error("Şifrə və şifrə təsdiqi eyni olmalıdır."),
+        }));
+      }
+
+      if (user.password == null) {
+        return set((prevState) => ({
+          ...prevState,
+          error: new Error("Yeni şifrə yaradılmayıb."),
+        }));
+      }
+      if (user.confirmPassword == null) {
+        return set((prevState) => ({
+          ...prevState,
+          error: new Error("Şifrə və təsdiq şifrəsi uyğun deyil."),
+        }));
+      }
       set((prevState) => ({
         ...prevState,
         loading: true,
@@ -66,10 +86,12 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         message: null,
       }));
       try {
+
+  
         await fakeBackend.post(path + "/signup", {
-          ...user,
-          country: "Azerbaijan",
-          city: "Baku",
+          email:user.email,
+          fullName:user.fullName,
+          password:user.password,
         });
         // await createSession(response.response._id, response.response.email);
         set((prevState) => ({
@@ -93,21 +115,23 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         message: null,
       }));
       try {
-        const response: User = await fakeBackend.post(path + "/login", user);
+        const response: {message:string, user:User} = await fakeBackend.post(path + "/signin", {...user, role:'web'});
 
+
+        console.log(response)
         await createSession({
-          userId: response.id,
-          email: response.email,
-          phoneNumber: response.phoneNumber,
-          fullName: response.fullName,
+          userId: response.user._id,
+          email: response.user.email,
+          fullName: response.user.fullName,
+          subscriptionId:response.user.subscriptionId
         });
 
         set((prevState) => ({
           ...prevState,
           loading: false,
-          user: response,
+          user: response.user,
         }));
-        router.replace("/home");
+        router.replace("/dashboard");
       } catch (error) {
         set((prevState) => ({
           ...prevState,
@@ -294,7 +318,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         }));
       }
     },
-    editProfilePicture: async (file, router) => {
+/*    editProfilePicture: async (file, router) => {
       try {
         const session = await verifySession();
         if (!session) return null;
@@ -368,7 +392,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           error: error instanceof Error ? error : new Error(String(error)),
         }));
       }
-    },
+    },*/
 
     reset: () => {
       set((prevState) => ({

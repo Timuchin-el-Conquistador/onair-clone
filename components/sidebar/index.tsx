@@ -115,18 +115,18 @@ function Sidebar({ page }: { page: string }) {
                   MORE
                 </h3>{" "}
                 <div className="mt-1 space-y-1">
-                  <a href="/organizations" className="advanced-buttons ">
+                  {/*<a href="/organizations" className="advanced-buttons ">
                     <span className="text-gray-300">&gt; &nbsp;</span>{" "}
                     Organizations
-                  </a>{" "}
-                  <a href="/integrations" className="advanced-buttons ">
+                  </a>{" "}*/}
+                  <a href="/integrations" className={`advanced-buttons ${page == 'integrations' && 'selected'}`}>
                     <span className="text-gray-300">&gt; &nbsp;</span>{" "}
                     Integrations
                   </a>{" "}
-                  <a href="/settings" className="advanced-buttons ">
+                  <a href="/settings" className={`advanced-buttons ${page == 'settings' && 'selected'}`}>
                     <span className="text-gray-300">&gt; &nbsp;</span> Settings
                   </a>{" "}
-                  <a href="/billing" className="advanced-buttons ">
+                  <a href="/billing" className={`advanced-buttons ${page == 'billing' && 'selected'}`}>
                     <span className="text-gray-300">&gt; &nbsp;</span> Billing
                   </a>
                 </div>

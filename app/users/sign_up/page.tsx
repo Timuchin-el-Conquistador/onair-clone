@@ -1,32 +1,27 @@
 "use client";
-import { useEffect, useRef } from "react";
 
-import SplashScreen from "@/app/splash-screen";
+import "@/styles/signup.scss";
 
-import TextInput from "@/components/Inputs/text";
-import SubmitBtn from "@/components/Buttons/submit";
-import Select from "@/components/Dropdown/select";
+import Logo from "@/public/logo.svg";
+
 import Danger from "@/components/Alerts/danger";
 import Success from "@/components/Alerts/success";
 import Spinner from "@/components/Loaders/spinner";
 
-import { useLayoutStore } from "@/providers/layout";
-import { useUserStore } from "@/providers/user";
-
-import "@/styles/signup.scss";
-
-import Logo from "@/public/logo.png";
+import Link from "next/link";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 import { useVisibility } from "@/hooks/useVisibility";
-import Link from "next/link";
+import { useUserStore } from "@/providers/user";
+
+import { useRef } from "react";
+
+import { useRouter } from "next/navigation";
 
 function Signup() {
   const router = useRouter();
 
-  const { splashScreen, splashScreenOff } = useLayoutStore((state) => state);
   const { error, loading, signup, message } = useUserStore((state) => state);
 
   const {
@@ -39,395 +34,239 @@ function Signup() {
 
   const emailRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
-  const phoneNumberRef = useRef<HTMLInputElement | null>(null);
-  const fullNameRef = useRef<HTMLInputElement | null>(null);
-  const ageRef = useRef<HTMLInputElement | null>(null);
-  const genderRef = useRef<HTMLSelectElement | null>(null);
-
-  useEffect(() => {
-    //splashScreenOn();
-    setTimeout(() => {
-      splashScreenOff();
-    }, 1500);
-  }, []);
+  const confirmPasswordRef = useRef<HTMLInputElement | null>(null);
+  const firstNameRef = useRef<HTMLInputElement | null>(null);
+  const lastNameRef = useRef<HTMLInputElement | null>(null);
 
   return (
-    <main className="flex flex-col justify-around items-center signup">
-      {splashScreen ? (
-        <SplashScreen />
-      ) : (
-        <>
-          <div className="flex justify-center logo">
-            <Image src={Logo} alt="logo" />
+    <>
+      <div className="authenticate-page p-4 sm:p-0">
+        <div className="mx-auto w-full text-center">
+          <Image className="inline-block w-16 mt-8" src={Logo} alt="OnAir" />
+          <h2 className="text-xl mt-4">Sign-up to OnAir</h2>
+          <h3 className=" text-sm font-medium text-gray-600">
+            7-days free trial, no credit card required
+          </h3>
+        </div>
+        {/*Main panel*/}
+        <div className="flex flex-col md:flex-row main-panel">
+          {/*Left panel*/}
+          <div className="hidden left-panel p-16">
+            <div className="">
+              <h2 className="mb-3 text-gray-700 text-2xl leading-8 font-bold">
+                Walk-ins Welcome!
+              </h2>
+
+              {/*} Features list*/}
+              <div className="mt-8">
+                <ul role="list" className="mt-8 space-y-5 grid grid-rows">
+                  <li className="flex items-end lg:col-span-1">
+                    <div className="flex-shrink-0 text-green-400">
+                      <svg
+                        width="18"
+                        height="18"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ display: "inline-block" }}
+                        className=""
+                        id=""
+                      >
+                        {" "}
+                        <use xlinkHref="/feather-sprite.svg#check-circle"></use>{" "}
+                      </svg>
+                    </div>
+                    <p className="ml-3 text-sm text-gray-700">Value prop one</p>
+                  </li>
+
+                  <li className="flex items-end lg:col-span-1">
+                    <div className="flex-shrink-0 text-green-400">
+                      <svg
+                        width="18"
+                        height="18"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ display: "inline-block" }}
+                      >
+                        {" "}
+                        <use xlinkHref="/feather-sprite.svg#check-circle"></use>{" "}
+                      </svg>
+                    </div>
+                    <p className="ml-3 text-sm text-gray-700">Value prop two</p>
+                  </li>
+
+                  <li className="flex items-end lg:col-span-1">
+                    <div className="flex-shrink-0 text-green-400">
+                      <svg
+                        width="18"
+                        height="18"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ display: "inline-block" }}
+                      >
+                        {" "}
+                        <use xlinkHref="/feather-sprite.svg#check-circle"></use>{" "}
+                      </svg>
+                    </div>
+                    <p className="ml-3 text-sm text-gray-700">
+                      Value prop three
+                    </p>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <div className="flex flex-col items-center">
-            <h1 className="header">Signup</h1>
+
+          {/*Right panel*/}
+          <div className="w-full sp-form auth-form py-4 px-4 md:py-16 md:px-16">
+            {/*Social signin partial*/}
+
+            <div className="mb-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">Signup</span>
+                </div>
+              </div>
+            </div>
+
             <form
-              className="flex flex-col items-center"
+              className="new_user"
+              id="new_user"
               onSubmit={(e) => {
                 e.preventDefault();
                 const email = emailRef?.current?.value || "";
-                const password = passwordRef?.current?.value || "";
-                const phoneNumber =
-                  "+994" + phoneNumberRef?.current?.value || "";
-                const fullName = fullNameRef?.current?.value || "";
-                const gender = genderRef?.current?.value || "";
-                const age = ageRef?.current?.value || "";
-                signup(
-                  { fullName, gender, age, phoneNumber, email, password },
-                  router
-                );
+                const password = passwordRef?.current?.value || null;
+                const confirmPassword =
+                  confirmPasswordRef.current?.value || null;
+                const fullName =
+                  (firstNameRef?.current?.value || "") +
+                  " " +
+                  (lastNameRef?.current?.value || "");
+
+                if (password == null) {
+                  passwordRef.current?.focus();
+                  setDangerAlertVisibility(true); //danger alert pops up on error => error message mutation and loading mutatition in other components
+                } else if (confirmPassword == null) {
+                  //i put it here cause if user gets same error message alert wont pop up after user closed it (no message mutation)
+                  confirmPasswordRef.current?.focus(); //cause in store i dont do netwroks request loading is always false when i send request to store when one of 3 errors is true(no loading mutation)
+                  setDangerAlertVisibility(true); //that is why need to change state to true to show alerts here not in useEffect (to avoid redundancy or mo when no effect happend)
+                } else if (confirmPassword != password) {
+                  setDangerAlertVisibility(true);
+                }
+                signup({ email, password, fullName, confirmPassword }, router);
               }}
             >
-              <div className="form-group">
-                <TextInput
-                  placeholder="Full Name"
-                  labelHidden={true}
-                  ref={(el) => {
-                    fullNameRef.current = el;
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                  >
-                    <path
-                      d="M10 10C12.3012 10 14.1667 8.13452 14.1667 5.83334C14.1667 3.53215 12.3012 1.66667 10 1.66667C7.69882 1.66667 5.83334 3.53215 5.83334 5.83334C5.83334 8.13452 7.69882 10 10 10Z"
-                      stroke="#8F9BB3"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M17.1583 18.3333C17.1583 15.1083 13.95 12.5 10 12.5C6.05001 12.5 2.84167 15.1083 2.84167 18.3333"
-                      stroke="#8F9BB3"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </TextInput>
+              <input
+                autoFocus={true}
+                autoComplete="autocomplete"
+                className="w-full sm:text-sm"
+                placeholder="Email"
+                type="email"
+                name="user[email]"
+                id="user_email"
+                ref={emailRef}
+              />
+
+              <div className="mt-4 flex justify-between">
+                <div className="w-1/2">
+                  <input
+                    autoComplete="autocomplete"
+                    className="w-full sm:text-sm"
+                    placeholder="First Name"
+                    type="text"
+                    name="user[first_name]"
+                    id="user_first_name"
+                    ref={firstNameRef}
+                  />
+                </div>
+
+                <div className="w-1/2 ml-2">
+                  <input
+                    autoComplete="autocomplete"
+                    className="w-full sm:text-sm"
+                    placeholder="Last Name"
+                    type="text"
+                    name="user[last_name]"
+                    id="user_last_name"
+                    ref={lastNameRef}
+                  />
+                </div>
               </div>
 
-              <div className="form-group">
-                <Select
-                  label="Gender"
-                  options={[
-                    { label: "Male", value: "male" },
-                    { label: "Female", value: "female" },
-                  ]}
-                  ref={(el) => {
-                    genderRef.current = el;
-                  }}
-                >
-                  <>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                    >
-                      <path
-                        d="M10.1333 9.05833C10.05 9.05 9.94999 9.05 9.85832 9.05833C7.87499 8.99167 6.29999 7.36667 6.29999 5.36667C6.29999 3.325 7.94999 1.66667 9.99999 1.66667C12.0417 1.66667 13.7 3.325 13.7 5.36667C13.6917 7.36667 12.1167 8.99167 10.1333 9.05833Z"
-                        stroke="#8F9BB3"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M5.96666 12.1333C3.95 13.4833 3.95 15.6833 5.96666 17.025C8.25833 18.5583 12.0167 18.5583 14.3083 17.025C16.325 15.675 16.325 13.475 14.3083 12.1333C12.025 10.6083 8.26666 10.6083 5.96666 12.1333Z"
-                        stroke="#8F9BB3"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+              <input
+                autoComplete="true"
+                className="mt-4 w-full sm:text-sm"
+                placeholder="Password"
+                type="password"
+                name="user[password]"
+                id="user_password"
+                ref={passwordRef}
+              />
 
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                    >
-                      <path
-                        d="M16.6 7.45833L11.1667 12.8917C10.525 13.5333 9.47503 13.5333 8.83336 12.8917L3.40002 7.45833"
-                        stroke="#2E3A59"
-                        strokeWidth="1.5"
-                        strokeMiterlimit="10"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </>
-                </Select>
+              <input
+                autoComplete="new-password"
+                className="mt-4 w-full sm:text-sm"
+                placeholder="Confirm Password"
+                type="password"
+                name="user[password_confirmation]"
+                id="user_password_confirmation"
+                ref={confirmPasswordRef}
+              />
+
+              <div className="mt-8 block w-full rounded-md shadow-sm">
+                <input
+                  type="submit"
+                  name="commit"
+                  value="Sign up"
+                  className="w-full btn btn-blue"
+                  data-disable-with="Sign up"
+                />
               </div>
-              <div className="form-group">
-                <TextInput
-                  placeholder="Phone Number"
-                  labelHidden={true}
-                  ref={(el) => {
-                    phoneNumberRef.current = el;
-                  }}
-                  defaultValue="+994"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                  >
-                    <mask id="path-1-inside-1_3140_474" fill="white">
-                      <path d="M12.5 18.9583H7.50001C3.82501 18.9583 2.70834 17.8417 2.70834 14.1667V5.83333C2.70834 2.15833 3.82501 1.04167 7.50001 1.04167H12.5C16.175 1.04167 17.2917 2.15833 17.2917 5.83333V14.1667C17.2917 17.8417 16.175 18.9583 12.5 18.9583ZM7.50001 2.29167C4.51668 2.29167 3.95834 2.85833 3.95834 5.83333V14.1667C3.95834 17.1417 4.51668 17.7083 7.50001 17.7083H12.5C15.4833 17.7083 16.0417 17.1417 16.0417 14.1667V5.83333C16.0417 2.85833 15.4833 2.29167 12.5 2.29167H7.50001Z" />
-                    </mask>
-                    <path
-                      d="M12.5 17.4583H7.50001V20.4583H12.5V17.4583ZM7.50001 17.4583C5.71417 17.4583 5.06897 17.1622 4.78671 16.88C4.50445 16.5977 4.20834 15.9525 4.20834 14.1667H1.20834C1.20834 16.0558 1.47057 17.8065 2.66539 19.0013C3.86021 20.1961 5.61085 20.4583 7.50001 20.4583V17.4583ZM4.20834 14.1667V5.83333H1.20834V14.1667H4.20834ZM4.20834 5.83333C4.20834 4.04749 4.50445 3.4023 4.78671 3.12004C5.06897 2.83778 5.71417 2.54167 7.50001 2.54167V-0.458332C5.61085 -0.458332 3.86021 -0.196107 2.66539 0.998716C1.47057 2.19354 1.20834 3.94418 1.20834 5.83333H4.20834ZM7.50001 2.54167H12.5V-0.458332H7.50001V2.54167ZM12.5 2.54167C14.2859 2.54167 14.931 2.83778 15.2133 3.12004C15.4956 3.4023 15.7917 4.04749 15.7917 5.83333H18.7917C18.7917 3.94418 18.5295 2.19354 17.3346 0.998716C16.1398 -0.196107 14.3892 -0.458332 12.5 -0.458332V2.54167ZM15.7917 5.83333V14.1667H18.7917V5.83333H15.7917ZM15.7917 14.1667C15.7917 15.9525 15.4956 16.5977 15.2133 16.88C14.931 17.1622 14.2859 17.4583 12.5 17.4583V20.4583C14.3892 20.4583 16.1398 20.1961 17.3346 19.0013C18.5295 17.8065 18.7917 16.0558 18.7917 14.1667H15.7917ZM7.50001 0.791668C6.7277 0.791668 6.00703 0.826301 5.37822 0.959037C4.7327 1.0953 4.07848 1.35643 3.54869 1.88729C3.01906 2.418 2.75943 3.07236 2.62418 3.71675C2.49241 4.34457 2.45834 5.06372 2.45834 5.83333H5.45834C5.45834 5.11545 5.49406 4.64814 5.56021 4.33299C5.62288 4.03441 5.68929 3.98929 5.67216 4.00646C5.65487 4.02378 5.69961 3.9573 5.99784 3.89435C6.31279 3.82787 6.78065 3.79167 7.50001 3.79167V0.791668ZM2.45834 5.83333V14.1667H5.45834V5.83333H2.45834ZM2.45834 14.1667C2.45834 14.9363 2.49241 15.6554 2.62418 16.2832C2.75943 16.9276 3.01906 17.582 3.54869 18.1127C4.07848 18.6436 4.7327 18.9047 5.37822 19.041C6.00703 19.1737 6.7277 19.2083 7.50001 19.2083V16.2083C6.78065 16.2083 6.31279 16.1721 5.99784 16.1057C5.69961 16.0427 5.65487 15.9762 5.67216 15.9935C5.68929 16.0107 5.62288 15.9656 5.56021 15.667C5.49406 15.3519 5.45834 14.8846 5.45834 14.1667H2.45834ZM7.50001 19.2083H12.5V16.2083H7.50001V19.2083ZM12.5 19.2083C13.2723 19.2083 13.993 19.1737 14.6218 19.041C15.2673 18.9047 15.9215 18.6436 16.4513 18.1127C16.981 17.582 17.2406 16.9276 17.3758 16.2832C17.5076 15.6554 17.5417 14.9363 17.5417 14.1667H14.5417C14.5417 14.8846 14.506 15.3519 14.4398 15.667C14.3771 15.9656 14.3107 16.0107 14.3279 15.9935C14.3451 15.9762 14.3004 16.0427 14.0022 16.1057C13.6872 16.1721 13.2194 16.2083 12.5 16.2083V19.2083ZM17.5417 14.1667V5.83333H14.5417V14.1667H17.5417ZM17.5417 5.83333C17.5417 5.06372 17.5076 4.34457 17.3758 3.71675C17.2406 3.07236 16.981 2.418 16.4513 1.88729C15.9215 1.35643 15.2673 1.0953 14.6218 0.959037C13.993 0.826301 13.2723 0.791668 12.5 0.791668V3.79167C13.2194 3.79167 13.6872 3.82787 14.0022 3.89435C14.3004 3.9573 14.3451 4.02378 14.3279 4.00646C14.3107 3.98929 14.3771 4.03441 14.4398 4.33299C14.506 4.64814 14.5417 5.11545 14.5417 5.83333H17.5417ZM12.5 0.791668H7.50001V3.79167H12.5V0.791668Z"
-                      fill="#8F9BB3"
-                      mask="url(#path-1-inside-1_3140_474)"
-                    />
-                    <mask id="path-3-inside-2_3140_474" fill="white">
-                      <path d="M11.6667 5.20833H8.33334C7.99168 5.20833 7.70834 4.925 7.70834 4.58333C7.70834 4.24167 7.99168 3.95833 8.33334 3.95833H11.6667C12.0083 3.95833 12.2917 4.24167 12.2917 4.58333C12.2917 4.925 12.0083 5.20833 11.6667 5.20833Z" />
-                    </mask>
-                    <path
-                      d="M11.6667 3.70833H8.33334V6.70833H11.6667V3.70833ZM8.33334 3.70833C8.8201 3.70833 9.20834 4.09657 9.20834 4.58333H6.20834C6.20834 5.75343 7.16325 6.70833 8.33334 6.70833V3.70833ZM9.20834 4.58333C9.20834 5.07009 8.8201 5.45833 8.33334 5.45833V2.45833C7.16325 2.45833 6.20834 3.41324 6.20834 4.58333H9.20834ZM8.33334 5.45833H11.6667V2.45833H8.33334V5.45833ZM11.6667 5.45833C11.1799 5.45833 10.7917 5.07009 10.7917 4.58333H13.7917C13.7917 3.41324 12.8368 2.45833 11.6667 2.45833V5.45833ZM10.7917 4.58333C10.7917 4.09657 11.1799 3.70833 11.6667 3.70833V6.70833C12.8368 6.70833 13.7917 5.75343 13.7917 4.58333H10.7917Z"
-                      fill="#8F9BB3"
-                      mask="url(#path-3-inside-2_3140_474)"
-                    />
-                    <path
-                      d="M10 16.55C8.94168 16.55 8.08334 15.6917 8.08334 14.6333C8.08334 13.575 8.94168 12.7167 10 12.7167C11.0583 12.7167 11.9167 13.575 11.9167 14.6333C11.9167 15.6917 11.0583 16.55 10 16.55ZM10 13.9583C9.63334 13.9583 9.33334 14.2583 9.33334 14.625C9.33334 14.9917 9.63334 15.2917 10 15.2917C10.3667 15.2917 10.6667 14.9917 10.6667 14.625C10.6667 14.2583 10.3667 13.9583 10 13.9583Z"
-                      fill="#8F9BB3"
-                    />
-                  </svg>
-                </TextInput>
-              </div>
-              <div className="form-group">
-                <TextInput
-                  placeholder="Age"
-                  labelHidden={true}
-                  ref={(el) => {
-                    ageRef.current = el;
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                  >
-                    <mask id="path-1-inside-1_3140_474" fill="white">
-                      <path d="M12.5 18.9583H7.50001C3.82501 18.9583 2.70834 17.8417 2.70834 14.1667V5.83333C2.70834 2.15833 3.82501 1.04167 7.50001 1.04167H12.5C16.175 1.04167 17.2917 2.15833 17.2917 5.83333V14.1667C17.2917 17.8417 16.175 18.9583 12.5 18.9583ZM7.50001 2.29167C4.51668 2.29167 3.95834 2.85833 3.95834 5.83333V14.1667C3.95834 17.1417 4.51668 17.7083 7.50001 17.7083H12.5C15.4833 17.7083 16.0417 17.1417 16.0417 14.1667V5.83333C16.0417 2.85833 15.4833 2.29167 12.5 2.29167H7.50001Z" />
-                    </mask>
-                    <path
-                      d="M12.5 17.4583H7.50001V20.4583H12.5V17.4583ZM7.50001 17.4583C5.71417 17.4583 5.06897 17.1622 4.78671 16.88C4.50445 16.5977 4.20834 15.9525 4.20834 14.1667H1.20834C1.20834 16.0558 1.47057 17.8065 2.66539 19.0013C3.86021 20.1961 5.61085 20.4583 7.50001 20.4583V17.4583ZM4.20834 14.1667V5.83333H1.20834V14.1667H4.20834ZM4.20834 5.83333C4.20834 4.04749 4.50445 3.4023 4.78671 3.12004C5.06897 2.83778 5.71417 2.54167 7.50001 2.54167V-0.458332C5.61085 -0.458332 3.86021 -0.196107 2.66539 0.998716C1.47057 2.19354 1.20834 3.94418 1.20834 5.83333H4.20834ZM7.50001 2.54167H12.5V-0.458332H7.50001V2.54167ZM12.5 2.54167C14.2859 2.54167 14.931 2.83778 15.2133 3.12004C15.4956 3.4023 15.7917 4.04749 15.7917 5.83333H18.7917C18.7917 3.94418 18.5295 2.19354 17.3346 0.998716C16.1398 -0.196107 14.3892 -0.458332 12.5 -0.458332V2.54167ZM15.7917 5.83333V14.1667H18.7917V5.83333H15.7917ZM15.7917 14.1667C15.7917 15.9525 15.4956 16.5977 15.2133 16.88C14.931 17.1622 14.2859 17.4583 12.5 17.4583V20.4583C14.3892 20.4583 16.1398 20.1961 17.3346 19.0013C18.5295 17.8065 18.7917 16.0558 18.7917 14.1667H15.7917ZM7.50001 0.791668C6.7277 0.791668 6.00703 0.826301 5.37822 0.959037C4.7327 1.0953 4.07848 1.35643 3.54869 1.88729C3.01906 2.418 2.75943 3.07236 2.62418 3.71675C2.49241 4.34457 2.45834 5.06372 2.45834 5.83333H5.45834C5.45834 5.11545 5.49406 4.64814 5.56021 4.33299C5.62288 4.03441 5.68929 3.98929 5.67216 4.00646C5.65487 4.02378 5.69961 3.9573 5.99784 3.89435C6.31279 3.82787 6.78065 3.79167 7.50001 3.79167V0.791668ZM2.45834 5.83333V14.1667H5.45834V5.83333H2.45834ZM2.45834 14.1667C2.45834 14.9363 2.49241 15.6554 2.62418 16.2832C2.75943 16.9276 3.01906 17.582 3.54869 18.1127C4.07848 18.6436 4.7327 18.9047 5.37822 19.041C6.00703 19.1737 6.7277 19.2083 7.50001 19.2083V16.2083C6.78065 16.2083 6.31279 16.1721 5.99784 16.1057C5.69961 16.0427 5.65487 15.9762 5.67216 15.9935C5.68929 16.0107 5.62288 15.9656 5.56021 15.667C5.49406 15.3519 5.45834 14.8846 5.45834 14.1667H2.45834ZM7.50001 19.2083H12.5V16.2083H7.50001V19.2083ZM12.5 19.2083C13.2723 19.2083 13.993 19.1737 14.6218 19.041C15.2673 18.9047 15.9215 18.6436 16.4513 18.1127C16.981 17.582 17.2406 16.9276 17.3758 16.2832C17.5076 15.6554 17.5417 14.9363 17.5417 14.1667H14.5417C14.5417 14.8846 14.506 15.3519 14.4398 15.667C14.3771 15.9656 14.3107 16.0107 14.3279 15.9935C14.3451 15.9762 14.3004 16.0427 14.0022 16.1057C13.6872 16.1721 13.2194 16.2083 12.5 16.2083V19.2083ZM17.5417 14.1667V5.83333H14.5417V14.1667H17.5417ZM17.5417 5.83333C17.5417 5.06372 17.5076 4.34457 17.3758 3.71675C17.2406 3.07236 16.981 2.418 16.4513 1.88729C15.9215 1.35643 15.2673 1.0953 14.6218 0.959037C13.993 0.826301 13.2723 0.791668 12.5 0.791668V3.79167C13.2194 3.79167 13.6872 3.82787 14.0022 3.89435C14.3004 3.9573 14.3451 4.02378 14.3279 4.00646C14.3107 3.98929 14.3771 4.03441 14.4398 4.33299C14.506 4.64814 14.5417 5.11545 14.5417 5.83333H17.5417ZM12.5 0.791668H7.50001V3.79167H12.5V0.791668Z"
-                      fill="#8F9BB3"
-                      mask="url(#path-1-inside-1_3140_474)"
-                    />
-                    <mask id="path-3-inside-2_3140_474" fill="white">
-                      <path d="M11.6667 5.20833H8.33334C7.99168 5.20833 7.70834 4.925 7.70834 4.58333C7.70834 4.24167 7.99168 3.95833 8.33334 3.95833H11.6667C12.0083 3.95833 12.2917 4.24167 12.2917 4.58333C12.2917 4.925 12.0083 5.20833 11.6667 5.20833Z" />
-                    </mask>
-                    <path
-                      d="M11.6667 3.70833H8.33334V6.70833H11.6667V3.70833ZM8.33334 3.70833C8.8201 3.70833 9.20834 4.09657 9.20834 4.58333H6.20834C6.20834 5.75343 7.16325 6.70833 8.33334 6.70833V3.70833ZM9.20834 4.58333C9.20834 5.07009 8.8201 5.45833 8.33334 5.45833V2.45833C7.16325 2.45833 6.20834 3.41324 6.20834 4.58333H9.20834ZM8.33334 5.45833H11.6667V2.45833H8.33334V5.45833ZM11.6667 5.45833C11.1799 5.45833 10.7917 5.07009 10.7917 4.58333H13.7917C13.7917 3.41324 12.8368 2.45833 11.6667 2.45833V5.45833ZM10.7917 4.58333C10.7917 4.09657 11.1799 3.70833 11.6667 3.70833V6.70833C12.8368 6.70833 13.7917 5.75343 13.7917 4.58333H10.7917Z"
-                      fill="#8F9BB3"
-                      mask="url(#path-3-inside-2_3140_474)"
-                    />
-                    <path
-                      d="M10 16.55C8.94168 16.55 8.08334 15.6917 8.08334 14.6333C8.08334 13.575 8.94168 12.7167 10 12.7167C11.0583 12.7167 11.9167 13.575 11.9167 14.6333C11.9167 15.6917 11.0583 16.55 10 16.55ZM10 13.9583C9.63334 13.9583 9.33334 14.2583 9.33334 14.625C9.33334 14.9917 9.63334 15.2917 10 15.2917C10.3667 15.2917 10.6667 14.9917 10.6667 14.625C10.6667 14.2583 10.3667 13.9583 10 13.9583Z"
-                      fill="#8F9BB3"
-                    />
-                  </svg>
-                </TextInput>
-              </div>
-              <div className="form-group">
-                <TextInput
-                  placeholder="Email"
-                  labelHidden={true}
-                  ref={(el) => {
-                    emailRef.current = el;
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                  >
-                    <mask id="path-1-inside-1_3112_815" fill="white">
-                      <path d="M14.1667 17.7083H5.83334C2.79167 17.7083 1.04167 15.9583 1.04167 12.9167V7.08333C1.04167 4.04166 2.79167 2.29166 5.83334 2.29166H14.1667C17.2083 2.29166 18.9583 4.04166 18.9583 7.08333V12.9167C18.9583 15.9583 17.2083 17.7083 14.1667 17.7083ZM5.83334 3.54166C3.45001 3.54166 2.29167 4.7 2.29167 7.08333V12.9167C2.29167 15.3 3.45001 16.4583 5.83334 16.4583H14.1667C16.55 16.4583 17.7083 15.3 17.7083 12.9167V7.08333C17.7083 4.7 16.55 3.54166 14.1667 3.54166H5.83334Z" />
-                    </mask>
-                    <path
-                      d="M14.1667 16.2083H5.83334V19.2083H14.1667V16.2083ZM5.83334 16.2083C4.59723 16.2083 3.82296 15.8579 3.35754 15.3925C2.89212 14.927 2.54167 14.1528 2.54167 12.9167H-0.458328C-0.458328 14.7222 0.0662264 16.3438 1.23622 17.5138C2.40621 18.6838 4.02778 19.2083 5.83334 19.2083V16.2083ZM2.54167 12.9167V7.08333H-0.458328V12.9167H2.54167ZM2.54167 7.08333C2.54167 5.84723 2.89212 5.07296 3.35754 4.60753C3.82296 4.14211 4.59723 3.79166 5.83334 3.79166V0.791664C4.02778 0.791664 2.40621 1.31622 1.23622 2.48621C0.0662264 3.65621 -0.458328 5.27777 -0.458328 7.08333H2.54167ZM5.83334 3.79166H14.1667V0.791664H5.83334V3.79166ZM14.1667 3.79166C15.4028 3.79166 16.177 4.14211 16.6425 4.60753C17.1079 5.07296 17.4583 5.84723 17.4583 7.08333H20.4583C20.4583 5.27777 19.9338 3.65621 18.7638 2.48621C17.5938 1.31622 15.9722 0.791664 14.1667 0.791664V3.79166ZM17.4583 7.08333V12.9167H20.4583V7.08333H17.4583ZM17.4583 12.9167C17.4583 14.1528 17.1079 14.927 16.6425 15.3925C16.177 15.8579 15.4028 16.2083 14.1667 16.2083V19.2083C15.9722 19.2083 17.5938 18.6838 18.7638 17.5138C19.9338 16.3438 20.4583 14.7222 20.4583 12.9167H17.4583ZM5.83334 2.04166C4.4212 2.04166 3.08143 2.38475 2.1081 3.35809C1.13476 4.33143 0.791672 5.6712 0.791672 7.08333H3.79167C3.79167 6.11213 4.02775 5.68107 4.22942 5.47941C4.43108 5.27775 4.86214 5.04166 5.83334 5.04166V2.04166ZM0.791672 7.08333V12.9167H3.79167V7.08333H0.791672ZM0.791672 12.9167C0.791672 14.3288 1.13476 15.6686 2.1081 16.6419C3.08143 17.6152 4.4212 17.9583 5.83334 17.9583V14.9583C4.86214 14.9583 4.43108 14.7222 4.22942 14.5206C4.02775 14.3189 3.79167 13.8879 3.79167 12.9167H0.791672ZM5.83334 17.9583H14.1667V14.9583H5.83334V17.9583ZM14.1667 17.9583C15.5788 17.9583 16.9186 17.6152 17.8919 16.6419C18.8653 15.6686 19.2083 14.3288 19.2083 12.9167H16.2083C16.2083 13.8879 15.9723 14.3189 15.7706 14.5206C15.5689 14.7222 15.1379 14.9583 14.1667 14.9583V17.9583ZM19.2083 12.9167V7.08333H16.2083V12.9167H19.2083ZM19.2083 7.08333C19.2083 5.6712 18.8653 4.33143 17.8919 3.35809C16.9186 2.38475 15.5788 2.04166 14.1667 2.04166V5.04166C15.1379 5.04166 15.5689 5.27775 15.7706 5.47941C15.9723 5.68107 16.2083 6.11213 16.2083 7.08333H19.2083ZM14.1667 2.04166H5.83334V5.04166H14.1667V2.04166Z"
-                      fill="#8F9BB3"
-                      mask="url(#path-1-inside-1_3112_815)"
-                    />
-                    <mask id="path-3-inside-2_3112_815" fill="white">
-                      <path d="M9.99981 10.725C9.29981 10.725 8.59148 10.5083 8.04981 10.0666L5.44148 7.98331C5.17481 7.76664 5.12481 7.37497 5.34148 7.10831C5.55815 6.84164 5.94982 6.79164 6.21648 7.00831L8.82481 9.09165C9.45814 9.59998 10.5331 9.59998 11.1665 9.09165L13.7748 7.00831C14.0415 6.79164 14.4415 6.83331 14.6498 7.10831C14.8665 7.37497 14.8248 7.77498 14.5498 7.98331L11.9415 10.0666C11.4081 10.5083 10.6998 10.725 9.99981 10.725Z" />
-                    </mask>
-                    <path
-                      d="M8.04981 10.0666L8.99772 8.90412L8.99185 8.89933L8.98594 8.89461L8.04981 10.0666ZM5.44148 7.98331L4.49555 9.14752L4.50535 9.15534L5.44148 7.98331ZM6.21648 7.00831L5.27056 8.17252L5.28035 8.18034L6.21648 7.00831ZM8.82481 9.09165L9.76373 7.92184L9.76094 7.91961L8.82481 9.09165ZM11.1665 9.09165L10.2303 7.91961L10.2276 7.92185L11.1665 9.09165ZM13.7748 7.00831L14.711 8.18039L14.7207 8.17248L13.7748 7.00831ZM14.6498 7.10831L13.4542 8.01409L13.4696 8.03441L13.4856 8.0542L14.6498 7.10831ZM14.5498 7.98331L13.644 6.78767L13.6287 6.79928L13.6137 6.81128L14.5498 7.98331ZM11.9415 10.0666L11.0054 8.89461L10.995 8.90289L10.9848 8.91136L11.9415 10.0666ZM9.99981 9.22497C9.59244 9.22497 9.23347 9.09635 8.99772 8.90412L7.10191 11.2292C7.94949 11.9203 9.00718 12.225 9.99981 12.225V9.22497ZM8.98594 8.89461L6.3776 6.81128L4.50535 9.15534L7.11368 11.2387L8.98594 8.89461ZM6.38736 6.81914C6.73096 7.09831 6.83756 7.6457 6.50565 8.0542L4.17731 6.16242C3.41207 7.10425 3.61866 8.43498 4.49559 9.14748L6.38736 6.81914ZM6.50565 8.0542C6.22648 8.39779 5.67909 8.50439 5.27059 8.17248L7.16237 5.84414C6.22054 5.0789 4.88981 5.28549 4.17731 6.16242L6.50565 8.0542ZM5.28035 8.18034L7.88868 10.2637L9.76094 7.91961L7.15261 5.83628L5.28035 8.18034ZM7.88589 10.2614C8.51657 10.7676 9.29383 10.9729 9.99564 10.9729C10.6975 10.9729 11.4747 10.7676 12.1054 10.2614L10.2276 7.92185C10.23 7.91991 10.2131 7.93374 10.1677 7.94817C10.1225 7.96256 10.0629 7.9729 9.99564 7.9729C9.92838 7.9729 9.86879 7.96256 9.82355 7.94817C9.77817 7.93374 9.76132 7.91991 9.76373 7.92185L7.88589 10.2614ZM12.1026 10.2637L14.7109 8.18035L12.8387 5.83628L10.2303 7.91961L12.1026 10.2637ZM14.7207 8.17248C14.35 8.47364 13.7745 8.43687 13.4542 8.01409L15.8455 6.20252C15.1085 5.22975 13.7329 5.10965 12.8289 5.84414L14.7207 8.17248ZM13.4856 8.0542C13.1845 7.68355 13.2213 7.10796 13.644 6.78767L15.4556 9.17895C16.4284 8.442 16.5485 7.0664 15.814 6.16242L13.4856 8.0542ZM13.6137 6.81128L11.0054 8.89461L12.8776 11.2387L15.4859 9.15534L13.6137 6.81128ZM10.9848 8.91136C10.7629 9.0951 10.4098 9.22497 9.99981 9.22497V12.225C10.9898 12.225 12.0534 11.9215 12.8982 11.2219L10.9848 8.91136Z"
-                      fill="#8F9BB3"
-                      mask="url(#path-3-inside-2_3112_815)"
-                    />
-                  </svg>
-                </TextInput>
-              </div>
-              <div className="form-group">
-                <TextInput
-                  placeholder="Password"
-                  labelHidden={true}
-                  type={isPasswordVisible ? "text" : "password"}
-                  ref={(el) => {
-                    passwordRef.current = el;
-                  }}
-                >
-                  <>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                    >
-                      <path
-                        d="M5 8.33333V6.66667C5 3.90833 5.83333 1.66667 10 1.66667C14.1667 1.66667 15 3.90833 15 6.66667V8.33333"
-                        stroke="#8F9BB3"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M14.1667 18.3333H5.83334C2.50001 18.3333 1.66667 17.5 1.66667 14.1667V12.5C1.66667 9.16667 2.50001 8.33333 5.83334 8.33333H14.1667C17.5 8.33333 18.3333 9.16667 18.3333 12.5V14.1667C18.3333 17.5 17.5 18.3333 14.1667 18.3333Z"
-                        stroke="#8F9BB3"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M13.3304 13.3333H13.3379"
-                        stroke="#8F9BB3"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M9.99624 13.3333H10.0037"
-                        stroke="#8F9BB3"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M6.66209 13.3333H6.66957"
-                        stroke="#8F9BB3"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <button
-                      className="eye"
-                      type="button"
-                      onClick={() => {
-                        setPasswordVisibility((prevState) => !prevState);
-                      }}
-                    >
-                      {isPasswordVisible ? (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                        >
-                          <path
-                            d="M12 5C7.25 5 3.27 8.11 1.64 12C3.27 15.89 7.25 19 12 19C16.75 19 20.73 15.89 22.36 12C20.73 8.11 16.75 5 12 5Z"
-                            stroke="#8F9BB3"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <circle
-                            cx="12"
-                            cy="12"
-                            r="3"
-                            stroke="#8F9BB3"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="M1 1L23 23"
-                            stroke="#8F9BB3"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      ) : (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                        >
-                          <path
-                            d="M12 5C7.25 5 3.27 8.11 1.64 12C3.27 15.89 7.25 19 12 19C16.75 19 20.73 15.89 22.36 12C20.73 8.11 16.75 5 12 5Z"
-                            stroke="#8F9BB3"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <circle
-                            cx="12"
-                            cy="12"
-                            r="3"
-                            stroke="#8F9BB3"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      )}
-                    </button>
-                  </>
-                </TextInput>
-              </div>
-              <div className="form-group">
-                <SubmitBtn label="Signup" />
-              </div>
+
+              <p className="mt-2 text-sm text-gray-500">
+                Already have an account?
+                <Link href="/users/sign_in" className="authentication-link">
+                  Log in
+                </Link>
+              </p>
             </form>
           </div>
-          {isSuccessAlertVisible ? (
-            <div className="fixed bottom-0 w-screen flex justify-center">
-              <Success message={message!}>
-                <Link href="/login" className="link">
-                  Login
-                </Link>
-              </Success>
-            </div>
-          ) : null}
-          {isDangerAlertVisible ? (
-            <div className="fixed bottom-0 w-screen flex justify-center">
-              <Danger
-                message={error?.message || ""}
-                click={() => {
-                  setDangerAlertVisibility(false);
-                }}
-              />
-            </div>
-          ) : null}
+        </div>
+      </div>
 
-          {loading ? <Spinner /> : null}
-        </>
-      )}
-    </main>
+      {isSuccessAlertVisible ? (
+        <div className="fixed bottom-0 w-screen flex justify-center">
+          <Success message={message!}>
+            <Link href="/users/sign_in" className="link">
+              Login
+            </Link>
+          </Success>
+        </div>
+      ) : null}
+      {isDangerAlertVisible ? (
+        <div className="fixed bottom-0 w-screen flex justify-center">
+          <Danger
+            message={error?.message || ""}
+            click={() => {
+              setDangerAlertVisibility(false);
+            }}
+          />
+        </div>
+      ) : null}
+
+      {loading ? <Spinner /> : null}
+    </>
   );
 }
 

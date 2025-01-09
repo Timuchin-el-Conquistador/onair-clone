@@ -6,9 +6,8 @@ function EditPage(props: { params: { slug: string } }) {
   return (
     <Layout page={`pages/edit`}>
       <NewLink
-        integrations={[
-    
-        ]}
+         deviceConnected={false}
+         integrations={[]}
       />
     </Layout>
   );

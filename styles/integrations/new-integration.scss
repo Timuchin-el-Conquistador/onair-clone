@@ -1,0 +1,42 @@
+
+	.integ-card
+	{
+		display: inline-block;
+		width: 20rem;
+		cursor: default;
+		border: solid 1px #EEE;
+		border-radius: 0.5rem;
+		text-align: center;
+		height: 18rem;
+		margin-right: 1rem;
+		margin-bottom: 1rem;
+		background-color: #FFF;
+	}
+
+	.integ-card img
+	{
+		display: inline-block;
+		margin-top: 1.5rem;
+		max-width: 6rem;
+		height: 4rem;
+	}
+
+	.integ-card h5
+	{
+		font-weight: bold;
+		font-size: 0.875rem;
+		margin-top: 1rem;
+	}
+
+	.integ-card p
+	{
+		color: #555;
+		font-size: 0.875rem;
+		margin: 1rem 3rem 2rem 3rem;
+	}
+
+	.integ-card .btn
+	{
+		display: inline-block;
+		margin-bottom: 1.5rem;
+	}

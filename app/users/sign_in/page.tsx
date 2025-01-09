@@ -1,18 +1,48 @@
 "use client";
 
 import "@/styles/login.scss";
-import Logo from "@/public/logo.svg";
 
 import Image from "next/image";
 
+import {  useRef } from "react";
+
+import { useLayoutStore } from "@/providers/layout";
+import { useUserStore } from "@/providers/user";
+
+import Link from "next/link";
+
+import "@/styles/login.scss";
+
+import Logo from "@/public/logo.svg";
+import Danger from "@/components/Alerts/danger";
+import Spinner from "@/components/Loaders/spinner";
+
+import { useVisibility } from "@/hooks/useVisibility";
+
+import { useRouter } from "next/navigation";
+
+
 function Login() {
+  const router = useRouter();
+  const { splashScreen, splashScreenOff } = useLayoutStore((state) => state);
+  const { login, error, loading } = useUserStore((state) => state);
+
+  const {
+    isDangerAlertVisible,
+    setDangerAlertVisibility,
+    isPasswordVisible,
+    setPasswordVisibility,
+  } = useVisibility();
+
+  const emailRef = useRef<HTMLInputElement | null>(null);
+  const passwordRef = useRef<HTMLInputElement | null>(null);
   return (
     <>
       <div className="mx-auto w-full text-center">
         <Image className="inline-block w-16 mt-8" src={Logo} alt="OnAir" />
         <h2 className="text-xl mt-4">Sign-in to your account</h2>
         <h3 className=" text-sm font-medium text-gray-600">
-          or <a href="/users/sign_up">start your 7-day free trial</a>
+          or <Link href="/users/sign_up">start your 7-day free trial</Link>
         </h3>
       </div>
       <div className="authenticate-page p-4 sm:p-0">
@@ -35,9 +65,9 @@ function Login() {
                         height="18"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         style={{ display: "inline-block" }}
                         className=""
                         id=""
@@ -56,9 +86,9 @@ function Login() {
                         height="18"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         style={{ display: "inline-block" }}
                       >
                         {" "}
@@ -75,9 +105,9 @@ function Login() {
                         height="18"
                         fill="none"
                         stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         style={{ display: "inline-block" }}
                       >
                         {" "}
@@ -124,15 +154,14 @@ function Login() {
             <form
               className="new_user"
               id="new_user"
-              action="/users/sign_in"
-              accept-charset="UTF-8"
-              method="post"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const email = emailRef?.current?.value || "";
+                const password = passwordRef?.current?.value || "";
+                login({email, password},router);
+              }}
             >
-              <input
-                type="hidden"
-                name="authenticity_token"
-                value="WgwbnxAI2FOxAkQdPAZ5A0XaKB-iwQemfBNpuQEO4O81f1ROBo3AiaeLgxh06VxgTltfVbwJKAeSB5RokP4QGg"
-              />
+ 
 
               {/* Email*/}
               <input
@@ -141,9 +170,9 @@ function Login() {
                 className="w-full sm:text-sm"
                 placeholder="Enter Email"
                 type="email"
-                value=""
                 name="user[email]"
                 id="user_email"
+                ref={emailRef}
               />
 
               {/*} Password*/}
@@ -154,13 +183,14 @@ function Login() {
                 type="password"
                 name="user[password]"
                 id="user_password"
+                ref={passwordRef}
               />
 
               <div className="mt-4 flex items-center">
                 <div className="text-sm leading-5">
-                  <a href="/users/password/new" className="authentication-link">
+                  <Link href="/users/password/new" className="authentication-link">
                     Forgot your password?
-                  </a>
+                  </Link>
                 </div>
               </div>
 
@@ -173,12 +203,6 @@ function Login() {
                   data-disable-with="Log in"
                 />
 
-                <input
-                  name="recaptcha_token"
-                  type="hidden"
-                  id="recaptcha_token_c8ed05862c8f13529b2f"
-                  value="03AFcWeA4oRbX4RXO6FVI7OZA-AItm1P1nY2v8TJ-4ygvHmbfwFEUUlFdPl5BdPdRoX9HKkwLu98aYcfBCcvn4fBrsPD_jrNBfp55mOil1u20fUwdqd969M1ZjDYLqwLx81nDleop361epZ5n7t1z3CAvBmLd4SGmdLyVLJZFXM3prv99-yVO132oOcQI5ofS8cZ9fX0hLpRXWioCtlRfWGI13HaooZxrB1pu-YdSpb-giYwrLQyxgYhitHE493E9oeVRu5FX4N8K1oaDM9QYxdjC4JX5fnqx3QSAMnVLrQTsuNQ4PjjYFgn7aFQk4ZtHSaorqqgp9FuU13yciGFDWKVSsbFadWwWa6mtzriYGGqesh6D1AAAxb99mmpwfxHw3lxmduraC3bmAkgKigrRnWXXBjBkOYRtCqWk4oHVh12vxz7YZhXCQz6q2QApOQ8WAFTJSZMafSmiyUUB5OhnZMSyPi9RAklivD5BJ_xIFr3DARtRfhlgafrboyfXQuzkwV76rc8lsRBrvCA6vZWyAUitJVtQjIQ6PymjAqwY0ntb0578jDyO1OSEJ8FO7kAuF72SchU-7qlyilj3pzDDBqQsjt1I85OLXN-LuRKJiubw5RrAlwqwM_7cx1_J2jes7QqUnSXDMUjQsoyyYYeBsTWF2nj3Ue5KZzjMLKvxncANSdl6jawMnPaPfXCkz176sIVuV7VjvMrqFHHftwLR2xppPT5WK9cASgkx7o2koC8A0Qqm39uE-ieStaznmkOscE1CPPwdNgf7LbpTd1irjaqh8TmsgaHoiuFO0HtFXdHWLAAclIja7OPiso6rY3hEBy9TlPYD30-DV1ILG2tVuQYWnxZDnZxrDSytEDyemQ00E7GbtNSaqczk"
-                />
               </div>
 
               {/*<div class="mt-2 text-sm leading-5">
@@ -190,6 +214,16 @@ function Login() {
           </div>
         </div>
       </div>
+      {isDangerAlertVisible ? (
+            <Danger
+              message={error?.message || ""}
+              click={() => {
+                setDangerAlertVisibility(false);
+              }}
+            />
+          ) : loading ? (
+            <Spinner />
+          ) : null}
     </>
   );
 }

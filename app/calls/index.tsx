@@ -3,7 +3,7 @@
 import Pulse from "@/components/Loaders/pulse";
 import Table from "@/components/table";
 
-import "@/styles/calls.scss";
+import "@/styles/calls/index.scss";
 
 function Calls() {
   return (
@@ -99,9 +99,9 @@ function Calls() {
               height="45"
               fill="none"
               stroke="currentColor"
-              stroke-width="1"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               id=""
               style={{ display: "inline-block" }}
             >
