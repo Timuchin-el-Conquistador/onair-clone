@@ -22,15 +22,14 @@ import { useRouter } from "next/navigation";
 function Signup() {
   const router = useRouter();
 
-  const { error, loading, signup, message } = useUserStore((state) => state);
-
+  const { reset, signup, error, loading, message } = useUserStore(
+    (state) => state
+  );
   const {
     isDangerAlertVisible,
     setDangerAlertVisibility,
-    isPasswordVisible,
-    setPasswordVisibility,
     isSuccessAlertVisible,
-  } = useVisibility();
+  } = useVisibility(reset, error, loading, message);
 
   const emailRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);

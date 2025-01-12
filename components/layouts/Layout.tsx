@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Link from "next/link";
 
@@ -7,10 +7,11 @@ import Sidebar from "../sidebar";
 
 import Warning from "../Alerts/warning";
 
-  import { socket } from "@/socket";
+import { socket } from "@/socket";
 
-import { useEffect,useState } from "react";
- 
+import { useEffect, useState } from "react";
+
+import { useUserStore } from "@/providers/user";
 
 function Layout({
   children,
@@ -19,35 +20,38 @@ function Layout({
   children: React.ReactNode;
   page: string;
 }) {
-
-
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [fooEvents, setFooEvents] = useState<string[]>([]);
-  const [peerConnection, setPeerConnection] =
-    useState<RTCPeerConnection | null>(null);
+  const { getUser, user, loading } = useUserStore((state) => state);
 
   useEffect(() => {
+    getUser();
+  }, []);
 
- 
+  useEffect(() => {
+    if (user == null) return;
+    socket.emit("web-connect", { userId: user._id });
+  }, [loading]);
+
+  useEffect(() => {
     function onConnect() {
       console.log("connected");
 
-      socket.emit("register");
-      setIsConnected(true);
+      //socket.emit("owner-connect", {userId});
     }
 
-    function onDisconnect() {
-      setIsConnected(false);
-    }
+    function onDisconnect() {}
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
 
+    socket.on('peering', (data) => {
+      console.log("ATTEMPT TO PEER", data)
+    })
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
     };
   }, [socket]);
+
   return (
     <div className="flex overflow-hidden bg-gray-100 h-screen">
       <Sidebar page={page} />
@@ -56,7 +60,9 @@ function Layout({
           <Warning>
             <div className="sm:flex  items-center">
               <div>
-                <strong className="text-sm sm:text-base font-bold">Reduce missed calls</strong>
+                <strong className="text-sm sm:text-base font-bold">
+                  Reduce missed calls
+                </strong>
                 <p className="text-sm mb-1">
                   Download OnAir mobile app to receive calls and stay connected
                   wherever you are.

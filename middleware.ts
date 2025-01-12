@@ -4,14 +4,15 @@ import { cookies } from 'next/headers'
  
 // 1. Specify protected and public routes
 const protectedRoutes = [
-  /^\/home$/,
-  /^\/home(\/[a-zA-Z0-9]+)?$/,
-  /^\/plans$/,
-  /^\/about-app$/,
-  /^\/edit$/,
-  /^\/profile$/,
+  /^\/dashboard$/,
+  /^(\/[a-zA-Z0-9]+)?$/,
+  /^\/settings$/,
+  /^\/integrations$/,
+  /^\/pages\/new$/,
+  /^\/pages\/edit\/([a-zA-Z0-9]+)$/,
+  /^\/billing$/,
 ];
-const publicRoutes = [/^\/login$/, /^\/signup$/, /^\/$/];
+const publicRoutes = [/^\/sign_in$/, /^\/sign_up$/, /^\/$/];
  
 export default async function middleware(req: NextRequest) {
   // 2. Check if the current route is protected or public
@@ -33,7 +34,7 @@ export default async function middleware(req: NextRequest) {
  
   // 4. Redirect to /login if the user is not authenticated
   if (isProtectedRoute && !session?.userId) {
-    return NextResponse.redirect(new URL('/login', req.nextUrl))
+    return NextResponse.redirect(new URL('/users/sign_in', req.nextUrl))
   }
  
   // 5. Redirect to /dashboard if the user is authenticated
@@ -42,7 +43,7 @@ export default async function middleware(req: NextRequest) {
     session?.userId &&
     !req.nextUrl.pathname.startsWith('/home')
   ) {
-    return NextResponse.redirect(new URL('/home', req.nextUrl))
+    return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
   }
  
   return NextResponse.next()

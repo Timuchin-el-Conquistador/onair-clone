@@ -105,7 +105,7 @@ function EditLink(props: PageProps) {
                   )}
                 </span>
               </div>
-              {form.slugStatus == "error" && (
+              {form.slugStatus == "taken" && (
                 <span className="text-xs text-red-400 absolute -bottom-5">
                   Slug is not available. Please choose another one.
                 </span>

@@ -10,11 +10,10 @@ import { Peer } from "peerjs";
 
 
 function IncommingCalls() {
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [fooEvents, setFooEvents] = useState<string[]>([]);
+
   const [peerConnection, setPeerConnection] =
     useState<RTCPeerConnection | null>(null);
-
+  const [incommingCalls, setIncommingCalls] = useState([])
 
     useEffect(() => {
       /*async function establishP2P(data: any) {
@@ -38,22 +37,13 @@ function IncommingCalls() {
     
         };*/
         const peer = new Peer(  {
-            host: 'http://localhost:4000',
+            host: 'localhost',
+            port:9000,
             debug: 1,
             path: "/myapp",
           },);
         peer.on("call", (call) => {
-          navigator.mediaDevices.getUserMedia({ video: false, audio: true })
-          .then((stream) => {
-              call.answer(stream); // Answer the call with an A/V stream.
-              call.on("stream", (remoteStream) => {
-                // Show stream in some <video> element.
-              });
-            },
-            (err) => {
-              console.error("Failed to get local stream", err);
-            },
-          );
+           console.log(call)
         });
     }, [socket]);
   return (

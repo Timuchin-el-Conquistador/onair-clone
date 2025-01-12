@@ -22,17 +22,18 @@ import { useVisibility } from "@/hooks/useVisibility";
 import { useRouter } from "next/navigation";
 
 
+
+
 function Login() {
   const router = useRouter();
-  const { splashScreen, splashScreenOff } = useLayoutStore((state) => state);
-  const { login, error, loading } = useUserStore((state) => state);
 
+  const { reset, error, loading, message,login  } = useUserStore((state) => state);
   const {
     isDangerAlertVisible,
     setDangerAlertVisibility,
     isPasswordVisible,
     setPasswordVisibility,
-  } = useVisibility();
+  } = useVisibility(reset, error, loading, message);
 
   const emailRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);

@@ -117,8 +117,6 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
       try {
         const response: {message:string, user:User} = await fakeBackend.post(path + "/signin", {...user, role:'web'});
 
-
-        console.log(response)
         await createSession({
           userId: response.user._id,
           email: response.user.email,
@@ -302,7 +300,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           error: null,
           message: null,
         }));
-        const path = `api/v1/test-app/user/${session?.email}`;
+        const path = `api/v1/user/${session?.email}`;
         const user: User = await fakeBackend.get(path);
 
         set((prevState) => ({

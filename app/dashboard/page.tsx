@@ -15,7 +15,7 @@ async function DashboardPage() {
 
   const response = await retrieveUrls();
   const links  = response instanceof Error || response == null ? [] : response;
-  
+  console.log('links', links)
   
   /*const links: Link[] = [
     {

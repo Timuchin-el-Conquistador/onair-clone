@@ -1,29 +1,28 @@
 // useVisibility.ts
 import { useState, useEffect, useRef } from "react";
 
-import { useUserStore } from "@/providers/user";
-
-export const useVisibility = () => {
+export const useVisibility = (
+  reset: () => void,
+  error: null | Error,
+  loading: boolean,
+  message: null | string
+) => {
   const [isDangerAlertVisible, setDangerAlertVisibility] = useState(false);
   const [isSuccessAlertVisible, setSuccessAlertVisibility] = useState(false);
   const [isPasswordVisible, setPasswordVisibility] = useState(false);
 
-  const { reset, error, loading, message } = useUserStore((state) => state);
-
   const isFirstRender = useRef(true); // Declare useRef outside the useEffect
 
   useEffect(() => {
-    console.log("effect triggered");
-
     // Skip the effect on the first render
-    if (isFirstRender.current) {
+    if (isFirstRender.current && reset != null) {
       isFirstRender.current = false;
       reset(); // Call reset function on mount
       return;
     }
-    const targetElement = document.getElementById('spinner');
+    const targetElement = document.getElementById("spinner");
     if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
     }
     // Avoid redundant state updates
     if (
@@ -45,9 +44,9 @@ export const useVisibility = () => {
       return;
     }
 
-    const targetElement = document.getElementById('spinner');
+    const targetElement = document.getElementById("spinner");
     if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
     }
     // Update state based on error
     setSuccessAlertVisibility(message != null);
@@ -59,6 +58,6 @@ export const useVisibility = () => {
     isPasswordVisible,
     setPasswordVisibility,
     isSuccessAlertVisible,
-    setSuccessAlertVisibility
+    setSuccessAlertVisibility,
   };
 };

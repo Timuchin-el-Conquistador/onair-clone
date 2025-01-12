@@ -2,15 +2,26 @@ import NewLink from ".";
 
 import Layout from "@/components/layouts/Layout";
 
-function EditPage(props: { params: { slug: string } }) {
+import { retrieveIntegrations, retrieveConnectedDevices, createUrlAction } from "@/lib/actions/link";
+
+async function NewLinkPage(props: { params: { slug: string } }) {
+ 
+    const integrationsResponse = await retrieveIntegrations();
+    const integrations  = integrationsResponse instanceof Error || integrationsResponse == null ? [] : integrationsResponse;
+    const connectedDevicesResponse =  await retrieveConnectedDevices();
+    const connectedDevices  = connectedDevicesResponse instanceof Error || connectedDevicesResponse == null ? [] : connectedDevicesResponse;
+
+
   return (
     <Layout page={`pages/edit`}>
       <NewLink
-         deviceConnected={false}
-         integrations={[]}
+         hasConnectedDevices={connectedDevices.length>0}
+         connectedDevices={connectedDevices}
+         integrations={integrations}
+         createUrlAction={createUrlAction}
       />
     </Layout>
   );
 }
 
-export default EditPage;
+export default NewLinkPage;

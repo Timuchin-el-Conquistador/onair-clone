@@ -142,7 +142,6 @@ const url =
     : process.env.PRODUCTION_URL || "http://localhost:4000";
 
 
-console.log(url)
 const fakeBackend = FakeBackend.getInstance(url);
 //const axiosInstance = backend.getAxiosInstance();
 

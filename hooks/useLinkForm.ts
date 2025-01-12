@@ -6,6 +6,7 @@ import { socket } from "@/socket";
 
 import { useEffect } from "react";
 
+
 type State = {
   link: Link;
   message: null | string;
@@ -18,7 +19,11 @@ type Action =
   | { type: "NAME"; payload: string }
   | { type: "REMOVE_INTEGRATION"; payload: string }
   | { type: "AVAILABILITY"; payload: string }
-  | { type: "SLUGSTATUSCHANGE"; payload: "pending" | "fulfilled" | "taken" };
+  | { type: "SLUGSTATUSCHANGE"; payload: "pending" | "fulfilled" | "taken" }
+  | {
+      type: "VISITORFORMCOLLECTING";
+      payload: { type: "push" | "pull"; value: "email" | "phone" };
+    };
 
 const formReducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -31,14 +36,14 @@ const formReducer = (state: State, action: Action): State => {
         },
       };
 
-      case "NAME":
-        return {
-          ...state,
-          link: {
-            ...state.link,
-            linkName: action.payload,
-          },
-        };
+    case "NAME":
+      return {
+        ...state,
+        link: {
+          ...state.link,
+          linkName: action.payload,
+        },
+      };
 
     case "REMOVE_INTEGRATION":
       return {
@@ -65,6 +70,23 @@ const formReducer = (state: State, action: Action): State => {
         slugStatus: action.payload,
       };
 
+    case "VISITORFORMCOLLECTING":
+      return {
+        ...state,
+        link: {
+          ...state.link,
+          settings: {
+            ...state.link.settings,
+            visitorForm:
+              action.payload.type == "push"
+                ? [...state.link.settings.visitorForm, action.payload.value]
+                : state.link.settings.visitorForm.filter(
+                    (el) => el != action.payload.value
+                  ),
+          },
+        },
+      };
+
     default:
       return { ...state };
   }
@@ -84,7 +106,6 @@ const useLinkForm = (initialLink: Omit<Link, "timeLength">) => {
   };
 
   const handleLinkNameChange = (linkName: string) => {
-
     setForm({ type: "NAME", payload: linkName });
   };
 
@@ -96,7 +117,9 @@ const useLinkForm = (initialLink: Omit<Link, "timeLength">) => {
     setForm({ type: "AVAILABILITY", payload: availability });
   };
 
-
+  const visitingFormCollectionStrategyChange= (type: "push" | "pull", value: "email" | "phone") => {
+    setForm({ type: "VISITORFORMCOLLECTING", payload: { type, value } });
+  };
 
   useEffect(() => {
     socket.on("slug-validation-result", (response) => {
@@ -115,6 +138,7 @@ const useLinkForm = (initialLink: Omit<Link, "timeLength">) => {
     handleLinkNameChange,
     removeIntegration,
     changeAvailability,
+    visitingFormCollectionStrategyChange,
   };
 };
 

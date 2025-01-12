@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-import { type Link as ILink } from "@/lib/types/links";
+import { type ExtendedLink } from "@/lib/types/links";
 import WarningBadge from "../Badges/warning";
 
 import "@/styles/badge.scss";
@@ -15,7 +15,12 @@ const SlTooltip = dynamic(
   }
 );
 
-type PageProps = Omit<ILink, "_id">;
+type CardPageLinkType = Omit<
+  ExtendedLink,
+  "callStrategy" | "settings" | "_id" | "connectedDevices"
+>;
+
+type PageProps = CardPageLinkType;
 
 function Card(props: PageProps) {
   const [menuVisibilityState, setMenuVisibilityState] = useState(false);
@@ -57,7 +62,7 @@ function Card(props: PageProps) {
           cx="19"
           cy="6"
           r="3"
-          fill={props.availability == "always online" ? "#2ECC71" : "#CCCCCC"}
+          fill={props.availability == "online" ? "#2ECC71" : "#CCCCCC"}
           strokeWidth="0"
         ></circle>{" "}
         <path d="M22 12v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"></path>{" "}
@@ -68,21 +73,17 @@ function Card(props: PageProps) {
         <h3 className="w-full truncate">{props.slug}</h3>{" "}
         <div className="index-card-top-right"></div>
       </div>{" "}
-      <div className="flex items-center col-span-3">
-        <SlTooltip
-          content="Incorrect range. End time must be after the start time."
-          className="text-sm"
-          style={{ maxWidth: "200px" }}
-        >
-          <WarningBadge>
-    
-                  No Devices
-           
-        
-          </WarningBadge>
-        </SlTooltip>
-      </div>
-
+      {!props.hasConnectedDevice && (
+        <div className="flex items-center col-span-3">
+          <SlTooltip
+            content="No Devices"
+            className="text-sm"
+            style={{ maxWidth: "200px" }}
+          >
+            <WarningBadge>No Devices</WarningBadge>
+          </SlTooltip>
+        </div>
+      )}
       <div className="col-span-2">
         <div className="mt-6">
           <div className="text-sm text-gray-400">Minutes</div>{" "}
