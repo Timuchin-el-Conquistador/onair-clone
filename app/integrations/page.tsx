@@ -1,4 +1,4 @@
-import Layout from "@/components/layouts/Layout";
+import Layout from "@/components/layouts/private";
 import Integrations from ".";
 
 import { type Link } from "@/lib/types/links";

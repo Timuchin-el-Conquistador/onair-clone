@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-import Layout from "@/components/layouts/Layout";
+import Layout from "@/components/layouts/private";
 import DailyAvailability from "@/components/availability";
 import Integration from "@/components/integration";
 import Danger from "@/components/Alerts/danger";
@@ -23,7 +23,7 @@ import { type Device } from "@/lib/types/device";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { socket } from "@/socket";
+import { socket } from "@/utils/socket";
 
 import Link from "next/link";
 
@@ -32,7 +32,7 @@ import Link from "next/link";
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
   {
-    loading: () => <>Loading...</>,
+  //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
@@ -40,14 +40,14 @@ const SlButton = dynamic(
 const SlCheckbox = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/checkbox/index.js"),
   {
-    loading: () => <>Loading...</>,
+  //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
 const SlTooltip = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/tooltip/index.js"),
   {
-    loading: () => <>Loading...</>,
+  //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
@@ -55,7 +55,7 @@ const SlDialog = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
   () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),
   {
-    loading: () => <p>Loading...</p>,
+   // loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
@@ -64,7 +64,7 @@ const SlIcon = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
   () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
   {
-    loading: () => <p>Loading...</p>,
+ //   loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );

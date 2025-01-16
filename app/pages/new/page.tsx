@@ -1,6 +1,6 @@
 import NewLink from ".";
 
-import Layout from "@/components/layouts/Layout";
+import Layout from "@/components/layouts/private";
 
 import { retrieveIntegrations, retrieveConnectedDevices, createUrlAction } from "@/lib/actions/link";
 

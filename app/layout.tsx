@@ -1,30 +1,28 @@
-
 import type { Metadata } from "next";
 
 import "@/styles/globals.scss";
+import "@shoelace-style/shoelace/dist/themes/light.css";
 
 export const metadata: Metadata = {
   title: "Test Mentor",
   description: "Test Mentor",
 };
 
-import { LayoutStoreProvider } from "@/providers/layout";
-
 import { UserStoreProvider } from "@/providers/user";
+import { SessionStoreProvider } from "@/providers/session";
 
-import '@shoelace-style/shoelace/dist/themes/light.css';
+import P2PLayout from "@/components/layouts/P@P";
 
 import ShoelaceSetup from "./shoelace-setup";
 
-
+import { verifySession } from "@/lib/dal";
 
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-
-
+  const session = await verifySession();
   return (
     <html lang="en">
       <head>
@@ -39,14 +37,22 @@ export default async function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
           rel="stylesheet"
         />
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-
-  
+        <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
       </head>
       <body>
-        <LayoutStoreProvider>
-          <UserStoreProvider><ShoelaceSetup>{children}</ShoelaceSetup></UserStoreProvider>
-        </LayoutStoreProvider>
+        {session != null ? (
+          <UserStoreProvider>
+            <SessionStoreProvider>
+              <P2PLayout>
+                <ShoelaceSetup>{children}</ShoelaceSetup>
+              </P2PLayout>
+            </SessionStoreProvider>
+          </UserStoreProvider>
+        ) : (
+          <UserStoreProvider>
+            <ShoelaceSetup>{children}</ShoelaceSetup>
+          </UserStoreProvider>
+        )}
       </body>
     </html>
   );

@@ -3,7 +3,7 @@
 import '@/styles/integrations/new-integration.scss'
 
 import Primary from "@/components/Badges/primary";
-import Layout from "@/components/layouts/Layout";
+import Layout from "@/components/layouts/private";
 
 function NewIntegration() {
   return (

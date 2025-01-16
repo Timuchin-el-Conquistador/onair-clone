@@ -1,56 +1,24 @@
 "use client";
 
-import Link from "next/link";
-
 import "@/styles/layouts.scss";
+
+
 import Sidebar from "../sidebar";
 
 import Warning from "../Alerts/warning";
 
-import { socket } from "@/socket";
 
-import { useEffect, useState } from "react";
-
-import { useUserStore } from "@/providers/user";
-
-function Layout({
+function PrivateLayout({
   children,
   page,
 }: {
   children: React.ReactNode;
   page: string;
 }) {
-  const { getUser, user, loading } = useUserStore((state) => state);
 
-  useEffect(() => {
-    getUser();
-  }, []);
 
-  useEffect(() => {
-    if (user == null) return;
-    socket.emit("web-connect", { userId: user._id });
-  }, [loading]);
 
-  useEffect(() => {
-    function onConnect() {
-      console.log("connected");
 
-      //socket.emit("owner-connect", {userId});
-    }
-
-    function onDisconnect() {}
-
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-
-    socket.on('peering', (data) => {
-      console.log("ATTEMPT TO PEER", data)
-    })
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-    };
-  }, [socket]);
 
   return (
     <div className="flex overflow-hidden bg-gray-100 h-screen">
@@ -114,4 +82,4 @@ function Layout({
   );
 }
 
-export default Layout;
+export default PrivateLayout;

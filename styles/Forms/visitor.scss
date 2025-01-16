@@ -151,3 +151,14 @@
 
 
 
+
+	sl-input.error::part(base) {
+		border-color: #e16b6b;
+		box-shadow: 0 0 0 3px #eababa;
+	}
+
+	@media (min-width: 750px) {
+		#visitor-dialog {
+			min-width: 450px;
+		}
+	}

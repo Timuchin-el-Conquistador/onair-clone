@@ -24,3 +24,127 @@
 }
 
 
+
+
+
+//
+
+
+
+  //modal
+
+
+
+  
+  #overlay {
+    position: fixed;
+    z-index: 100;
+    top: 0px;
+    left: 0px;
+    height:100%;
+    width:100%;
+    background: #000;
+    opacity: 0.4;
+}
+
+/*** Alert ***/
+#modal-alert {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    margin-left: -175px;
+    min-width: 300px;
+    max-width: 550px;
+    z-index: 500;
+    transition: top 500ms;
+    background-color: #27ae60;
+    color: #FFF;
+    padding: 10px;
+    font-family: "HelveticaNeue-Light", sans-serif;
+    font-weight: normal;
+    text-align: center;
+}
+
+#modal-alert.visible {
+    top: 30px;
+}
+
+/*** Dialog ***/
+.modal-dialog {
+    position: fixed;
+    top: -1000px;
+    left: 50%;
+    z-index: 1000;
+    transition: top 500ms;
+    background-color: #FFFFFF;
+    padding: 1.25rem;
+    border-radius: 0.25rem;
+}
+
+.modal-dialog.no-transition {
+    transition: none;
+}
+
+.modal-dialog.visible {
+    top: 50%;
+}
+
+.modal-dialog h3 {
+    background-color: #3f83f8;
+    padding: 10px;
+    margin: -30px -30px 30px -30px;
+    color: #FEFEFE;
+    font-weight: bold;
+    font-size: 16px;
+    font-family: "Mulish", arial,sans-serif;
+}
+
+.modal-dialog h3 .close-btn {
+    float: right;
+    font-size: 18px;
+    line-height: 24px;
+    color: #F0F0F0;
+    cursor: pointer;
+}
+
+.modal-dialog .hint {
+    display: block;
+    margin-top: 5px;
+    color: #AAA;
+    font-size: 14px;
+    line-height: 150%;
+    font-family: "HelveticaNeue", sans-serif;
+    margin-bottom: 10px;
+}
+
+/*** Dismissable ***/
+#dismissable {
+    position: relative;
+    background-color: #FFFFCF;
+    font-family: "HelveticaNeue-Light", sans-serif;
+    font-weight: 100;
+    font-size: 14px;
+    line-height: 170%;
+    color: #444;
+    text-align: left;
+    padding: 10px 35px 10px 10px;
+    margin-bottom: 20px;
+}
+
+#dismissable-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 16px;
+    line-height: 100%;
+    color: #CCC;
+    cursor: pointer;
+}
+
+@media(max-width: 480px) {
+    .modal-dialog {
+        width: 90%;
+        margin: auto;
+    }
+}
+

@@ -21,9 +21,9 @@ import { useEffect, useRef } from "react";
 import { useVisibility } from "@/hooks/useVisibility";
 
 function ForgotPassword() {
-  const { forgotPassword, error, loading, message } = useUserStore(
-    (state) => state
-  );
+
+
+  const { reset, error, loading, message,forgotPassword  } = useUserStore((state) => state);
   const router = useRouter();
 
   
@@ -31,7 +31,8 @@ function ForgotPassword() {
     isDangerAlertVisible,
     setDangerAlertVisibility,
     isSuccessAlertVisible,
-  } = useVisibility();
+  } = useVisibility(reset, error, loading, message);
+
 
   const emailRef = useRef<HTMLInputElement | null>(null);
 

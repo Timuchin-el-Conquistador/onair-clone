@@ -10,9 +10,11 @@ import { type  ExtendedLink } from "@/lib/types/links";
 type  DashboardPageLinkType = Omit<ExtendedLink, "callStrategy" | "settings">
 type PageProps = {
   links: DashboardPageLinkType[];
+
 };
 
 function Dashboard(props: PageProps) {
+
   return (
     <div id="pages-grid" className="index-card-grid">
       {props.links.map((link) => (
@@ -24,6 +26,7 @@ function Dashboard(props: PageProps) {
           integrations={link.integrations}
           timeLength={link.timeLength}
           hasConnectedDevice={link.connectedDevices.length>0}
+
         />
       ))}
       <div className="index-card bordered">

@@ -1,27 +1,27 @@
-import Layout from "@/components/layouts/Layout";
-import IncommingCalls from "./incoming-call";
+import Layout from "@/components/layouts/private";
+import Sessions from "./sessions";
 import Visitor from "./visitor";
 import { verifySession } from "@/lib/dal";
-
+import { retrieveActiveSessions } from "@/lib/actions/session";
 
 async function Page(props: { params: { slug: string } }) {
   const user = await verifySession();
 
-
-  console.log(user, 'user')
   const slug = props.params.slug;
 
-  if (user == null) {
-  }
+  
   return (
     <>
       {user != null ? (
         <Layout page="dashboard">
-          <IncommingCalls />
+          <Sessions
+            domain={process.env.LOCAL_URL || ""}
+            slug={slug}
+          />
         </Layout>
       ) : (
         <>
-        <Visitor />
+          <Visitor />
         </>
       )}
     </>

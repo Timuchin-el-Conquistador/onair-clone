@@ -7,29 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { Schedule } from "@/utils/dtos/availability";
 import TimeSelect from "./Dropdown/time-select";
 
-const SlCheckbox = dynamic(
-  // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
-  () => import("@shoelace-style/shoelace/dist/react/checkbox/index.js"),
-  {
-    loading: () => <>Loading...</>,
-    ssr: false,
-  }
-);
-const SlIcon = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
-  {
-    loading: () => <>Loading...</>,
-    ssr: false,
-  }
-);
 
-const SlTooltip = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react/tooltip/index.js"),
-  {
-    loading: () => <>Loading...</>,
-    ssr: false,
-  }
-);
 
 
 type PageProps = {

@@ -7,9 +7,10 @@ body {
   height: 100vh;
 }
 
-
-@media(max-width: 480px) {
-    body { background: #FFF; }
+@media (max-width: 480px) {
+  body {
+    background: #fff;
+  }
 }
 
 *,
@@ -80,6 +81,13 @@ a {
   background-color: #cccccc;
 }
 
+.status-card .title {
+  font-weight: bold;
+}
+.status-card .subtitle {
+  font-size: 13px;
+  color: #999;
+}
 
 .status-card .status-offline {
   background-color: #cccccc;
@@ -228,6 +236,7 @@ input[type="checkbox"],
   flex-shrink: 0;
   height: 1rem;
   -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
   user-select: none;
   vertical-align: middle;
   width: 1rem;
@@ -253,4 +262,43 @@ input[type="checkbox"]:checked,
   background-size: 100% 100%;
   background-position: 50% center;
   border-color: rgba(0, 0, 0, 0);
+}
+
+///media
+///
+///
+
+.media-permission-modal .sl-dialog__close-button {
+  display: none;
+}
+
+.media-permission-modal {
+  --width: 50vw;
+}
+
+.media-permission-modal.ask-user-to-alow-modal {
+  --width: 25vw;
+}
+
+.media-permission-modal.mobile-permissions {
+  --width: 35vw;
+}
+
+.media-permission-modal .dialog-body {
+  padding: 1rem;
+}
+
+.unrecognized-error::part(body) {
+  padding-top: 0px;
+}
+
+@media (max-width: 480px) {
+  .media-permission-modal,
+  .media-permission-modal.mobile-permissions {
+    --width: 90vw;
+  }
+
+  .dialog-body {
+    padding: 0.75rem;
+  }
 }

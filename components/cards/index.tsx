@@ -114,7 +114,7 @@ function Card(props: PageProps) {
           </svg>{" "}
           <div className="inline-block">Settings</div>
         </button>{" "}
-        <Link href="/timuchin" className="index-card-footer-button">
+        <Link href={`/${props.slug}`} className="index-card-footer-button">
           <svg
             width="16"
             height="16"

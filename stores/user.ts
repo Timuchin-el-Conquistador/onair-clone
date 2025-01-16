@@ -17,6 +17,7 @@ export type UserState = {
   message: string | null;
   resetPasswordToken: string | null;
   token: string | null;
+  peerId:string|null
 };
 
 export type UserActions = {
@@ -49,10 +50,11 @@ export type UserStore = UserState & UserActions;
 export const defaultInitState: UserState = {
   loading: false,
   error: null,
-  user: null,
   message: null,
+  user: null,
   resetPasswordToken: null,
   token: null,
+  peerId:null
 };
 
 export const createUserStore = (initState: UserState = defaultInitState) => {
@@ -301,12 +303,12 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           message: null,
         }));
         const path = `api/v1/user/${session?.email}`;
-        const user: User = await fakeBackend.get(path);
+        const response: {user:User} = await fakeBackend.get(path);
 
         set((prevState) => ({
           ...prevState,
           loading: false,
-          user,
+          user:response.user,
         }));
       } catch (error) {
         set((prevState) => ({
@@ -316,81 +318,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         }));
       }
     },
-/*    editProfilePicture: async (file, router) => {
-      try {
-        const session = await verifySession();
-        if (!session) return null;
-        set((prevState) => ({
-          ...prevState,
-          loading: true,
-          error: null,
-          message: null,
-        }));
-        const form = new FormData();
-        form.append("file", file);
 
-        const response: { message: string; url: string } =
-          await fakeBackend.post(path + "/avatar/" + session?.userId, form, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
-
-        set((prevState) => ({
-          ...prevState,
-          loading: false,
-          message: response.message,
-          user: prevState.user
-            ? { ...prevState.user, profilePhoto: response.url }
-            : null,
-        }));
-
-        router.push("/profile");
-      } catch (error) {
-        console.log(error);
-        set((prevState) => ({
-          ...prevState,
-          loading: false,
-          error: error instanceof Error ? error : new Error(String(error)),
-        }));
-      }
-    },
-    editProfile: async (user) => {
-      try {
-        const session = await verifySession();
-        if (!session) return null;
-
-        set((prevState) => ({
-          ...prevState,
-          loading: true,
-          error: null,
-          message: null,
-        }));
-
-        const data: EditUser = {
-          fullName: user.fullName,
-          phoneNumber: user.phoneNumber,
-        };
-
-        if (user.password != null) {
-          data["password"] = user.password;
-        }
-
-        await fakeBackend.put(path + "/update/" + session?.email, data);
-
-        set((prevState) => ({
-          ...prevState,
-          loading: false,
-          message: "Uğur",
-        }));
-      } catch (error) {
-        set((prevState) => ({
-          ...prevState,
-          loading: false,
-          error: error instanceof Error ? error : new Error(String(error)),
-        }));
-      }
-    },*/
 
     reset: () => {
       set((prevState) => ({

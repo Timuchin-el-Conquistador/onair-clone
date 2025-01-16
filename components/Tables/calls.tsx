@@ -8,7 +8,7 @@ const SlDialog = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
   () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),
   {
-    loading: () => <p>Loading...</p>,
+   // loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
@@ -17,7 +17,7 @@ const SlButton = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
   {
-    loading: () => <p>Loading...</p>,
+ //   loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
@@ -25,7 +25,7 @@ const SlButton = dynamic(
 const SlIcon = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
   {
-    loading: () => <p>Loading...</p>,
+  //  loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
@@ -33,7 +33,7 @@ const SlIcon = dynamic(
 const SlDrawer = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/drawer/index.js"),
   {
-    loading: () => <p>Loading...</p>,
+  //  loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
@@ -41,7 +41,7 @@ const SlDrawer = dynamic(
 const SlAlert = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/alert/index.js"),
   {
-    loading: () => <p>Loading...</p>,
+   // loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );

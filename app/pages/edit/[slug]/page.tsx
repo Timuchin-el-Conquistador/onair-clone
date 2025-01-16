@@ -1,6 +1,6 @@
 import Edit from ".";
 
-import Layout from "@/components/layouts/Layout";
+import Layout from "@/components/layouts/private";
 
 function EditPage(props: { params: { slug: string } }) {
   return (

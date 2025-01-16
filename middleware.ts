@@ -5,14 +5,15 @@ import { cookies } from 'next/headers'
 // 1. Specify protected and public routes
 const protectedRoutes = [
   /^\/dashboard$/,
-  /^(\/[a-zA-Z0-9]+)?$/,
+ // /^(\/[a-zA-Z0-9]+)?$/,
+ /^\/calls$/,
   /^\/settings$/,
   /^\/integrations$/,
   /^\/pages\/new$/,
   /^\/pages\/edit\/([a-zA-Z0-9]+)$/,
   /^\/billing$/,
 ];
-const publicRoutes = [/^\/sign_in$/, /^\/sign_up$/, /^\/$/];
+const publicRoutes = [/^\/users\/sign_in$/, /^\/users\/sign_up$/, /^\/$/];
  
 export default async function middleware(req: NextRequest) {
   // 2. Check if the current route is protected or public
@@ -41,7 +42,7 @@ export default async function middleware(req: NextRequest) {
   if (
     isPublicRoute &&
     session?.userId &&
-    !req.nextUrl.pathname.startsWith('/home')
+    !req.nextUrl.pathname.startsWith('/dashboard')
   ) {
     return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
   }

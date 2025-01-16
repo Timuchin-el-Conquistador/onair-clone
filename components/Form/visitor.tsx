@@ -1,22 +1,22 @@
-'use client'
+"use client";
 
 import dynamic from "next/dynamic";
 
-import '@/styles/Forms/visitor.scss'
-import '@/styles/modal.scss'
+import "@/styles/Forms/visitor.scss";
+import "@/styles/modal.scss";
 import { useState } from "react";
 
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
   {
-    loading: () => <>Loading...</>,
+   // loading: () => <>Loading...</>,
     ssr: false,
   }
 );
 const SlSwitch = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/switch/index.js"),
   {
-    loading: () => <>Loading...</>,
+  //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
@@ -24,7 +24,7 @@ const SlDialog = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
   () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),
   {
-    loading: () => <p>Loading...</p>,
+  //  loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
@@ -32,31 +32,26 @@ const SlDialog = dynamic(
 const SlIcon = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
   {
-    loading: () => <p>Loading...</p>,
+   // loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
 
 const SlInput = dynamic(
-    () => import("@shoelace-style/shoelace/dist/react/input/index.js"),
-    {
-      loading: () => <p>Loading...</p>,
-      ssr: false,
-    }
-  );
-  const SlSpinner = dynamic(
-    () => import("@shoelace-style/shoelace/dist/react/spinner/index.js"),
-    {
-      loading: () => <p>Loading...</p>,
-      ssr: false,
-    }
-  );
-  
+  () => import("@shoelace-style/shoelace/dist/react/input/index.js"),
+  {
+  //  loading: () => <p>Loading...</p>,
+    ssr: false,
+  }
+);
 
-function Visitor({initCall}:{initCall:() => void}) {
 
+function Visitor() {
   const [settingModalVisibility, setSettingModalVisibility] = useState(false);
-  const [selectAudioDeviceModalVisibility, setSelectAudioDeviceModalVisibility] = useState(true);
+  const [
+    selectAudioDeviceModalVisibility,
+    setSelectAudioDeviceModalVisibility,
+  ] = useState(false);
   return (
     <div id="main" className="mt-4 sm:mt-20">
       <div
@@ -82,7 +77,7 @@ function Visitor({initCall}:{initCall:() => void}) {
               form=""
               data-optional=""
               data-valid=""
-              className=""
+              className="!border-transparent"
             >
               <SlIcon
                 slot="suffix"
@@ -90,7 +85,7 @@ function Visitor({initCall}:{initCall:() => void}) {
                 aria-hidden="true"
                 library="default"
                 className="text-red-600"
-                style={{display: "none"}}
+                style={{ display: "none" }}
               ></SlIcon>
             </SlInput>{" "}
             <SlInput
@@ -101,15 +96,15 @@ function Visitor({initCall}:{initCall:() => void}) {
               form=""
               data-optional=""
               data-valid=""
-              className=""
+           className="!border-transparent"
             >
-                <SlIcon
+              <SlIcon
                 slot="suffix"
                 name="x-circle"
                 aria-hidden="true"
                 library="default"
                 className="text-red-600"
-                style={{display: "none"}}
+                style={{ display: "none" }}
               ></SlIcon>
             </SlInput>{" "}
             <SlInput
@@ -120,15 +115,15 @@ function Visitor({initCall}:{initCall:() => void}) {
               form=""
               data-optional=""
               data-valid=""
-              className=""
+        className="!border-transparent"
             >
-             <SlIcon
+              <SlIcon
                 slot="suffix"
                 name="x-circle"
                 aria-hidden="true"
                 library="default"
                 className="text-red-600"
-                style={{display: "none"}}
+                style={{ display: "none" }}
               ></SlIcon>
             </SlInput>{" "}
             <div className="flex flex-col p-3">
@@ -136,20 +131,32 @@ function Visitor({initCall}:{initCall:() => void}) {
                 <SlSwitch size="medium" form="" data-optional="" data-valid="">
                   <span className="text-sm">Enable Audio</span>
                 </SlSwitch>{" "}
+   
+              <SlButton
+                variant="default"
+                size="medium"
+                data-optional=""
+                data-valid=""
+                className="mt-2 xs:mt-auto"
+              >
+                <span className="w-44 xs:w-28 truncate block text-left">
+                  По умолчанию - Microphone (High Definition Audio Device)
+                </span>{" "}
+                <SlIcon
+                  slot="suffix"
+                  name="gear"
+                  aria-hidden="true"
+                  library="default"
+                ></SlIcon>
+              </SlButton>
               </div>{" "}
-              <div className="flex items-center mt-2">
-                <SlSpinner style={{ display: "none" }}></SlSpinner>{" "}
-                <p className="text-sm ml-2 text-gray-500"></p>
-              </div>
             </div>{" "}
             <div className="text-center mt-4">
               <SlButton
                 variant="primary"
-                onClick={initCall}
                 size="medium"
                 data-optional=""
                 data-valid=""
-
               >
                 Call
               </SlButton>
@@ -158,8 +165,12 @@ function Visitor({initCall}:{initCall:() => void}) {
         </div>
       </div>{" "}
       <div>
-        <SlDialog no-header="" className="media-permission-modal" label="" open={settingModalVisibility}>
-
+        <SlDialog
+          no-header=""
+          className="media-permission-modal"
+          label=""
+          open={settingModalVisibility}
+        >
           <div className="dialog-body">
             <div className="flex items-center">
               <h3 className="text-base sm:text-xl ml-2 font-medium text-gray-900">
@@ -180,7 +191,10 @@ function Visitor({initCall}:{initCall:() => void}) {
             </div>
           </div>
         </SlDialog>{" "}
-        <SlDialog className="media-permission-modal unrecognized-error" label="">
+        <SlDialog
+          className="media-permission-modal unrecognized-error"
+          label=""
+        >
           <div slot="label">
             <div className="flex items-center">
               <svg
@@ -361,15 +375,16 @@ function Visitor({initCall}:{initCall:() => void}) {
           </div>
         </SlDialog>
       </div>{" "}
-      <SlDialog label="Settings" className="dialog-overview with-header" open={selectAudioDeviceModalVisibility}>
-
+      <SlDialog
+        label="Settings"
+        className="dialog-overview with-header"
+        open={selectAudioDeviceModalVisibility}
+      >
         <div>
           <div className="flex items-center justify-between mt-1">
             <span className="text-sm">Microphone</span>{" "}
             <select style={{ width: "200px", fontSize: "13px" }}>
-              <option value="" >
-                Select Audio Device
-              </option>{" "}
+              <option value="">Select Audio Device</option>{" "}
             </select>
           </div>{" "}
         </div>{" "}

@@ -11,14 +11,14 @@ import { type User } from "@/lib/types/user";
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
   {
-    loading: () => <>Loading...</>,
+   // loading: () => <>Loading...</>,
     ssr: false,
   }
 );
 const SlSwitch = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/switch/index.js"),
   {
-    loading: () => <>Loading...</>,
+  //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
@@ -26,7 +26,7 @@ const SlDialog = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
   () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),
   {
-    loading: () => <p>Loading...</p>,
+  //  loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
@@ -36,8 +36,8 @@ type PageProps = {
 };
 
 function Settings(props: PageProps) {
-  const [user, updateUser] = useState<Omit<User, "subscription">>({
-    name: props.initialSettings.user.name,
+  const [user, updateUser] = useState<{fullName:string,email:string}>({
+    fullName: props.initialSettings.user.fullName,
     email: props.initialSettings.user.email,
   });
   const [notificationsState, setNotificationsState] = useState<boolean>(
@@ -58,7 +58,7 @@ function Settings(props: PageProps) {
                     name="first_name"
                     type="text"
                     placeholder="First Name"
-                    value={user.name.split(" ")[0]}
+                    value={user.fullName.split(" ")[0]}
                     className="p-1.5 rounded w-full block"
                   />
                 </div>{" "}
@@ -68,7 +68,7 @@ function Settings(props: PageProps) {
                     name="last_name"
                     type="text"
                     placeholder="Last Name"
-                    value={user.name.split(" ")[1]}
+                    value={user.fullName.split(" ")[1]}
                     className="p-1.5 rounded block w-full"
                   />
                 </div>{" "}
@@ -85,7 +85,7 @@ function Settings(props: PageProps) {
             <div>
               <dt>Name</dt>{" "}
               <dd className="group relative">
-                {user.name}
+                {user.fullName}
                 <SlButton
                   size="small"
                   variant="default"
@@ -110,7 +110,7 @@ function Settings(props: PageProps) {
                     name="first_name"
                     type="text"
                     placeholder="First Name"
-                    value={user.name.split(" ")[0]}
+                    value={user.fullName.split(" ")[0]}
                     className="p-1.5 rounded w-full block"
                   />
                 </div>{" "}
@@ -120,7 +120,7 @@ function Settings(props: PageProps) {
                     name="last_name"
                     type="text"
                     placeholder="Last Name"
-                    value={user.name.split(" ")[1]}
+                    value={user.fullName.split(" ")[1]}
                     className="p-1.5 rounded block w-full"
                   />
                 </div>{" "}
@@ -137,7 +137,7 @@ function Settings(props: PageProps) {
             <div>
               <dt>Name</dt>{" "}
               <dd className="group relative">
-                {user.name}
+                {user.fullName}
                 <SlButton
                   size="small"
                   variant="default"

@@ -2,7 +2,7 @@ function Pulse(){
 
 
     return(
-        <div className="shadow rounded-md p-4 w-full mx-auto">
+        <div className=" rounded-md p-4 w-full mx-auto">
   <div className="animate-pulse flex space-x-4">
     <div className="rounded-full bg-slate-200 h-10 w-10"></div>
     <div className="flex-1 space-y-6 py-1">

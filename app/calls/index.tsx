@@ -1,9 +1,11 @@
 "use client";
 
 import Pulse from "@/components/Loaders/pulse";
-import Table from "@/components/table";
+import Table from "@/components/Tables/calls";
 
 import "@/styles/calls/index.scss";
+
+import peer from '@/utils/peer'
 
 function Calls() {
   return (

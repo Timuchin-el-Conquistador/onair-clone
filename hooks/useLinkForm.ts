@@ -2,7 +2,7 @@ import { useReducer } from "react";
 
 import { type Link } from "@/lib/types/links";
 
-import { socket } from "@/socket";
+import { socket } from "@/utils/socket";
 
 import { useEffect } from "react";
 
