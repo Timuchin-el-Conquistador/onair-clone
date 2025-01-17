@@ -5,11 +5,9 @@ import "@/styles/dashboard.scss";
 
 import Dashboard from ".";
 
-
-
 import { retrieveUrls } from "@/lib/actions/link";
 
-import { retrieveActiveSessions } from "@/lib/actions/session";
+
 
 async function DashboardPage() {
 

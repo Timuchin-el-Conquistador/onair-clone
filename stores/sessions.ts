@@ -14,7 +14,7 @@ export type SessionState = {
 export type SessionActions = {
   retrieveActiveSessions: (slug: string, router: any) => void;
   pushSession: (session: Session, router:any) => void;
-  removeSession: (slug: string) => void;
+  removeSession: (callId: string) => void;
 };
 
 export type SessionStore = SessionState & SessionActions;

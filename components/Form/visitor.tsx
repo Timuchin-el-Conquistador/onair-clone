@@ -4,19 +4,21 @@ import dynamic from "next/dynamic";
 
 import "@/styles/Forms/visitor.scss";
 import "@/styles/modal.scss";
-import { useState } from "react";
+import { useRef, useState } from "react";
+
+
 
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
   {
-   // loading: () => <>Loading...</>,
+    // loading: () => <>Loading...</>,
     ssr: false,
   }
 );
 const SlSwitch = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/switch/index.js"),
   {
-  //  loading: () => <>Loading...</>,
+    //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
@@ -24,7 +26,7 @@ const SlDialog = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
   () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),
   {
-  //  loading: () => <p>Loading...</p>,
+    //  loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
@@ -32,7 +34,7 @@ const SlDialog = dynamic(
 const SlIcon = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
   {
-   // loading: () => <p>Loading...</p>,
+    // loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
@@ -40,18 +42,32 @@ const SlIcon = dynamic(
 const SlInput = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/input/index.js"),
   {
-  //  loading: () => <p>Loading...</p>,
+    //  loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
 
+type PageProps = {
+  slug:string,
+  linkName:string,
+  message:string
+  call:(fullName:string,email:string,phone:string,slug:string) => void
+}
 
-function Visitor() {
+function Visitor(props:PageProps) {
   const [settingModalVisibility, setSettingModalVisibility] = useState(false);
   const [
     selectAudioDeviceModalVisibility,
     setSelectAudioDeviceModalVisibility,
   ] = useState(false);
+
+  const emailRef = useRef<string | null>(null);
+  const fullNameRef = useRef<string | null>(null);
+  const phoneRef = useRef<string | null>(null);
+
+
+
+
   return (
     <div id="main" className="mt-4 sm:mt-20">
       <div
@@ -61,13 +77,13 @@ function Visitor() {
       >
         <div className="status-card m-3">
           <div className="status online"></div>{" "}
-          <div className="title">Meeting with Cengiz</div>{" "}
+          <div className="title">{props.linkName}</div>{" "}
           <div className="subtitle">Online</div>
         </div>{" "}
         <div>
           <div>
             <div className="m-3 max-w-sm">
-              Introduce yourself and press call.
+             {props.message}
             </div>{" "}
             <SlInput
               name="visitor-name"
@@ -78,6 +94,10 @@ function Visitor() {
               data-optional=""
               data-valid=""
               className="!border-transparent"
+              onSlChange={event => {
+                const value = (event.target as HTMLInputElement).value
+                fullNameRef.current = value
+              }}
             >
               <SlIcon
                 slot="suffix"
@@ -96,7 +116,11 @@ function Visitor() {
               form=""
               data-optional=""
               data-valid=""
-           className="!border-transparent"
+              className="!border-transparent"
+              onSlChange={event => {
+                const value = (event.target as HTMLInputElement).value
+                emailRef.current = value
+              }}
             >
               <SlIcon
                 slot="suffix"
@@ -115,7 +139,11 @@ function Visitor() {
               form=""
               data-optional=""
               data-valid=""
-        className="!border-transparent"
+              className="!border-transparent"
+              onSlChange={event => {
+                const value = (event.target as HTMLInputElement).value
+                phoneRef.current = value
+              }}
             >
               <SlIcon
                 slot="suffix"
@@ -131,24 +159,23 @@ function Visitor() {
                 <SlSwitch size="medium" form="" data-optional="" data-valid="">
                   <span className="text-sm">Enable Audio</span>
                 </SlSwitch>{" "}
-   
-              <SlButton
-                variant="default"
-                size="medium"
-                data-optional=""
-                data-valid=""
-                className="mt-2 xs:mt-auto"
-              >
-                <span className="w-44 xs:w-28 truncate block text-left">
-                  По умолчанию - Microphone (High Definition Audio Device)
-                </span>{" "}
-                <SlIcon
-                  slot="suffix"
-                  name="gear"
-                  aria-hidden="true"
-                  library="default"
-                ></SlIcon>
-              </SlButton>
+                <SlButton
+                  variant="default"
+                  size="medium"
+                  data-optional=""
+                  data-valid=""
+                  className="mt-2 xs:mt-auto"
+                >
+                  <span className="w-44 xs:w-28 truncate block text-left">
+                    По умолчанию - Microphone (High Definition Audio Device)
+                  </span>{" "}
+                  <SlIcon
+                    slot="suffix"
+                    name="gear"
+                    aria-hidden="true"
+                    library="default"
+                  ></SlIcon>
+                </SlButton>
               </div>{" "}
             </div>{" "}
             <div className="text-center mt-4">
@@ -157,6 +184,13 @@ function Visitor() {
                 size="medium"
                 data-optional=""
                 data-valid=""
+                onClick={() =>{
+                  const email = emailRef?.current || "";
+                  const fullName = fullNameRef?.current || '';
+                  const phone = phoneRef?.current || '';
+                  console.log(email, fullName,phone)
+              //    props.call(fullName,email,phone,props.slug)
+                }}
               >
                 Call
               </SlButton>

@@ -4,16 +4,16 @@ import "@/styles/calls/conference-room.scss";
 import { useEffect, useRef, useState } from "react";
 
 import { socket } from "@/utils/socket";
-import Peer, {DataConnection} from "peerjs";
+import Peer, { DataConnection } from "peerjs";
 import { formatHHMMSSTime } from "@/utils/timer";
 import peer from "@/utils/peer";
 
 type PageProps = {
-  slug:string,
-  sessionId:string
-}
+  slug: string;
+  sessionId: string;
+};
 
-function ConferenceRoom(props:PageProps) {
+function ConferenceRoom(props: PageProps) {
   const [time, setTime] = useState(0); // time in seconds
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
@@ -27,6 +27,7 @@ function ConferenceRoom(props:PageProps) {
 
   const peerRef = useRef<Peer>(peer);
   const connRef = useRef<DataConnection | null>(null);
+
 
   const localAudioRef = useRef<HTMLAudioElement | null>(null);
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -43,50 +44,18 @@ function ConferenceRoom(props:PageProps) {
     return () => clearInterval(interval); // cleanup on unmount
   }, []);
 
-  useEffect(() => {
-    function setConnection(data: { peerId: string; slug: string; iceServers: any }) {
-      console.log("peering", data);
-
-      connRef.current = peerRef.current.connect(data.peerId);
-
-      connRef.current.on("open", function () {
-        connRef.current!.on("data", function (data) {
-          console.log("Received", data);
-        });
-        connRef.current!.send("Hello World");
-      });
+  const toggleMute = () => {
+    if (localStream) {
+      const audioTrack = localStream.getAudioTracks()[0];
+      if (audioTrack) {
+        console.log(isMuted, "enabled");
+        audioTrack.enabled = isMuted; // Toggle mute state
+        setIsMuted(!isMuted);
+      }
     }
-
-    socket.on("offer-connection", setConnection);
-
-    return () => {
-      socket.off("offer-connection", setConnection);
-    };
-  }, [socket]);
+  };
 
   useEffect(() => {
-    peerRef.current?.on("open", function (id) {
-      //handle the id
-      socket.emit("offer", {
-        slug:props.slug,
-        peerId: id,
-      });
-    });
-
-    peerRef.current?.on("connection", (connection) => {
-      console.log(connection, "connect");
-
-      peerRef.current.connect(connection.peer);
-      connRef.current = connection;
-      connRef.current.on("open", function () {
-        connRef.current!.on("data", function (data) {
-          console.log("Received", data);
-        });
-        connRef.current!.send("Hello World");
-      });
-    });
-
-
     const getLocalStream = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -123,37 +92,36 @@ function ConferenceRoom(props:PageProps) {
     };
   }, []);
 
-  const toggleMute = () => {
-    if (localStream) {
-      const audioTrack = localStream.getAudioTracks()[0];
-      if (audioTrack) {
-        console.log(isMuted, "enabled");
-        audioTrack.enabled = isMuted; // Toggle mute state
-        setIsMuted(!isMuted);
-      }
-    }
-  };
 
-  // Combine local and remote streams
+  
   useEffect(() => {
-    if (localStream && remoteStream) {
-      const combinedStream = new MediaStream();
-      localStream
-        .getTracks()
-        .forEach((track) => combinedStream.addTrack(track));
-      remoteStream
-        .getTracks()
-        .forEach((track) => combinedStream.addTrack(track));
-      combinedStreamRef.current = combinedStream;
+    function setConnection(data: {
+      peerId: string;
+      slug: string;
+      iceServers: any;
+    }) {
+      console.log("peering", data);
+
+      connRef.current = peerRef.current.connect(data.peerId);
+
+      connRef.current.on("open", function () {
+        connRef.current!.on("data", function (data) {
+          console.log("Received", data);
+        });
+        connRef.current!.send("Hello World");
+      });
     }
-    if (localStream) {
-      const combinedStream = new MediaStream();
-      localStream
-        .getTracks()
-        .forEach((track) => combinedStream.addTrack(track));
-      combinedStreamRef.current = combinedStream;
-    }
-  }, [localStream, remoteStream]);
+
+    socket.on("offer-connection", setConnection);
+
+    return () => {
+      socket.off("offer-connection", setConnection);
+    };
+  }, [socket]);
+
+
+
+  //PRIVATE
 
   // Start Recording
   const startRecording = () => {
@@ -180,8 +148,18 @@ function ConferenceRoom(props:PageProps) {
     setMediaRecorder(recorder);
   };
 
-  // Stop Recording
-  const stopRecording = () => {
+
+  const endCall = () => {
+    if (localStream && remoteStream) {
+      const combinedStream = new MediaStream();
+      localStream
+        .getTracks()
+        .forEach((track) => combinedStream.addTrack(track));
+      remoteStream
+        .getTracks()
+        .forEach((track) => combinedStream.addTrack(track));
+      combinedStreamRef.current = combinedStream;
+    }
     if (mediaRecorder) {
       mediaRecorder.stop();
     }
@@ -425,7 +403,7 @@ function ConferenceRoom(props:PageProps) {
                 </div>
                 Chat
               </button>{" "}*/}
-              <button className="p-2" onClick={stopRecording}>
+              <button className="p-2" onClick={endCall}>
                 <div className="icon-container end-session mb-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

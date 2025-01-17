@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import "@/styles/calls/incomming-calls.scss";
 import Table from "@/components/Tables/sessions";
@@ -13,6 +13,8 @@ import { useRouter } from "next/navigation";
 import { useSessionStore } from "@/providers/session";
 
 import { socket } from "@/utils/socket";
+import useSession from "@/hooks/useSession";
+import { ExtendedLink } from "@/lib/types/links";
 
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
@@ -25,7 +27,7 @@ const SlButton = dynamic(
 const SlDrawer = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/drawer/index.js"),
   {
-   // loading: () => <>Loading...</>,
+    // loading: () => <>Loading...</>,
     ssr: false,
   }
 );
@@ -33,7 +35,7 @@ const SlDrawer = dynamic(
 const SlIcon = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
   {
-  //  loading: () => <>Loading...</>,
+    //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
@@ -41,17 +43,17 @@ const SlIcon = dynamic(
 type PageProps = {
   domain: string;
   slug: string;
+  url: ExtendedLink;
 };
 
 function IncommingCalls(props: PageProps) {
   const router = useRouter();
+  const { session, goOffline, goOnline } = useSession({ ...props.url });
 
-  const [peerConnection, setPeerConnection] =
-    useState<RTCPeerConnection | null>(null);
-  const [incommingCalls, setIncommingCalls] = useState([]);
-
-  const { sessions, error, loaded, message, retrieveActiveSessions } =
+  const { sessions, error, loaded, message, retrieveActiveSessions, removeSession } =
     useSessionStore((state) => state);
+
+  const [isDropdownVisible, setDropdownVisibility] = useState(false);
 
   const [drawer, setDrawerState] = useState<{
     isOpen: boolean;
@@ -61,15 +63,35 @@ function IncommingCalls(props: PageProps) {
     id: null,
   });
 
+  const elementRef = useRef<HTMLUListElement | null>(null);
+
+  const handleOutsideClick = (event: MouseEvent) => {
+    if (
+      elementRef.current &&
+      !elementRef.current.contains(event.target as Node)
+    ) {
+      setDropdownVisibility(false); // Close or perform an action
+    }
+  };
+
+  useEffect(() => {
+    // Add event listener to detect clicks
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    // Cleanup the event listener
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
   useEffect(() => {
     retrieveActiveSessions(props.slug, router);
   }, []);
 
-  const session = drawer.isOpen
+  const viewSession = drawer.isOpen
     ? sessions.filter((el) => el._id == drawer.id)[0]
     : null;
 
-  console.log(drawer);
   return (
     <div id="main" className="mt-0 sm:mt-0 relative p-6">
       <div
@@ -103,11 +125,18 @@ function IncommingCalls(props: PageProps) {
                 <button
                   type="button"
                   className="relative w-full rounded-md bg-white py-1 lg:py-1.5 pl-3 pr-10 text-left text-gray-900 ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 !leading-6 sm:text-sm h-full cursor-pointer"
+                  onClick={() => {
+                    setDropdownVisibility(true);
+                  }}
                 >
                   <span className="flex items-center">
-                    <span className="status-dot online mr-3"></span>{" "}
+                    <span
+                      className={`status-dot ${session.link.availability} mr-3`}
+                    ></span>{" "}
                     <span className="text-gray-600 leading-none text-xs">
-                      Online
+                      {session.link.availability == "online"
+                        ? "Online"
+                        : "Offline"}
                     </span>
                   </span>{" "}
                   <span className="absolute inset-y-0 right-0 flex items-center pr-2">
@@ -126,6 +155,53 @@ function IncommingCalls(props: PageProps) {
                     </svg>
                   </span>
                 </button>{" "}
+                {isDropdownVisible && (
+                  <ul
+                    tabIndex={-1}
+                    role="listbox"
+                    className="absolute z-30 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white shadow-lg text-base ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm py-1"
+                    style={{ maxHeight: "225px" }}
+                    ref={elementRef}
+                  >
+                    <li
+                      id="option1"
+                      role="option"
+                      className="relative flex items-center select-none py-2 pr-4 hover:bg-gray-100 text-gray-900 cursor-pointer pl-3"
+                      style={{ fontSize: "12px" }}
+                      onClick={() => {
+                        goOnline();
+                        setDropdownVisibility(false);
+                        socket.emit('go-online', {slug:props.slug})
+                      }}
+                    >
+                      <span className="status-dot online mr-3"></span>{" "}
+                      <span className="block truncate"> Online</span>{" "}
+                    </li>
+                    <li
+                      id="option2"
+                      role="option"
+                      className="relative flex items-center select-none py-2 pr-4 hover:bg-gray-100 text-gray-900 cursor-pointer pl-3"
+                      style={{ fontSize: "12px" }}    
+                      onClick={() => {
+                        goOffline();
+                        setDropdownVisibility(false);
+                        socket.emit('go-offline', {slug:props.slug})
+                      }}
+                    >
+                      <span className="status-dot offline mr-3"></span>{" "}
+                      <span className="block truncate"> Offline</span>{" "}
+                    </li>
+                    {/*}  <li
+                    id="option3"
+                    role="option"
+                    className="relative flex items-center select-none py-2 pr-4 hover:bg-gray-100 text-gray-900 cursor-pointer pl-3"
+                    style={{ fontSize: "12px" }}
+                  >
+                    <span className="status-dot auto mr-3"></span>{" "}
+                    <span className="block truncate">Scheduled</span>{" "}
+                  </li>*/}
+                  </ul>
+                )}
               </div>
             </div>
           </div>
@@ -135,11 +211,11 @@ function IncommingCalls(props: PageProps) {
       {loaded && sessions.length > 0 && (
         <Table
           sessions={sessions}
-          openDrawer={( id: string) => {
+          openDrawer={(id: string) => {
             setDrawerState((prevState) => ({
               ...prevState,
               isOpen: true,
-              id
+              id,
             }));
           }}
         />
@@ -188,10 +264,10 @@ function IncommingCalls(props: PageProps) {
       >
         <div>
           <div className="mt-4 text-gray-500 text-sm">Name</div>{" "}
-          <div>{session?.callerInfo.fullName}</div>{" "}
+          <div>{viewSession?.callerInfo.fullName}</div>{" "}
           <div className="mt-4">
             <div className="text-gray-500 text-sm">Email</div>{" "}
-            <div>{session?.callerInfo.email}</div>
+            <div>{viewSession?.callerInfo.email}</div>
           </div>{" "}
           <div className="mt-4">
             <div className="mt-4 text-gray-500 text-sm">Waiting</div>{" "}
@@ -216,7 +292,7 @@ function IncommingCalls(props: PageProps) {
                   ...prevState,
                   isOpen: false,
                 }));
-                router.replace(`/room/${session!.peerId}`);
+                router.replace(`/room/${viewSession!._id}`);
               }}
             >
               Join Call
@@ -234,7 +310,8 @@ function IncommingCalls(props: PageProps) {
                   ...prevState,
                   isOpen: false,
                 }));
-                socket.emit("decline", { callId: session!._id });
+                socket.emit("decline", { callId: viewSession!._id });
+                removeSession(viewSession!._id )
               }}
             >
               <div>End Call</div>
@@ -253,7 +330,6 @@ function IncommingCalls(props: PageProps) {
                   ...prevState,
                   isOpen: false,
                 }));
-        
               }}
             >
               <SlIcon

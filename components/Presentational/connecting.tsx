@@ -15,12 +15,7 @@ const SlSpinner = dynamic(
 );
 function ConnectingCall() {
   return (
-    <>
-      <div id="animated-background" className="">
-        <div className="waiting-room-bg"></div>
-        <div className="waiting-room-bg waiting-room-bg2"></div>
-        <div className="waiting-room-bg waiting-room-bg3"></div>
-      </div>
+
       <div
         id="visitor-dialog"
         className="modal-dialog no-transition visible"
@@ -39,7 +34,7 @@ function ConnectingCall() {
           <Timer />
         </div>
       </div>
-    </>
+
   );
 }
 

@@ -54,6 +54,22 @@ export async function retrieveUrls() {
   }
 }
 
+export async function retrieveUrlAction(slug:string) {
+  'use server'
+  try {   const session = await verifySession();
+
+    if (!session) return redirect("/users/sign_in");
+    const path = `api/v1/user/${session.email}/urls/${slug}`;
+    const response: { message: string; url: ExtendedLink } = await fakeBackend.get(
+      path
+    );
+    return response.url;
+  } catch (error) {
+    return error instanceof Error ? error : new Error(String(error));
+  }
+}
+
+
 
 export async function retrieveIntegrations() {
   try {
