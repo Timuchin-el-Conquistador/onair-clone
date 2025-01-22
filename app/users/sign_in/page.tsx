@@ -4,7 +4,7 @@ import "@/styles/login.scss";
 
 import Image from "next/image";
 
-import {  useRef } from "react";
+import { useRef } from "react";
 
 import { useLayoutStore } from "@/providers/layout";
 import { useUserStore } from "@/providers/user";
@@ -21,13 +21,12 @@ import { useVisibility } from "@/hooks/useVisibility";
 
 import { useRouter } from "next/navigation";
 
-
-
-
 function Login() {
   const router = useRouter();
 
-  const { reset, error, loading, message,login  } = useUserStore((state) => state);
+  const { reset, error, loading, message, login } = useUserStore(
+    (state) => state
+  );
   const {
     isDangerAlertVisible,
     setDangerAlertVisibility,
@@ -127,7 +126,14 @@ function Login() {
           {/*Right panel*/}
           <div className="w-full sp-form auth-form py-4 px-4 md:py-16 md:px-16">
             {/*Social signin partial*/}
-
+            {isDangerAlertVisible && (
+                <Danger
+                  message={error?.message || ""}
+                  click={() => {
+                    setDangerAlertVisibility(false);
+                  }}
+                />
+              )}
             <div className="mb-6">
               {/*<div className="m-auto mb-6 grid grid-rows-2 gap-4">
       <a href="/oauth/google" className="social-sign-in-button bg-blue-500">
@@ -141,17 +147,16 @@ function Login() {
     </div>*/}
 
               <div className="relative">
+     
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">
-                     Login
-                  </span>
+                  <span className="px-2 bg-white text-gray-500">Login</span>
                 </div>
               </div>
             </div>
-
+     
             <form
               className="new_user"
               id="new_user"
@@ -159,11 +164,11 @@ function Login() {
                 e.preventDefault();
                 const email = emailRef?.current?.value || "";
                 const password = passwordRef?.current?.value || "";
-                login({email, password},router);
+                login({ email, password }, router);
               }}
             >
- 
 
+    
               {/* Email*/}
               <input
                 autoFocus
@@ -175,7 +180,6 @@ function Login() {
                 id="user_email"
                 ref={emailRef}
               />
-
               {/*} Password*/}
               <input
                 autoComplete="current-password"
@@ -186,15 +190,16 @@ function Login() {
                 id="user_password"
                 ref={passwordRef}
               />
-
               <div className="mt-4 flex items-center">
                 <div className="text-sm leading-5">
-                  <Link href="/users/password/new" className="authentication-link">
+                  <Link
+                    href="/users/password/new"
+                    className="authentication-link"
+                  >
                     Forgot your password?
                   </Link>
                 </div>
               </div>
-
               <div className="mt-6">
                 <input
                   type="submit"
@@ -203,9 +208,7 @@ function Login() {
                   className="w-full btn btn-blue"
                   data-disable-with="Log in"
                 />
-
               </div>
-
               {/*<div class="mt-2 text-sm leading-5">
           <a href="/users/confirmation/new" class="authentication-link">
             Didn't receive confirmation instructions?
@@ -215,16 +218,8 @@ function Login() {
           </div>
         </div>
       </div>
-      {isDangerAlertVisible ? (
-            <Danger
-              message={error?.message || ""}
-              click={() => {
-                setDangerAlertVisibility(false);
-              }}
-            />
-          ) : loading ? (
-            <Spinner />
-          ) : null}
+
+      {loading && <Spinner />}
     </>
   );
 }

@@ -2,15 +2,18 @@
 
 import Pulse from "@/components/Loaders/pulse";
 import Table from "@/components/Tables/calls";
+import { Call } from "@/lib/types/call";
 
 import "@/styles/calls/index.scss";
 
-import peer from '@/utils/peer'
+type PageProps = {
+  calls: Call[];
+};
 
-function Calls() {
+function Calls(props: PageProps) {
   return (
     <div id="main" className="mt-0 sm:mt-0 relative p-6">
-      <div className="mb-4">
+      {/*} <div className="mb-4">
         <div className="block lg:flex lg:justify-between lg:items-center w-full">
           <div className="mb-4 sm:mb-0">
             <input
@@ -90,10 +93,12 @@ function Calls() {
             </div>
           </div>
         </div>
-      </div>{" "}
-      {false ? (
-        <Pulse />
-      ) : true ? (
+      </div>*/}
+      {false && <Pulse />}
+
+      {props.calls.length > 0 ? (
+        <Table calls={props.calls} />
+      ) : (
         <div className="dotted-container sm:h-80 mt-4 py-12 px-6">
           <div className="text-gray-400">
             <svg
@@ -110,15 +115,12 @@ function Calls() {
               <use xlinkHref="/feather-sprite.svg#coffee"></use>
             </svg>{" "}
             <h2 className="text-l mt-4 sm:mt-6 text-gray-400">Nothing Found</h2>{" "}
-            <h3 className="text-sm mt-2 text-gray-400">
+            {/*<h3 className="text-sm mt-2 text-gray-400">
               Clear search field or page filter
-            </h3>
+            </h3>*/}
           </div>
         </div>
-      ) : (
-        <Table />
       )}
-      {false}
     </div>
   );
 }

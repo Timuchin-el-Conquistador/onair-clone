@@ -1,5 +1,4 @@
-
-'use client'
+"use client";
 
 import Image from "next/image";
 
@@ -7,7 +6,13 @@ function CallDeclined() {
   return (
     <div className="max-w-lg mx-auto mt-48 text-center px-8 sm:px-0">
       <div className="text-center">
-        <Image className="w-16 inline-block" src="/logo.svg" alt="logo" width={0} height={0}/>
+        <Image
+          className="w-16 inline-block"
+          src="/logo.svg"
+          alt="logo"
+          width={0}
+          height={0}
+        />
       </div>
 
       <div data-cy="big-message-title" className="mt-6 text-xl font-bold">
@@ -21,6 +26,4 @@ function CallDeclined() {
   );
 }
 
-
-
-export default CallDeclined
+export default CallDeclined;

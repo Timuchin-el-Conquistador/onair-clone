@@ -16,14 +16,14 @@ const SlButton = dynamic(
 const SlBadge = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/badge/index.js"),
   {
-  //  loading: () => <p>Loading...</p>,
+    //  loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
 
 type PageProps = {
   sessions: Session[];
-  openDrawer: (id:string) => void;
+  openDrawer: (id: string) => void;
 };
 function Table(props: PageProps) {
   return (
@@ -32,53 +32,53 @@ function Table(props: PageProps) {
         <table>
           <thead>
             <tr>
-              <td>Visitor</td> <td>Since</td>{" "}
-              <td className="hidden md:table-cell">Info</td>{" "}
-              <td className="hidden md:table-cell">Status</td> <td>Actions</td>
+              <td>Visitor</td> 
+              <td>Since</td>
+              <td className="hidden md:table-cell">Info</td>
+              <td className="hidden md:table-cell">Status</td>
+              <td>Actions</td>
             </tr>
-          </thead>{" "}
+          </thead>
           <tbody>
             {props.sessions.map((session: Session) => (
               <tr key={session._id}>
                 <td className="truncate">
                   <span className="truncate block w-full font-semibold">
                     {session.callerInfo.fullName}
-                  </span>{" "}
+                  </span>
                   {session.callerInfo.email && (
                     <span className="truncate block w-full text-gray-500">
                       {session.callerInfo.email}
                     </span>
                   )}
-                </td>{" "}
+                </td>
                 <td className="truncate">
                   <span className="truncate block w-full font-semibold">
                     a few seconds
-                  </span>{" "}
+                  </span>
                   <span className="text-gray-500">ago</span>
-                </td>{" "}
+                </td>
                 <td className="text-gray-500 hidden md:table-cell">
                   Azerbaijan 🇦🇿
-                  <br /> <small>Windows, Chrome/131</small>
-                </td>{" "}
+                 <small>Windows, Chrome/131</small>
+                </td>
                 <td className="hidden text-left md:table-cell">
                   <SlBadge
                     variant={
-                      session.callStatus == "live" ? "success" : "primary"
+                      session.callStatus === "live" ? "success" : "primary"
                     }
                     className="inline-block"
                   >
                     {session.callStatus}
-                  </SlBadge>{" "}
-                </td>{" "}
+                  </SlBadge>
+                </td>
                 <td>
                   <SlButton
                     size="small"
                     variant="default"
                     data-optional=""
                     data-valid=""
-                    onClick={() => {
-                      props.openDrawer(session._id);
-                    }}
+                    onClick={() => props.openDrawer(session._id)}
                   >
                     Open
                   </SlButton>

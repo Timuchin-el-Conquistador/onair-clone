@@ -292,7 +292,8 @@ function IncommingCalls(props: PageProps) {
                   ...prevState,
                   isOpen: false,
                 }));
-                router.replace(`/room/${viewSession!._id}`);
+                socket.emit("answer", { callId: viewSession!._id });
+                router.replace(`/session/${props.slug}/${viewSession!._id}`);
               }}
             >
               Join Call

@@ -1,5 +1,6 @@
 
 import { fakeBackend } from "../axios";
+import { Session } from "../types/call";
 
 import { type ExtendedLink } from "../types/links";
 
@@ -19,4 +20,19 @@ export async function retrieveUrlAction(slug:string) {
   }
   }
   
-  
+  export async function retrieveCallSession(callId:string) {
+   
+     try {   
+   
+
+       const path = `api/v1/public/session/${callId}`;
+       const response: { message: string; session: Session } = await fakeBackend.get(
+         path
+       );
+       return response.session;
+     } catch (error) {
+       return error instanceof Error ? error : new Error(String(error));
+     }
+    }
+    
+    

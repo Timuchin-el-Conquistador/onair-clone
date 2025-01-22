@@ -19,7 +19,7 @@ async function Page(props: { params: { slug: string } }) {
   }
 
   const url = response instanceof Error || response == null ? null : response;
-console.log(url)
+
   return (
     <>
       {session && url != null ? (

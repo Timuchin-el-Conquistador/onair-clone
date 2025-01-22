@@ -14,13 +14,17 @@ import { ExtendedLink, Settings } from "@/lib/types/links";
 
 import useSession from "@/hooks/useSession";
 
+import { useRouter } from "next/navigation";
+
+
 type PageProps = {
   slug: string;
   url: ExtendedLink;
 };
 function Visitor(props: PageProps) {
+  const router = useRouter()
 
-  const [isConnecting, setIsCOnnecting] = useState(false);
+
   const { session, goOnline, goOffline } = useSession({
     ...props.url,
   });
@@ -35,23 +39,27 @@ function Visitor(props: PageProps) {
       callerInfo: { fullName, email, phone },
       slug,
     });
-    setIsCOnnecting(true);
+
   };
 
   useEffect(() => {
+    function callSessionCreated({callId}:{callId:string}) {
+      router.push(`/session/${props.slug}/${callId}`)
+    }
     function online() {
       goOnline();
     }
     function offline() {
       goOffline();
     }
-    socket.emit("session", {
-      slug: props.slug,
-    });
+
+    socket.on("session", callSessionCreated);
     socket.on("online", online);
     socket.on("offline", offline);
 
+  
     return () => {
+      socket.off("session", callSessionCreated);
       socket.off("online", online);
       socket.off("offline", offline);
     };
@@ -64,16 +72,18 @@ function Visitor(props: PageProps) {
         <div className="waiting-room-bg waiting-room-bg2"></div>
         <div className="waiting-room-bg waiting-room-bg3"></div>
       </div>
-      {isConnecting && <ConnectingCall />}{" "}
-      {!isConnecting && session.link.availability == "online" && (
+ 
+      { session.link.availability == "online" && (
         <VisitorForm
           call={call}
           slug={props.slug}
           linkName={session.link.linkName}
           message={session.link.settings.onlineMessage}
+          isEmailRequired={props.url.settings.visitorForm.includes('email')}
+          isPhoneRequired={props.url.settings.visitorForm.includes('phone')}
         />
       )}
-      {!isConnecting && session.link.availability == "offline" && (
+      {session.link.availability == "offline" && (
         <UrlIsOffline
           linkName={session.link.linkName}
           message={session.link.settings.offlineMessage}

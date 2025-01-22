@@ -7,7 +7,8 @@ type PageProps = {
   fullName: string;
   phone: string;
   callId: string;
-  answer: (callId: string) => void;
+  slug:string
+  answer: (slug:string,callId: string) => void;
   decline: (callId: string) => void;
 };
 
@@ -55,7 +56,7 @@ function WebCallNotification(props: PageProps) {
         </div>{" "}
         <button
           className="flex items-center justify-center bg-green-500 text-white text-sm font-medium pulse-effect rounded-full w-9 h-9 rounded hover:bg-green-600"
-          onClick={() => props.answer(props.callId)}
+          onClick={() => props.answer(props.slug,props.callId)}
         >
           <svg
             width="18"

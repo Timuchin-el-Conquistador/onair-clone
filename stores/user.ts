@@ -4,7 +4,7 @@ import { fakeBackend } from "@/lib/axios";
 
 import { verifySession } from "@/lib/dal";
 
-import {  type NewUser, type User } from "@/lib/types/user";
+import { type NewUser, type User } from "@/lib/types/user";
 
 import { createSession, deleteSession } from "@/lib/session";
 
@@ -17,7 +17,7 @@ export type UserState = {
   message: string | null;
   resetPasswordToken: string | null;
   token: string | null;
-  peerId:string|null
+  peerId: string | null;
 };
 
 export type UserActions = {
@@ -35,7 +35,8 @@ export type UserActions = {
   ) => void;
   //private
   getUser: () => void;
- /* editProfilePicture: (file: File, router: any) => void;
+
+  /* editProfilePicture: (file: File, router: any) => void;
   editProfile: (user: {
     fullName: string;
     phoneNumber: string;
@@ -54,14 +55,13 @@ export const defaultInitState: UserState = {
   user: null,
   resetPasswordToken: null,
   token: null,
-  peerId:null
+  peerId: null,
 };
 
 export const createUserStore = (initState: UserState = defaultInitState) => {
   return createStore<UserStore>()((set, getState) => ({
     ...initState,
     signup: async (user, router) => {
-
       if (user.password != user.confirmPassword) {
         return set((prevState) => ({
           ...prevState,
@@ -88,12 +88,10 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         message: null,
       }));
       try {
-
-  
         await fakeBackend.post(path + "/signup", {
-          email:user.email,
-          fullName:user.fullName,
-          password:user.password,
+          email: user.email,
+          fullName: user.fullName,
+          password: user.password,
         });
         // await createSession(response.response._id, response.response.email);
         set((prevState) => ({
@@ -117,13 +115,14 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         message: null,
       }));
       try {
-        const response: {message:string, user:User} = await fakeBackend.post(path + "/signin", {...user, role:'web'});
+        const response: { message: string; user: User } =
+          await fakeBackend.post(path + "/signin", { ...user, role: "web" });
 
         await createSession({
           userId: response.user._id,
           email: response.user.email,
           fullName: response.user.fullName,
-          subscriptionId:response.user.subscriptionId
+          subscriptionId: response.user.subscriptionId,
         });
 
         set((prevState) => ({
@@ -303,12 +302,12 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           message: null,
         }));
         const path = `api/v1/user/${session?.email}`;
-        const response: {user:User} = await fakeBackend.get(path);
+        const response: { user: User } = await fakeBackend.get(path);
 
         set((prevState) => ({
           ...prevState,
           loading: false,
-          user:response.user,
+          user: response.user,
         }));
       } catch (error) {
         set((prevState) => ({

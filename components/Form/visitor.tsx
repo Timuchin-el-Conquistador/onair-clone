@@ -6,8 +6,6 @@ import "@/styles/Forms/visitor.scss";
 import "@/styles/modal.scss";
 import { useRef, useState } from "react";
 
-
-
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
   {
@@ -48,25 +46,49 @@ const SlInput = dynamic(
 );
 
 type PageProps = {
-  slug:string,
-  linkName:string,
-  message:string
-  call:(fullName:string,email:string,phone:string,slug:string) => void
-}
+  slug: string;
+  linkName: string;
+  message: string;
+  isEmailRequired:boolean,
+  isPhoneRequired:boolean,
+  call: (fullName: string, email: string, phone: string, slug: string) => void;
+};
 
-function Visitor(props:PageProps) {
-  const [settingModalVisibility, setSettingModalVisibility] = useState(false);
+function Visitor(props: PageProps) {
   const [
-    selectAudioDeviceModalVisibility,
-    setSelectAudioDeviceModalVisibility,
+    audioInputDevicesModalVisibility,
+    setAudioInputDevicesModalVisibility,
   ] = useState(false);
+
+  const [audioInputDevices, setAudioInputDevices] = useState<MediaDeviceInfo[]>(
+    []
+  );
 
   const emailRef = useRef<string | null>(null);
   const fullNameRef = useRef<string | null>(null);
   const phoneRef = useRef<string | null>(null);
 
+  const enableAuidioPermission = async (permissionState: boolean) => {
+    if (!permissionState) return;
 
+    try {
+      //await navigator.mediaDevices.getUserMedia({ audio: true });
 
+      // Get the list of available audio devices after permission is granted
+      const devices = await navigator.mediaDevices.enumerateDevices();
+
+      // Filter out audio input devices
+      const audioDevices = devices.filter(
+        (device) => device.kind === "audioinput"
+      );
+      if (audioDevices.length > 0) {
+        localStorage.setItem("audio-input-device-id", audioDevices[0].deviceId);
+        setAudioInputDevices(audioDevices);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div id="main" className="mt-4 sm:mt-20">
@@ -82,9 +104,7 @@ function Visitor(props:PageProps) {
         </div>{" "}
         <div>
           <div>
-            <div className="m-3 max-w-sm">
-             {props.message}
-            </div>{" "}
+            <div className="m-3 max-w-sm">{props.message}</div>{" "}
             <SlInput
               name="visitor-name"
               label="Name*"
@@ -94,9 +114,9 @@ function Visitor(props:PageProps) {
               data-optional=""
               data-valid=""
               className="!border-transparent"
-              onSlChange={event => {
-                const value = (event.target as HTMLInputElement).value
-                fullNameRef.current = value
+              onSlChange={(event) => {
+                const value = (event.target as HTMLInputElement).value;
+                fullNameRef.current = value;
               }}
             >
               <SlIcon
@@ -108,7 +128,7 @@ function Visitor(props:PageProps) {
                 style={{ display: "none" }}
               ></SlIcon>
             </SlInput>{" "}
-            <SlInput
+          {props.isEmailRequired &&  <SlInput
               name="visitor-email"
               label="Email*"
               type="email"
@@ -117,9 +137,9 @@ function Visitor(props:PageProps) {
               data-optional=""
               data-valid=""
               className="!border-transparent"
-              onSlChange={event => {
-                const value = (event.target as HTMLInputElement).value
-                emailRef.current = value
+              onSlChange={(event) => {
+                const value = (event.target as HTMLInputElement).value;
+                emailRef.current = value;
               }}
             >
               <SlIcon
@@ -130,8 +150,8 @@ function Visitor(props:PageProps) {
                 className="text-red-600"
                 style={{ display: "none" }}
               ></SlIcon>
-            </SlInput>{" "}
-            <SlInput
+            </SlInput>}
+            {props.isPhoneRequired &&<SlInput
               name="visitor-phone"
               label="Phone*"
               type="tel"
@@ -140,9 +160,9 @@ function Visitor(props:PageProps) {
               data-optional=""
               data-valid=""
               className="!border-transparent"
-              onSlChange={event => {
-                const value = (event.target as HTMLInputElement).value
-                phoneRef.current = value
+              onSlChange={(event) => {
+                const value = (event.target as HTMLInputElement).value;
+                phoneRef.current = value;
               }}
             >
               <SlIcon
@@ -153,29 +173,41 @@ function Visitor(props:PageProps) {
                 className="text-red-600"
                 style={{ display: "none" }}
               ></SlIcon>
-            </SlInput>{" "}
+            </SlInput>}
             <div className="flex flex-col p-3">
               <div className="xs:flex items-center justify-between">
-                <SlSwitch size="medium" form="" data-optional="" data-valid="">
-                  <span className="text-sm">Enable Audio</span>
-                </SlSwitch>{" "}
-                <SlButton
-                  variant="default"
+                <SlSwitch
                   size="medium"
+                  form=""
                   data-optional=""
                   data-valid=""
-                  className="mt-2 xs:mt-auto"
+                  onSlChange={(event) => {
+                    const checked = (event.target as HTMLInputElement).checked;
+                    enableAuidioPermission(checked);
+                  }}
                 >
-                  <span className="w-44 xs:w-28 truncate block text-left">
-                    По умолчанию - Microphone (High Definition Audio Device)
-                  </span>{" "}
-                  <SlIcon
-                    slot="suffix"
-                    name="gear"
-                    aria-hidden="true"
-                    library="default"
-                  ></SlIcon>
-                </SlButton>
+                  <span className="text-sm">Enable Audio</span>
+                </SlSwitch>{" "}
+                {audioInputDevices.length > 0 && (
+                  <SlButton
+                    variant="default"
+                    size="medium"
+                    data-optional=""
+                    data-valid=""
+                    className="mt-2 xs:mt-auto"
+                    onClick={() => setAudioInputDevicesModalVisibility(true)}
+                  >
+                    <span className="w-44 xs:w-28 truncate block text-left">
+                      {audioInputDevices[0].label}
+                    </span>{" "}
+                    <SlIcon
+                      slot="suffix"
+                      name="gear"
+                      aria-hidden="true"
+                      library="default"
+                    ></SlIcon>
+                  </SlButton>
+                )}
               </div>{" "}
             </div>{" "}
             <div className="text-center mt-4">
@@ -184,12 +216,13 @@ function Visitor(props:PageProps) {
                 size="medium"
                 data-optional=""
                 data-valid=""
-                onClick={() =>{
+                disabled={audioInputDevices.length === 0}
+                onClick={() => {
                   const email = emailRef?.current || "";
-                  const fullName = fullNameRef?.current || '';
-                  const phone = phoneRef?.current || '';
-                  console.log(email, fullName,phone)
-              //    props.call(fullName,email,phone,props.slug)
+                  const fullName = fullNameRef?.current || "";
+                  const phone = phoneRef?.current || "";
+
+                  props.call(fullName, email, phone, props.slug);
                 }}
               >
                 Call
@@ -199,11 +232,11 @@ function Visitor(props:PageProps) {
         </div>
       </div>{" "}
       <div>
-        <SlDialog
+        {/*<SlDialog
           no-header=""
           className="media-permission-modal"
           label=""
-          open={settingModalVisibility}
+          open={audioDevicesModalVisibility}
         >
           <div className="dialog-body">
             <div className="flex items-center">
@@ -318,7 +351,7 @@ function Visitor(props:PageProps) {
               </ol>
             </div>
           </div>
-        </SlDialog>{" "}
+        </SlDialog>*/}
         <SlDialog
           no-header=""
           className="media-permission-modal mobile-permissions"
@@ -412,13 +445,27 @@ function Visitor(props:PageProps) {
       <SlDialog
         label="Settings"
         className="dialog-overview with-header"
-        open={selectAudioDeviceModalVisibility}
+        open={audioInputDevicesModalVisibility}
+        onSlAfterHide={() => setAudioInputDevicesModalVisibility(false)}
       >
         <div>
           <div className="flex items-center justify-between mt-1">
             <span className="text-sm">Microphone</span>{" "}
-            <select style={{ width: "200px", fontSize: "13px" }}>
-              <option value="">Select Audio Device</option>{" "}
+            <select
+              style={{ width: "200px", fontSize: "13px" }}
+              onChange={(e) => {
+                const deviceId = e.target.value;
+                localStorage.setItem("audio-input-device-id", deviceId);
+              }}
+            >
+              <option value="" disabled>
+                Select Audio Device
+              </option>{" "}
+              {audioInputDevices.map((device) => (
+                <option value={device.deviceId} key={device.deviceId}>
+                  {device.label}
+                </option>
+              ))}
             </select>
           </div>{" "}
         </div>{" "}
@@ -429,6 +476,7 @@ function Visitor(props:PageProps) {
             size="medium"
             data-optional=""
             data-valid=""
+            onClick={() => setAudioInputDevicesModalVisibility(false)}
           >
             Close
           </SlButton>

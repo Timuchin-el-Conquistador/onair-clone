@@ -1,14 +1,16 @@
+"use client";
+
 import dynamic from "next/dynamic";
 
 import "@/styles/table.scss";
 
-
+import { Call } from "@/lib/types/call";
 
 const SlDialog = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
   () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),
   {
-   // loading: () => <p>Loading...</p>,
+    // loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
@@ -17,7 +19,7 @@ const SlButton = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
   {
- //   loading: () => <p>Loading...</p>,
+    //   loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
@@ -25,7 +27,7 @@ const SlButton = dynamic(
 const SlIcon = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
   {
-  //  loading: () => <p>Loading...</p>,
+    //  loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
@@ -33,7 +35,7 @@ const SlIcon = dynamic(
 const SlDrawer = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/drawer/index.js"),
   {
-  //  loading: () => <p>Loading...</p>,
+    //  loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
@@ -41,14 +43,31 @@ const SlDrawer = dynamic(
 const SlAlert = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/alert/index.js"),
   {
-   // loading: () => <p>Loading...</p>,
+    // loading: () => <p>Loading...</p>,
+    ssr: false,
+  }
+);
+const SlBadge = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/badge/index.js"),
+  {
+    //  loading: () => <p>Loading...</p>,
+    ssr: false,
+  }
+);
+const SlRelativeTime = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/relative-time/index.js"),
+  {
+    //  loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
 
-function Table() {
+type PageProps = {
+  calls: Call[];
+};
 
-
+function Table(props: PageProps) {
+  console.log(props.calls);
   return (
     <>
       <div id="sessions" className="mb-6 mx-0 sm:mx-0 hidden sm:block">
@@ -63,47 +82,74 @@ function Table() {
               </tr>
             </thead>{" "}
             <tbody>
-              <tr>
-                <td className="truncate">
-                  <b className="truncate">Magush</b>
-                  <br />
-                  <span className="text-gray-500 text-xs lg:text-sm block w-full truncate">
-                    test@gmail.com
-                  </span>
-                </td>{" "}
-                <td className="truncate">
-                  <b>1</b>
-                  <br />
-                  <span className="text-gray-500 text-xs lg:text-sm block w-full truncate">
-                    minute(s)
-                  </span>
-                </td>
-                <td className="hidden lg:table-cell truncate">
-                  <b>Meeting with Cingiz</b>
-                  <br />
-                  <span className="text-gray-500 text-xs lg:text-sm block w-full truncate">
-                    timuchin
-                  </span>
-                </td>
-                <td className="hidden lg:table-cell truncate">
-                  <b>4 days</b>
-                  <br />
-                  <span className="text-gray-500 text-xs lg:text-sm block w-full truncate">
-                    ago
-                  </span>
-                </td>
-                <td className="text-left truncate"></td>
-                <td>
-                  <SlButton
-                    size="small"
-                    variant="default"
-                    data-optional=""
-                    data-valid=""
-                  >
-                    Details
-                  </SlButton>
-                </td>
-              </tr>
+              {props.calls.map((call: Call) => {
+                // Step 1: Remove the ordinal suffix (e.g., "nd")
+                console.log(call);
+                const cleanedDateString = call.callStartedTime.replace(
+                  /(\d+)(st|nd|rd|th)/,
+                  "$1"
+                );
+
+                // Step 2: Parse the date
+                const date = new Date(cleanedDateString);
+
+                // Step 3: Convert to ISO 8601 format
+                const isoDate = date.toISOString();
+                //const isoDate= moment(call.callStartedTime).toISOString();
+                console.log(isoDate);
+                return (
+                  <tr>
+                    <td className="truncate">
+                      <b className="truncate">{call.callerInfo.fullName}</b>
+                      <br />
+                      <span className="text-gray-500 text-xs lg:text-sm block w-full truncate">
+                        {call.callerInfo.email}
+                      </span>
+                    </td>{" "}
+                    <td className="truncate">
+                      <b>{Math.round(call.duration / 60)}</b>
+                      <br />
+                      <span className="text-gray-500 text-xs lg:text-sm block w-full truncate">
+                        minute(s)
+                      </span>
+                    </td>
+                    <td className="hidden lg:table-cell truncate">
+                      <b>{call.link.linkName}</b>
+                      <br />
+                      <span className="text-gray-500 text-xs lg:text-sm block w-full truncate">
+                        {call.slug}
+                      </span>
+                    </td>
+                    <td className="hidden lg:table-cell truncate">
+                      <b>
+                        <SlRelativeTime date={isoDate} />
+                      </b>
+                    </td>
+                    <td className="text-left truncate">
+                      {call.callStatus == "live" && (
+                        <SlBadge variant="success" className="inline-block">
+                          {call.callStatus}
+                        </SlBadge>
+                      )}
+                      {call.callStatus == "waiting" && (
+                        <SlBadge variant="primary" className="inline-block">
+                          {call.callStatus}
+                        </SlBadge>
+                      )}
+                    </td>
+                    <td>
+                      <SlButton
+                        size="small"
+                        variant="default"
+                        data-optional=""
+                        data-valid=""
+                      >
+                        Details
+                      </SlButton>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

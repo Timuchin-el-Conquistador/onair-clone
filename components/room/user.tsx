@@ -6,14 +6,16 @@ import { useEffect, useRef, useState } from "react";
 import { socket } from "@/utils/socket";
 import Peer, { DataConnection } from "peerjs";
 import { formatHHMMSSTime } from "@/utils/timer";
-import peer from "@/utils/peer";
 
 type PageProps = {
   slug: string;
   sessionId: string;
+  endCall: (callId: string, duration:number) => void;
 };
 
 function ConferenceRoom(props: PageProps) {
+  const [isP2PConEstablished, setP2PConnectionState] = useState(false);
+  const [isCallConEstablished, setCallConnectionState] = useState(false);
   const [time, setTime] = useState(0); // time in seconds
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
@@ -25,9 +27,8 @@ function ConferenceRoom(props: PageProps) {
     null
   );
 
-  const peerRef = useRef<Peer>(peer);
+  const peerRef = useRef<Peer | null>(null);
   const connRef = useRef<DataConnection | null>(null);
-
 
   const localAudioRef = useRef<HTMLAudioElement | null>(null);
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -36,6 +37,14 @@ function ConferenceRoom(props: PageProps) {
 
   const callAudioRecordBlobRef = useRef<Blob | null>(null);
 
+  const peerId = useRef<string | null>(null);
+  useEffect(() => {
+    peerRef.current = new Peer({
+      host: "localhost",
+      port: 9000,
+      path: "/myapp",
+    });
+  }, []);
   useEffect(() => {
     const interval = setInterval(() => {
       setTime((prevTime) => prevTime + 1);
@@ -43,58 +52,63 @@ function ConferenceRoom(props: PageProps) {
 
     return () => clearInterval(interval); // cleanup on unmount
   }, []);
-
-  const toggleMute = () => {
-    if (localStream) {
-      const audioTrack = localStream.getAudioTracks()[0];
-      if (audioTrack) {
-        console.log(isMuted, "enabled");
-        audioTrack.enabled = isMuted; // Toggle mute state
-        setIsMuted(!isMuted);
-      }
-    }
-  };
-
   useEffect(() => {
-    const getLocalStream = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
-        setLocalStream(stream);
-        startRecording();
-        if (localAudioRef.current) {
-          localAudioRef.current.srcObject = stream;
-        }
-      } catch (error) {
-        console.error("Error accessing local audio:", error);
+    if (isP2PConEstablished) {
+      return;
+    }
+    const interval = setInterval(() => {
+      if (isP2PConEstablished) {
+        alert("clearing");
+        return clearInterval(interval);
       }
-    };
-
-    // Simulating a Peer.js connection (Replace this with actual Peer.js logic)
-    const setupRemoteStream = () => {
-      peerRef.current.on("call", (call) => {
-        call.answer(); // Answer the call
-        call.on("stream", (stream) => {
-          setRemoteStream(stream); // Set the remote stream
-          if (remoteAudioRef.current) {
-            remoteAudioRef.current.srcObject = stream;
-          }
+      if (peerId.current) {
+        console.log("open peer", peerId.current);
+        socket.emit("offer", {
+          callId: props.sessionId,
+          peerId: peerId.current,
         });
-      });
-    };
+        return clearInterval(interval);
+      }
+    }, 5000);
 
-    getLocalStream();
-    setupRemoteStream();
-
-    return () => {
-      peerRef.current?.disconnect();
-    };
+    return () => clearInterval(interval); // cleanup on unmount
   }, []);
 
-
-  
   useEffect(() => {
+    peerRef.current?.on("open", function (id) {
+      //handle the id
+      peerId.current = id;
+    });
+
+    peerRef.current?.on("connection", (connection) => {
+      console.log(connection, "connect");
+      setP2PConnectionState(true);
+      peerRef.current!.connect(connection.peer);
+      connRef.current = connection;
+
+      connRef.current.on("open", function () {
+        connRef.current!.on("data", function (data) {
+          console.log("Received", data);
+        });
+        connRef.current!.send("Hello World");
+      });
+
+      const call = peerRef.current!.call(
+        connection.peer,
+        localAudioRef.current!.srcObject as MediaStream
+      );
+
+      call.on("stream", (stream) => {
+        console.log("STREAMMMMMM");
+        setCallConnectionState(true);
+        setRemoteStream(stream); // Set the remote stream
+        if (remoteAudioRef.current) {
+          remoteAudioRef.current.srcObject = stream;
+        }
+      });
+    });
+  }, []);
+  /*useEffect(() => {
     function setConnection(data: {
       peerId: string;
       slug: string;
@@ -117,9 +131,69 @@ function ConferenceRoom(props: PageProps) {
     return () => {
       socket.off("offer-connection", setConnection);
     };
-  }, [socket]);
+  }, [socket]);*/
 
+  const toggleMute = () => {
+    if (localStream) {
+      const audioTrack = localStream.getAudioTracks()[0];
+      if (audioTrack) {
+        console.log(isMuted, "enabled");
+        audioTrack.enabled = isMuted; // Toggle mute state
+        setIsMuted(!isMuted);
+      }
+    }
+  };
 
+  useEffect(() => {
+    const getLocalStream = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        setLocalStream(stream);
+
+        if (localAudioRef.current) {
+          localAudioRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error("Error accessing local audio:", error);
+      }
+    };
+
+    // Simulating a Peer.js connection (Replace this with actual Peer.js logic)
+    /* const setupRemoteStream = () => {
+      peerRef.current.on("call", (call) => {
+        call.answer(); // Answer the call
+        call.on("stream", (stream) => {
+          setRemoteStream(stream); // Set the remote stream
+          if (remoteAudioRef.current) {
+            remoteAudioRef.current.srcObject = stream;
+          }
+        });
+      });
+    };*/
+
+    getLocalStream();
+    //setupRemoteStream();
+
+    return () => {
+      peerRef.current?.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (localStream && remoteStream) {
+      const combinedStream = new MediaStream();
+      localStream
+        .getTracks()
+        .forEach((track) => combinedStream.addTrack(track));
+      remoteStream
+        .getTracks()
+        .forEach((track) => combinedStream.addTrack(track));
+      combinedStreamRef.current = combinedStream;
+      startRecording();
+    }
+  }, [localStream, remoteStream]);
 
   //PRIVATE
 
@@ -142,27 +216,20 @@ function ConferenceRoom(props: PageProps) {
     recorder.onstop = () => {
       const audioBlob = new Blob(chunks, { type: "audio/webm" });
       callAudioRecordBlobRef.current = audioBlob;
+      console.log(audioBlob);
     };
 
     recorder.start();
     setMediaRecorder(recorder);
   };
 
-
   const endCall = () => {
-    if (localStream && remoteStream) {
-      const combinedStream = new MediaStream();
-      localStream
-        .getTracks()
-        .forEach((track) => combinedStream.addTrack(track));
-      remoteStream
-        .getTracks()
-        .forEach((track) => combinedStream.addTrack(track));
-      combinedStreamRef.current = combinedStream;
-    }
+    console.log(mediaRecorder);
     if (mediaRecorder) {
       mediaRecorder.stop();
     }
+
+    props.endCall(props.sessionId, time);
   };
 
   return (
@@ -242,6 +309,9 @@ function ConferenceRoom(props: PageProps) {
             <div className="mt-1 text-gray-400 text-xl font-thin">
               test@gmail.com
             </div>{" "}
+            {!isCallConEstablished && (
+              <div className="mt-1 text-red-500 text-sm font-thin">Offline</div>
+            )}
           </div>{" "}
           <div className="audio-call-controls">
             <div className="flex items-center justify-evenly w-full">

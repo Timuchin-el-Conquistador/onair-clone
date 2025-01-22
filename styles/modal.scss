@@ -24,11 +24,15 @@
 }
 
 
+///IMPORTANT 
+sl-dialog.with-header {
+    --body-spacing: 0 1.25rem 1.25rem 1.25rem;
+}
 
-
-
-//
-
+sl-dialog {
+    --sl-z-index-dialog: 1000;
+}
+///IMPORTANT 
 
 
   //modal
@@ -148,3 +152,56 @@
     }
 }
 
+
+
+///media
+///
+///
+
+.media-permission-modal .sl-dialog__close-button {
+    display: none;
+  }
+  
+  .media-permission-modal {
+    --width: 50vw;
+  }
+  
+  .media-permission-modal.ask-user-to-alow-modal {
+    --width: 25vw;
+  }
+  
+  .media-permission-modal.mobile-permissions {
+    --width: 35vw;
+  }
+  
+  .media-permission-modal .dialog-body {
+    padding: 1rem;
+  }
+  
+  .unrecognized-error::part(body) {
+    padding-top: 0px;
+  }
+  
+  @media (max-width: 480px) {
+    .media-permission-modal,
+    .media-permission-modal.mobile-permissions {
+      --width: 90vw;
+    }
+  
+    .dialog-body {
+      padding: 0.75rem;
+    }
+  }
+  
+
+
+
+
+
+
+
+  .dialog__overlay {
+    position: fixed;
+    inset: 0px;
+    background-color: var(--sl-overlay-background-color);
+}

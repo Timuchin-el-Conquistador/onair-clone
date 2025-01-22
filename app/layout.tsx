@@ -12,6 +12,7 @@ import { UserStoreProvider } from "@/providers/user";
 import { SessionStoreProvider } from "@/providers/session";
 
 import P2PLayout from "@/components/layouts/P@P";
+import PublicLayout from "@/components/layouts/public";
 
 import ShoelaceSetup from "./shoelace-setup";
 
@@ -43,14 +44,16 @@ export default async function RootLayout({
         {session != null ? (
           <UserStoreProvider>
             <SessionStoreProvider>
-              <P2PLayout>
+              <P2PLayout userId={session.userId as string}>
                 <ShoelaceSetup>{children}</ShoelaceSetup>
               </P2PLayout>
             </SessionStoreProvider>
           </UserStoreProvider>
         ) : (
           <UserStoreProvider>
+            <PublicLayout>
             <ShoelaceSetup>{children}</ShoelaceSetup>
+            </PublicLayout>
           </UserStoreProvider>
         )}
       </body>

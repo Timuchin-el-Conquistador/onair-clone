@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import { socket } from "@/utils/socket";
 import Peer, { DataConnection } from "peerjs";
 import { formatHHMMSSTime } from "@/utils/timer";
-import peer from "@/utils/peer";
 
 type PageProps = {
   slug: string;
@@ -14,26 +13,28 @@ type PageProps = {
 };
 
 function ConferenceRoom(props: PageProps) {
+  const [isCallConEstablished, setCallConnectionState] = useState(false);
+
   const [time, setTime] = useState(0); // time in seconds
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
 
   const [isMuted, setIsMuted] = useState(false);
 
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
-    null
-  );
+  const peerRef = useRef<Peer | null>(null);
 
-  const peerRef = useRef<Peer>(peer);
   const connRef = useRef<DataConnection | null>(null);
-
 
   const localAudioRef = useRef<HTMLAudioElement | null>(null);
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
 
-
-
+  useEffect(() => {
+    peerRef.current = new Peer({
+      host: "localhost",
+      port: 9000,
+      path: "/myapp",
+    });
+  }, []);
   useEffect(() => {
     const interval = setInterval(() => {
       setTime((prevTime) => prevTime + 1);
@@ -41,6 +42,40 @@ function ConferenceRoom(props: PageProps) {
 
     return () => clearInterval(interval); // cleanup on unmount
   }, []);
+  useEffect(() => {
+    socket.emit("connect-socket", { callId: props.sessionId });
+  }, [socket]);
+
+  useEffect(() => {
+    peerRef.current?.on("open", function (id) {
+      //handle the id
+      console.log("open peer", id);
+    });
+  }, []);
+  useEffect(() => {
+    function setConnection(data: { peerId: string; iceServers: any }) {
+      console.log("peering", data);
+
+      connRef.current = peerRef.current!.connect(data.peerId);
+
+      connRef.current.on("open", function () {
+        connRef.current!.on("data", function (data) {
+          console.log("Received", data);
+        });
+        connRef.current!.send("Hello World");
+      });
+
+      connRef.current.on("error", (err) => {
+        console.error("Connection error:", err);
+      });
+    }
+
+    socket.on("offer-connection", setConnection);
+
+    return () => {
+      socket.off("offer-connection", setConnection);
+    };
+  }, [socket]);
 
   const toggleMute = () => {
     if (localStream) {
@@ -60,14 +95,6 @@ function ConferenceRoom(props: PageProps) {
           audio: true,
         });
 
-        const call = peer.call('', stream);
-        call.on('stream', function(remoteStream) {
-          // Show stream in some video/canvas element.
-          setRemoteStream(remoteStream); // Set the remote stream
-          if (remoteAudioRef.current) {
-            remoteAudioRef.current.srcObject = remoteStream;
-          }
-        });
         setLocalStream(stream);
 
         if (localAudioRef.current) {
@@ -78,51 +105,39 @@ function ConferenceRoom(props: PageProps) {
       }
     };
 
-
+    // Simulating a Peer.js connection (Replace this with actual Peer.js logic)
+    const setupRemoteStream = () => {
+      peerRef.current!.on("call", (call) => {
+        call.answer(localAudioRef.current!.srcObject as MediaStream); // Answer the call
+        call.on("stream", (stream) => {
+          setCallConnectionState(true);
+          console.log("STREMMMMM");
+          console.log(stream);
+          if (remoteAudioRef.current) {
+            remoteAudioRef.current.srcObject = stream;
+          }
+        });
+      });
+    };
 
     getLocalStream();
-  
+    setupRemoteStream();
 
     return () => {
       peerRef.current?.disconnect();
     };
   }, []);
 
-
-
-
-  useEffect(() => {
-    peerRef.current?.on("open", function (id) {
-      //handle the id
-      socket.emit("offer", {
-        slug:props.slug,
-        peerId: id,
-      });
-    });
-
-    peerRef.current?.on("connection", (connection) => {
-      console.log(connection, "connect");
-
-      peerRef.current.connect(connection.peer);
-      connRef.current = connection;
-      connRef.current.on("open", function () {
-        connRef.current!.on("data", function (data) {
-          console.log("Received", data);
-        });
-        connRef.current!.send("Hello World");
-      });
-    });
-  }, []);
-
-
-
-  const endCall = () => {
-
-  };
+  const endCall = () => {};
   return (
     <div id="conference">
       <div id="active-audio">
-        <audio autoPlay data-uid="visitor-22275" ref={localAudioRef}></audio>
+        <audio
+          autoPlay
+          data-uid="visitor-22275"
+          ref={localAudioRef}
+          muted
+        ></audio>
         <audio autoPlay data-uid="visitor-22275" ref={remoteAudioRef}></audio>
       </div>{" "}
       <div id="main-video">
@@ -196,6 +211,9 @@ function ConferenceRoom(props: PageProps) {
             <div className="mt-1 text-gray-400 text-xl font-thin">
               test@gmail.com
             </div>{" "}
+            {!isCallConEstablished && (
+              <div className="mt-1 text-red-500 text-sm font-thin">Offline</div>
+            )}
           </div>{" "}
           <div className="audio-call-controls">
             <div className="flex items-center justify-evenly w-full">

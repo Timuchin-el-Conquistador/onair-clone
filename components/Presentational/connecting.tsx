@@ -13,7 +13,15 @@ const SlSpinner = dynamic(
     ssr: false,
   }
 );
-function ConnectingCall() {
+
+
+
+type PageProps = {
+  linkName:string
+}
+
+function ConnectingCall(props:PageProps) {
+
   return (
 
       <div
@@ -23,7 +31,7 @@ function ConnectingCall() {
       >
         <div className="status-card m-3">
           <div className="status online"></div>{" "}
-          <div className="title">Teambuilding</div>{" "}
+          <div className="title">{props.linkName}</div>{" "}
           <div className="subtitle">Online</div>
         </div>{" "}
         <div className="m-3 mt-6">
