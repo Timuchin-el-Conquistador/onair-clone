@@ -4,10 +4,10 @@ import Card from "@/components/cards";
 
 import "@/styles/dashboard.scss";
 
-import { type Link } from "@/lib/types/links";
+import {type  ExtendedLink } from "@/lib/types/links";
 
 type PageProps = {
-  links: Link[];
+  links: ExtendedLink[];
 };
 
 function Integrations(props: PageProps) {
@@ -21,6 +21,7 @@ function Integrations(props: PageProps) {
           linkName={link.linkName}
           integrations={link.integrations}
           timeLength={link.timeLength}
+          hasConnectedDevice={link.connectedDevices.length>0}
         />
       ))}
       <div className="index-card bordered">

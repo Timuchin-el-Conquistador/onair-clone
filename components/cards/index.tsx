@@ -20,7 +20,7 @@ type CardPageLinkType = Omit<
   "callStrategy" | "settings" | "_id" | "connectedDevices"
 >;
 
-type PageProps = CardPageLinkType;
+type PageProps = CardPageLinkType 
 
 function Card(props: PageProps) {
   const [menuVisibilityState, setMenuVisibilityState] = useState(false);

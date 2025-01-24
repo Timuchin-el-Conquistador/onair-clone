@@ -15,6 +15,7 @@ export interface Link {
   linkName: string;
   integrations: Integration[];
   settings: Settings;
+
 }
 
 export interface Settings {
