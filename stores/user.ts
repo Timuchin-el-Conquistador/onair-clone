@@ -6,7 +6,7 @@ import { verifySession } from "@/lib/dal";
 
 import { type NewUser, type User } from "@/lib/types/user";
 
-import { createSession, deleteSession } from "@/lib/session";
+import { createSession } from "@/lib/session";
 
 const path = "/api/v1/user";
 
@@ -24,7 +24,6 @@ export type UserActions = {
   //auth
   signup: (user: NewUser, router: any) => void;
   login: (user: { email: string; password: string }, router: any) => void;
-  logout: (router: any) => void;
   forgotPassword: (email: string, router: any) => void;
   submitOTP: (otp: string, router: any) => void;
   resendToEmailOTP: () => void;
@@ -117,7 +116,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
       try {
         const response: { message: string; user: User } =
           await fakeBackend.post(path + "/signin", { ...user, role: "web" });
-
+        console.log("CREATING SESSION");
         await createSession({
           userId: response.user._id,
           email: response.user.email,
@@ -139,10 +138,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         }));
       }
     },
-    logout: async (router) => {
-      await deleteSession();
-      router.replace("/login");
-    },
+
     forgotPassword: async (email, router) => {
       try {
         set((prevState) => ({
@@ -317,7 +313,6 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         }));
       }
     },
-
 
     reset: () => {
       set((prevState) => ({

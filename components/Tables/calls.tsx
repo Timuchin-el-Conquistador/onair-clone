@@ -64,6 +64,7 @@ const SlRelativeTime = dynamic(
 
 type PageProps = {
   calls: Call[];
+  openSession:(sessionId:string) => void
 };
 
 function Table(props: PageProps) {
@@ -75,16 +76,18 @@ function Table(props: PageProps) {
           <table>
             <thead>
               <tr>
-                <td>Visitor</td> <td>Duration</td>
+                <td>Visitor</td> 
+                <td>Duration</td>
                 <td className="hidden lg:table-cell">Link</td>
                 <td className="hidden lg:table-cell">Since</td>
-                <td>Status</td> <td></td>
+                <td>Status</td> 
+                <td></td>
               </tr>
-            </thead>{" "}
+            </thead>
             <tbody>
               {props.calls.map((call: Call) => {
                 // Step 1: Remove the ordinal suffix (e.g., "nd")
-                console.log(call);
+          
                 const cleanedDateString = call.callStartedTime.replace(
                   /(\d+)(st|nd|rd|th)/,
                   "$1"
@@ -96,26 +99,23 @@ function Table(props: PageProps) {
                 // Step 3: Convert to ISO 8601 format
                 const isoDate = date.toISOString();
                 //const isoDate= moment(call.callStartedTime).toISOString();
-                console.log(isoDate);
+
                 return (
-                  <tr>
+                  <tr key={call._id}>
                     <td className="truncate">
                       <b className="truncate">{call.callerInfo.fullName}</b>
-                      <br />
                       <span className="text-gray-500 text-xs lg:text-sm block w-full truncate">
                         {call.callerInfo.email}
                       </span>
-                    </td>{" "}
+                    </td>
                     <td className="truncate">
                       <b>{Math.round(call.duration / 60)}</b>
-                      <br />
                       <span className="text-gray-500 text-xs lg:text-sm block w-full truncate">
                         minute(s)
                       </span>
                     </td>
                     <td className="hidden lg:table-cell truncate">
                       <b>{call.link.linkName}</b>
-                      <br />
                       <span className="text-gray-500 text-xs lg:text-sm block w-full truncate">
                         {call.slug}
                       </span>
@@ -143,6 +143,9 @@ function Table(props: PageProps) {
                         variant="default"
                         data-optional=""
                         data-valid=""
+                        onClick={()=>{
+                          props.openSession(call._id)
+                        }}
                       >
                         Details
                       </SlButton>
@@ -153,8 +156,8 @@ function Table(props: PageProps) {
             </tbody>
           </table>
         </div>
-      </div>{" "}
-      <div id="sessions" className="mb-12 mx-0 sm:mx-0 sm:hidden">
+      </div>
+      {/*<div id="sessions" className="mb-12 mx-0 sm:mx-0 sm:hidden">
         <ul className="rounded-lg mt-2 divide-y divide-gray-200 overflow-hidden shadow">
           <li>
             <div className="block px-4 py-4 bg-white hover:bg-gray-50">
@@ -189,8 +192,8 @@ function Table(props: PageProps) {
             </div>
           </li>
         </ul>
-      </div>{" "}
-      <SlDialog
+      </div>{" "}*/}
+     {/*} <SlDialog
         label="Download Records"
         className="dialog-deny-close with-header"
         style={{ width: "520px" }}
@@ -494,8 +497,8 @@ function Table(props: PageProps) {
             </SlButton>
           </a>
         </div>
-      </SlDialog>{" "}
-      <SlDrawer
+      </SlDialog>{" "}*/}
+      {/*<SlDrawer
         no-header=""
         label=""
         placement="end"
@@ -539,7 +542,7 @@ function Table(props: PageProps) {
             </SlButton>
           </span>
         </div>
-      </SlDrawer>
+      </SlDrawer>*/}
     </>
   );
 }

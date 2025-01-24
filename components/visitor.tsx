@@ -15,36 +15,47 @@ import { ExtendedLink, Settings } from "@/lib/types/links";
 import useSession from "@/hooks/useSession";
 
 import { useRouter } from "next/navigation";
-
+import axios from "axios";
 
 type PageProps = {
   slug: string;
   url: ExtendedLink;
 };
 function Visitor(props: PageProps) {
-  const router = useRouter()
-
+  const router = useRouter();
 
   const { session, goOnline, goOffline } = useSession({
     ...props.url,
   });
 
+  useEffect(() => {
+    async function fetchLocation() {
+      try {
+        const response = await axios.get("/api/ip");
+        console.log(response);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    fetchLocation()
+  }, []);
+
   const call = (
     fullName: string,
-    email: string,
-    phone: string,
+    email: string | null,
+    phone: string | null,
     slug: string
   ) => {
     socket.emit("call", {
       callerInfo: { fullName, email, phone },
       slug,
     });
-
   };
 
   useEffect(() => {
-    function callSessionCreated({callId}:{callId:string}) {
-      router.push(`/session/${props.slug}/${callId}`)
+    function callSessionCreated({ callId }: { callId: string }) {
+      router.push(`/session/${props.slug}/${callId}`);
     }
     function online() {
       goOnline();
@@ -57,7 +68,6 @@ function Visitor(props: PageProps) {
     socket.on("online", online);
     socket.on("offline", offline);
 
-  
     return () => {
       socket.off("session", callSessionCreated);
       socket.off("online", online);
@@ -72,15 +82,15 @@ function Visitor(props: PageProps) {
         <div className="waiting-room-bg waiting-room-bg2"></div>
         <div className="waiting-room-bg waiting-room-bg3"></div>
       </div>
- 
-      { session.link.availability == "online" && (
+
+      {session.link.availability == "online" && (
         <VisitorForm
           call={call}
           slug={props.slug}
           linkName={session.link.linkName}
           message={session.link.settings.onlineMessage}
-          isEmailRequired={props.url.settings.visitorForm.includes('email')}
-          isPhoneRequired={props.url.settings.visitorForm.includes('phone')}
+          isEmailRequired={props.url.settings.visitorForm.includes("email")}
+          isPhoneRequired={props.url.settings.visitorForm.includes("phone")}
         />
       )}
       {session.link.availability == "offline" && (

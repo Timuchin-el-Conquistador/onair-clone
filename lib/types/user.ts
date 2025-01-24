@@ -17,4 +17,6 @@ export interface SessionUser {
   email: string;
   userId: string;
   subscriptionId: null | string;
+  [key: string]: unknown; // Allows additional string keys
+
 }

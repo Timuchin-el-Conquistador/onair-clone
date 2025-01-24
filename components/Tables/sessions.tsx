@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 
 import "@/styles/table.scss";
 
-import { Session } from "@/lib/types/call";
+import { Call } from "@/lib/types/call";
 
 const SlButton = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
@@ -22,7 +22,7 @@ const SlBadge = dynamic(
 );
 
 type PageProps = {
-  sessions: Session[];
+  sessions: Call[];
   openDrawer: (id: string) => void;
 };
 function Table(props: PageProps) {
@@ -40,7 +40,7 @@ function Table(props: PageProps) {
             </tr>
           </thead>
           <tbody>
-            {props.sessions.map((session: Session) => (
+            {props.sessions.map((session: Call) => (
               <tr key={session._id}>
                 <td className="truncate">
                   <span className="truncate block w-full font-semibold">

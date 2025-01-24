@@ -51,7 +51,7 @@ type PageProps = {
   message: string;
   isEmailRequired:boolean,
   isPhoneRequired:boolean,
-  call: (fullName: string, email: string, phone: string, slug: string) => void;
+  call: (fullName: string, email: string|null, phone: string|null, slug: string) => void;
 };
 
 function Visitor(props: PageProps) {
@@ -218,9 +218,9 @@ function Visitor(props: PageProps) {
                 data-valid=""
                 disabled={audioInputDevices.length === 0}
                 onClick={() => {
-                  const email = emailRef?.current || "";
+                  const email = emailRef?.current || null;
                   const fullName = fullNameRef?.current || "";
-                  const phone = phoneRef?.current || "";
+                  const phone = phoneRef?.current || null;
 
                   props.call(fullName, email, phone, props.slug);
                 }}

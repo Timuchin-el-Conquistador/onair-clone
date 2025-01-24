@@ -1,8 +1,7 @@
 
 
-import { retrieveCalls } from "@/lib/actions/call";
 
-import Session from ".";
+import CallSession from ".";
 
 import Layout from "@/components/layouts/private";
 
@@ -14,7 +13,7 @@ async function CallsPage() {
 
   return (
     <Layout page="calls">
-     <Session/>
+     <CallSession/>
      </Layout>
   );
 }

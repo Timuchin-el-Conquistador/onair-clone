@@ -1,7 +1,7 @@
 "use client";
 
-import GuestConferenceRoom from "@/components/room/guest";
-import UserConferenceRoom from "@/components/room/user";
+import GuestCall from "@/components/session/guest";
+import UserCall from "@/components/session/user";
 import CallEnded from "@/components/Presentational/call-ended";
 import ConnectingCall from "@/components/Presentational/connecting";
 import CallDeclined from "@/components/Presentational/call-declined";
@@ -12,18 +12,17 @@ import useSession from "@/hooks/useSession";
 import { socket } from "@/utils/socket";
 
 import { ExtendedLink } from "@/lib/types/links";
-import { Session } from "@/lib/types/call";
+import { Call } from "@/lib/types/call";
 
 type PageProps = {
   url: ExtendedLink;
   isAuth: boolean;
-  call: Session;
+  call: Call;
   slug: string;
   sessionId: string;
 };
 
-function ConferenceRoom(props: PageProps) {
-
+function ActiveCallSession(props: PageProps) {
   const [status, setStatus] = useState(props.call.callStatus);
 
   const { session, goOnline, goOffline } = useSession(props.url);
@@ -62,13 +61,12 @@ function ConferenceRoom(props: PageProps) {
     };
   }, [socket]);
 
-  const endCall = (callId: string, duration:number) => {
-    console.log(duration)
+  const endCall = (callId: string, duration: number) => {
+    console.log(duration);
     socket.emit("end", { callId, duration });
     setStatus("ended");
   };
-
-  console.log(status, props.isAuth);
+console.log(props.isAuth)
   if (status == "declined") {
     return <CallDeclined />;
   }
@@ -76,7 +74,7 @@ function ConferenceRoom(props: PageProps) {
   if (props.isAuth) {
     if (status == "live") {
       return (
-        <UserConferenceRoom
+        <UserCall
           slug={session.link.slug}
           sessionId={props.sessionId}
           endCall={endCall}
@@ -84,33 +82,56 @@ function ConferenceRoom(props: PageProps) {
       );
     } else {
       return (
+        <>
+        <div id="animated-background" className="">
+          <div className="waiting-room-bg"></div>
+          <div className="waiting-room-bg waiting-room-bg2"></div>
+          <div className="waiting-room-bg waiting-room-bg3"></div>
+        </div>
         <CallEnded
           isAuth={true}
           slug={props.slug}
           domain={process.env.NEXT_PUBLIC_FRONTEND_LOCAL_URL!}
         />
+        </>
       );
     }
   } else {
     if (status == "live") {
       return (
-        <GuestConferenceRoom
+        <GuestCall
           slug={session.link.slug}
           sessionId={props.sessionId}
         />
       );
     } else if (status == "waiting") {
-      return <ConnectingCall linkName={session.link.linkName} />;
+      return (
+        <>
+          <div id="animated-background" className="">
+            <div className="waiting-room-bg"></div>
+            <div className="waiting-room-bg waiting-room-bg2"></div>
+            <div className="waiting-room-bg waiting-room-bg3"></div>
+          </div>
+          <ConnectingCall linkName={session.link.linkName} />
+        </>
+      );
     } else if (status == "ended") {
       return (
-        <CallEnded
-          isAuth={false}
-          slug={props.slug}
-          domain={process.env.NEXT_PUBLIC_FRONTEND_LOCAL_URL!}
-        />
+        <>
+          <div id="animated-background" className="">
+            <div className="waiting-room-bg"></div>
+            <div className="waiting-room-bg waiting-room-bg2"></div>
+            <div className="waiting-room-bg waiting-room-bg3"></div>
+          </div>
+          <CallEnded
+            isAuth={false}
+            slug={props.slug}
+            domain={process.env.NEXT_PUBLIC_FRONTEND_LOCAL_URL!}
+          />
+        </>
       );
     }
   }
 }
 
-export default ConferenceRoom;
+export default ActiveCallSession;

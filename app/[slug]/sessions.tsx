@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 
 import { useState, useEffect, useRef } from "react";
 
-import "@/styles/calls/incomming-calls.scss";
+import "@/styles/calls/sessions.scss";
 import Table from "@/components/Tables/sessions";
 import Pulse from "@/components/Loaders/pulse";
 
@@ -46,7 +46,7 @@ type PageProps = {
   url: ExtendedLink;
 };
 
-function IncommingCalls(props: PageProps) {
+function Sessions(props: PageProps) {
   const router = useRouter();
   const { session, goOffline, goOnline } = useSession({ ...props.url });
 
@@ -347,4 +347,4 @@ function IncommingCalls(props: PageProps) {
   );
 }
 
-export default IncommingCalls;
+export default Sessions;

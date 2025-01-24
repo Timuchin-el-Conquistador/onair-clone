@@ -5,8 +5,9 @@ import { decrypt } from "./session";
 import { cache } from "react";
 
 export const verifySession = cache(async () => {
-  const cookie = (await cookies()).get("session")?.value;
-  const session = await decrypt(cookie);
+  const cookie = (await cookies()).get("session");
+  console.log(cookie?.value, 'cookie value')
+  const session = await decrypt(cookie?.value);
 
   if (!session?.userId) {
     return null;
@@ -20,3 +21,4 @@ export const verifySession = cache(async () => {
     subscriptionId:session.subscriptionId
   };
 });
+

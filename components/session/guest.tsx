@@ -1,18 +1,21 @@
 "use client";
 
-import "@/styles/calls/conference-room.scss";
+import "@/styles/calls/active-session.scss";
+
 import { useEffect, useRef, useState } from "react";
 
 import { socket } from "@/utils/socket";
 import Peer, { DataConnection } from "peerjs";
 import { formatHHMMSSTime } from "@/utils/timer";
 
+import Image from "next/image";
+
 type PageProps = {
   slug: string;
   sessionId: string;
 };
 
-function ConferenceRoom(props: PageProps) {
+function Session(props: PageProps) {
   const [isCallConEstablished, setCallConnectionState] = useState(false);
 
   const [time, setTime] = useState(0); // time in seconds
@@ -43,19 +46,14 @@ function ConferenceRoom(props: PageProps) {
     return () => clearInterval(interval); // cleanup on unmount
   }, []);
   useEffect(() => {
-    socket.emit("connect-socket", { callId: props.sessionId });
+    socket.emit("call-connect", { callId: props.sessionId });
   }, [socket]);
 
   useEffect(() => {
-    peerRef.current?.on("open", function (id) {
-      //handle the id
-      console.log("open peer", id);
-    });
+    peerRef.current?.on("open", function (id) {});
   }, []);
   useEffect(() => {
     function setConnection(data: { peerId: string; iceServers: any }) {
-      console.log("peering", data);
-
       connRef.current = peerRef.current!.connect(data.peerId);
 
       connRef.current.on("open", function () {
@@ -65,8 +63,8 @@ function ConferenceRoom(props: PageProps) {
         connRef.current!.send("Hello World");
       });
 
-      connRef.current.on("error", (err) => {
-        console.error("Connection error:", err);
+      connRef.current.on("close", () => {
+        setCallConnectionState(false);
       });
     }
 
@@ -92,7 +90,11 @@ function ConferenceRoom(props: PageProps) {
     const getLocalStream = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
+          audio: {
+            noiseSuppression: true, // Enable noise suppression
+            echoCancellation: true, // Optional: Reduce echo
+            autoGainControl: true,  // Optional: Normalize audio levels
+          },
         });
 
         setLocalStream(stream);
@@ -197,8 +199,8 @@ function ConferenceRoom(props: PageProps) {
         <div className="audio-call-container">
           <div className="audio-call-header">
             <div className="text-lg font-thin">{formatHHMMSSTime(time)}</div>{" "}
-            <img
-              src="https://gravatar.com/avatar/87924606b4131a8aceeeae8868531fbb9712aaa07a5d3a756b26ce0f5d6ca674?d=mp"
+            <Image
+              src="/logo.svg"
               alt="Profile Picture"
               width="80"
               height="80"
@@ -415,4 +417,4 @@ function ConferenceRoom(props: PageProps) {
   );
 }
 
-export default ConferenceRoom;
+export default Session;

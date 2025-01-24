@@ -5,7 +5,7 @@ import { verifySession } from "../dal";
 
 import { redirect } from "next/navigation";
 
-import { Session } from "../types/call";
+import { Call } from "../types/call";
 
 
 export async function retrieveActiveSessions(slug:string) {
@@ -17,7 +17,7 @@ export async function retrieveActiveSessions(slug:string) {
 
     const path = `api/v1/user/${session.email}/urls/${slug}/calls/sessions`;
 
-    const response:{sessions:Session[],message:string} = await fakeBackend.get(
+    const response:{sessions:Call[],message:string} = await fakeBackend.get(
       path,
     );
 

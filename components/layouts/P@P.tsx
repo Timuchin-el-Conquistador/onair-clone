@@ -9,7 +9,7 @@ import { useUserStore } from "@/providers/user";
 import { DataConnection, Peer } from "peerjs";
 import WebCallNotification from "../Notifications/call";
 
-import { type Session } from "@/lib/types/call";
+import { type Call } from "@/lib/types/call";
 
 import { useSessionStore } from "@/providers/session";
 
@@ -34,7 +34,7 @@ function P2PLayout({ children, userId }: { children: React.ReactNode,userId:stri
         socket.emit("web-connect", { userId });
 
     }
-    function call(data: { call: Session }) {
+    function call(data: { call: Call }) {
       console.log("incomming session", data);
 
       setIncommingCalls((calls) => [

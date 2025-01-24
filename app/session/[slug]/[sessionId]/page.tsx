@@ -1,34 +1,28 @@
-import ConferenceRoom from ".";
-import { retrieveSession } from "@/lib/actions/user";
+import ActiveCallSession from ".";
 
+import { verifySession } from "@/lib/dal";
 import {
   retrieveUrlAction as publicRetrieveUrlAction,
-  retrieveCallSession,
+  retrieveActiveCallSession,
 } from "@/lib/actions/public";
-import { retrieveUrlAction as privateRetrieveUrlAction } from "@/lib/actions/link";
 
-async function ConferenceRoomPage(props: {
+async function ActiveCallSessionPage(props: {
   params: { slug: string; sessionId: string };
 }) {
-  const session = await retrieveSession();
-
+  const session = await verifySession();
+console.log(session, 'current session')
   const slug = props.params.slug;
 
-  let response;
-  if (session) {
-    response = await privateRetrieveUrlAction(slug);
-  } else {
-    response = await publicRetrieveUrlAction(slug);
-  }
+  const urlResponse = await publicRetrieveUrlAction(slug);
+  const url =
+    urlResponse instanceof Error || urlResponse == null ? null : urlResponse;
 
-  const url = response instanceof Error || response == null ? null : response;
-
-  response = await retrieveCallSession(props.params.sessionId);
-
-  const call = response instanceof Error || response == null ? null : response;
+  const callResponse = await retrieveActiveCallSession(props.params.sessionId);
+  const call =
+    callResponse instanceof Error || callResponse == null ? null : callResponse;
 
   return (
-    <ConferenceRoom
+    <ActiveCallSession
       url={url!}
       isAuth={session != null}
       call={call!}
@@ -38,4 +32,4 @@ async function ConferenceRoomPage(props: {
   );
 }
 
-export default ConferenceRoomPage;
+export default ActiveCallSessionPage;

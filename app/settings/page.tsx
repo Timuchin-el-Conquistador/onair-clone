@@ -9,15 +9,16 @@ function SettingsPage(props: { params: { slug: string } }) {
     <Layout page={`settings`}>
         <Settings initialSettings={{
             user:{
-              name:"Cengiz Hamidov",
+              fullName:"Cengiz Hamidov",
               email:"cengizhemidov@gmail.com",
-              subscription:'Basic Plan (trial)'
+             // subscription:'Basic Plan (trial)'
             },
             monthlyMinutesCapacity:1000,
             monthlyMinutesConsumed:0,
             browserNotifications:true
-          }
-        }/>
+          }}
+     
+        />
     </Layout>
   );
 }

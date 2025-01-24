@@ -35,7 +35,7 @@ export async function subscribe(
           customer: {
             email: session.email,
             name: session.fullName,
-            phone: session.phoneNumber,
+            //phone: session.phoneNumber,
           },
           paymentMethod: paymentMethod?.id,
           user_id: session.userId,

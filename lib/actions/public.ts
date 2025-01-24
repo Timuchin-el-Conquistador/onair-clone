@@ -1,6 +1,6 @@
 
 import { fakeBackend } from "../axios";
-import { Session } from "../types/call";
+import { Call } from "../types/call";
 
 import { type ExtendedLink } from "../types/links";
 
@@ -20,13 +20,13 @@ export async function retrieveUrlAction(slug:string) {
   }
   }
   
-  export async function retrieveCallSession(callId:string) {
+  export async function retrieveActiveCallSession(callId:string) {
    
      try {   
    
 
        const path = `api/v1/public/session/${callId}`;
-       const response: { message: string; session: Session } = await fakeBackend.get(
+       const response: { message: string; session: Call } = await fakeBackend.get(
          path
        );
        return response.session;

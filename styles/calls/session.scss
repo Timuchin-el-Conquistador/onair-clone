@@ -1,0 +1,30 @@
+
+.details-table {
+    width: 100%;
+    max-width: 700px;
+}
+
+.details-table td {
+    padding: 10px;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.details-table td:first-child {
+    width: 150px;
+    min-width: 100px;
+    max-width: 120px;
+    vertical-align: top;
+}
+
+.details-table td:last-child {
+    vertical-align: top;
+}
+
+.details-table .divider {
+    border-top: 1px dotted #ddd;
+}
+
+
+
+

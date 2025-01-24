@@ -7,6 +7,7 @@ import "@/styles/settings.scss";
 import { type Settings as ISettings } from "@/lib/types/settings";
 import { useState } from "react";
 import { type User } from "@/lib/types/user";
+import Link from "next/link";
 
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
@@ -32,7 +33,19 @@ const SlDialog = dynamic(
 );
 
 type PageProps = {
-  initialSettings: ISettings;
+  initialSettings: {
+    user:{
+      fullName:string,
+      email:string,
+
+    },
+    browserNotifications:boolean,
+    monthlyMinutesCapacity:number,
+    monthlyMinutesConsumed:number
+
+  };
+
+
 };
 
 function Settings(props: PageProps) {
@@ -172,7 +185,7 @@ function Settings(props: PageProps) {
           </div>{" "}
           <div>
             <dt className="whitespace-nowrap">
-              <a href="/users/sign_out">Sign out</a> from your account
+              <Link href="/users/sign_out">Sign out</Link> from your account
             </dt>
           </div>
         </dl>

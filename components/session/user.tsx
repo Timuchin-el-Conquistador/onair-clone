@@ -1,21 +1,25 @@
 "use client";
 
-import "@/styles/calls/conference-room.scss";
+import "@/styles/calls/active-session.scss";
+
 import { useEffect, useRef, useState } from "react";
 
 import { socket } from "@/utils/socket";
 import Peer, { DataConnection } from "peerjs";
 import { formatHHMMSSTime } from "@/utils/timer";
 
+import Image from "next/image";
+
 type PageProps = {
   slug: string;
   sessionId: string;
-  endCall: (callId: string, duration:number) => void;
+  endCall: (callId: string, duration: number) => void;
 };
 
-function ConferenceRoom(props: PageProps) {
+function Session(props: PageProps) {
   const [isP2PConEstablished, setP2PConnectionState] = useState(false);
   const [isCallConEstablished, setCallConnectionState] = useState(false);
+
   const [time, setTime] = useState(0); // time in seconds
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
@@ -27,14 +31,13 @@ function ConferenceRoom(props: PageProps) {
     null
   );
 
+  const [boxShadow, setBoxShadow] = useState("none"); // Initial box-shadow
+
   const peerRef = useRef<Peer | null>(null);
   const connRef = useRef<DataConnection | null>(null);
-
   const localAudioRef = useRef<HTMLAudioElement | null>(null);
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
-
   const combinedStreamRef = useRef<MediaStream | null>(null);
-
   const callAudioRecordBlobRef = useRef<Blob | null>(null);
 
   const peerId = useRef<string | null>(null);
@@ -53,44 +56,48 @@ function ConferenceRoom(props: PageProps) {
     return () => clearInterval(interval); // cleanup on unmount
   }, []);
   useEffect(() => {
-    if (isP2PConEstablished) {
-      return;
-    }
-    const interval = setInterval(() => {
-      if (isP2PConEstablished) {
-        alert("clearing");
-        return clearInterval(interval);
-      }
-      if (peerId.current) {
-        console.log("open peer", peerId.current);
-        socket.emit("offer", {
-          callId: props.sessionId,
-          peerId: peerId.current,
-        });
-        return clearInterval(interval);
-      }
-    }, 5000);
+    const interval = intervalFn();
 
     return () => clearInterval(interval); // cleanup on unmount
   }, []);
 
+  const intervalFn = () => {
+    const interval = setInterval(() => {
+      if(isP2PConEstablished){
+        clearInterval(interval);
+        return 
+      }
+      if (peerId.current) {
+        socket.emit("offer", {
+          callId: props.sessionId,
+          peerId: peerId.current,
+        });
+      }
+    }, 5000);
+
+    return interval;
+  };
+
   useEffect(() => {
     peerRef.current?.on("open", function (id) {
-      //handle the id
       peerId.current = id;
     });
 
     peerRef.current?.on("connection", (connection) => {
-      console.log(connection, "connect");
       setP2PConnectionState(true);
       peerRef.current!.connect(connection.peer);
       connRef.current = connection;
 
       connRef.current.on("open", function () {
-        connRef.current!.on("data", function (data) {
-          console.log("Received", data);
-        });
-        connRef.current!.send("Hello World");
+        connRef.current!.on("data", function (data) {});
+        //    connRef.current!.send("Hello World");
+      });
+
+      // Handle disconnection of the remote peer
+      connRef.current.on("close", () => {
+        setP2PConnectionState(false);
+        setCallConnectionState(false);
+        intervalFn();
       });
 
       const call = peerRef.current!.call(
@@ -99,45 +106,21 @@ function ConferenceRoom(props: PageProps) {
       );
 
       call.on("stream", (stream) => {
-        console.log("STREAMMMMMM");
         setCallConnectionState(true);
         setRemoteStream(stream); // Set the remote stream
+
         if (remoteAudioRef.current) {
           remoteAudioRef.current.srcObject = stream;
         }
+        startAudioProcessing(stream)
       });
     });
   }, []);
-  /*useEffect(() => {
-    function setConnection(data: {
-      peerId: string;
-      slug: string;
-      iceServers: any;
-    }) {
-      console.log("peering", data);
-
-      connRef.current = peerRef.current.connect(data.peerId);
-
-      connRef.current.on("open", function () {
-        connRef.current!.on("data", function (data) {
-          console.log("Received", data);
-        });
-        connRef.current!.send("Hello World");
-      });
-    }
-
-    socket.on("offer-connection", setConnection);
-
-    return () => {
-      socket.off("offer-connection", setConnection);
-    };
-  }, [socket]);*/
 
   const toggleMute = () => {
     if (localStream) {
       const audioTrack = localStream.getAudioTracks()[0];
       if (audioTrack) {
-        console.log(isMuted, "enabled");
         audioTrack.enabled = isMuted; // Toggle mute state
         setIsMuted(!isMuted);
       }
@@ -148,7 +131,11 @@ function ConferenceRoom(props: PageProps) {
     const getLocalStream = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
+          audio: {
+            noiseSuppression: true, // Enable noise suppression
+            echoCancellation: true, // Optional: Reduce echo
+            autoGainControl: true,  // Optional: Normalize audio levels
+          },
         });
         setLocalStream(stream);
 
@@ -160,24 +147,11 @@ function ConferenceRoom(props: PageProps) {
       }
     };
 
-    // Simulating a Peer.js connection (Replace this with actual Peer.js logic)
-    /* const setupRemoteStream = () => {
-      peerRef.current.on("call", (call) => {
-        call.answer(); // Answer the call
-        call.on("stream", (stream) => {
-          setRemoteStream(stream); // Set the remote stream
-          if (remoteAudioRef.current) {
-            remoteAudioRef.current.srcObject = stream;
-          }
-        });
-      });
-    };*/
-
     getLocalStream();
-    //setupRemoteStream();
 
     return () => {
       peerRef.current?.disconnect();
+      
     };
   }, []);
 
@@ -232,10 +206,57 @@ function ConferenceRoom(props: PageProps) {
     props.endCall(props.sessionId, time);
   };
 
+
+
+
+
+
+
+
+
+  async function startAudioProcessing(stream:MediaStream) {
+    try {
+    
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const analyser = audioContext.createAnalyser();
+      const microphone = audioContext.createMediaStreamSource(stream);
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      analyser.fftSize = 512;
+      microphone.connect(analyser);
+
+       const calculateVolume = () =>  {
+        analyser.getByteFrequencyData(dataArray);
+        const volume = dataArray.reduce((sum, value) => sum + value) / dataArray.length;
+
+        // Scale volume to a shadow intensity (adjust these values as needed)
+        const shadowIntensity = Math.min(Math.max((volume ) ** 1.5, 5), 50);
+
+        setBoxShadow(
+          `0 0 ${shadowIntensity}px ${shadowIntensity / 2}px rgba(0, 150, 255, 0.8)`
+        );
+
+        requestAnimationFrame(calculateVolume);
+      }
+
+      calculateVolume();
+    } catch (err) {
+      console.error("Error accessing microphone:", err);
+    }
+  }
+
+
+
+
   return (
     <div id="conference">
       <div id="active-audio">
-        <audio autoPlay data-uid="visitor-22275" ref={localAudioRef}></audio>
+        <audio
+          autoPlay
+          data-uid="visitor-22275"
+          ref={localAudioRef}
+          muted
+        ></audio>
         <audio autoPlay data-uid="visitor-22275" ref={remoteAudioRef}></audio>
       </div>{" "}
       <div id="main-video">
@@ -295,12 +316,12 @@ function ConferenceRoom(props: PageProps) {
         <div className="audio-call-container">
           <div className="audio-call-header">
             <div className="text-lg font-thin">{formatHHMMSSTime(time)}</div>{" "}
-            <img
-              src="https://gravatar.com/avatar/87924606b4131a8aceeeae8868531fbb9712aaa07a5d3a756b26ce0f5d6ca674?d=mp"
+            <Image
+              src="/avatar.png"
               alt="Profile Picture"
               width="80"
               height="80"
-              style={{ boxShadow: "none" }}
+              style={{ boxShadow:boxShadow }}
             />{" "}
             <div className="text-2xl font-normal flex items-center">
               <span className="mr-2">🇦🇿</span>
@@ -513,4 +534,4 @@ function ConferenceRoom(props: PageProps) {
   );
 }
 
-export default ConferenceRoom;
+export default Session;
