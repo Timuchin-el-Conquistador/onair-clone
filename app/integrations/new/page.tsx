@@ -16,7 +16,7 @@ function NewIntegration() {
             Add Integration
           </a>
         </div>{" "}
-        <div className="integ-card">
+       {/*} <div className="integ-card">
           <img src="/external-logos/google-calendar-icon.svg" />{" "}
           <h5>Google Calendar</h5>{" "}
           <p>Read availability from Google Calendar.</p>{" "}
@@ -48,7 +48,7 @@ function NewIntegration() {
           >
             Add Integration
           </a>
-        </div>
+        </div>*/}
       </div>
     </Layout>
   );

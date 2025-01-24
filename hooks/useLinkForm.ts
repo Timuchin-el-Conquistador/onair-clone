@@ -17,7 +17,7 @@ type State = {
 type Action =
   | { type: "SLUG"; payload: string }
   | { type: "NAME"; payload: string }
-  | { type: "REMOVE_INTEGRATION"; payload: string }
+  | { type: "REMOVE_DEVICE"; payload: string }
   | { type: "AVAILABILITY"; payload: string }
   | { type: "SLUGSTATUSCHANGE"; payload: "pending" | "fulfilled" | "taken" }
   | {
@@ -45,12 +45,12 @@ const formReducer = (state: State, action: Action): State => {
         },
       };
 
-    case "REMOVE_INTEGRATION":
+    case "REMOVE_DEVICE":
       return {
         ...state,
         link: {
           ...state.link,
-          integrations: state.link.integrations.filter(
+          connectedDevices: state.link.connectedDevices.filter(
             (el) => el._id !== action.payload
           ),
         },
@@ -109,8 +109,8 @@ const useLinkForm = (initialLink: Omit<Link, "timeLength">) => {
     setForm({ type: "NAME", payload: linkName });
   };
 
-  const removeIntegration = (integrationId: string) => {
-    setForm({ type: "REMOVE_INTEGRATION", payload: integrationId });
+  const removeDevice = (deviceId: string) => {
+    setForm({ type: "REMOVE_DEVICE", payload: deviceId });
   };
 
   const changeAvailability = (availability: string) => {
@@ -136,7 +136,7 @@ const useLinkForm = (initialLink: Omit<Link, "timeLength">) => {
     form,
     handleSlugChange,
     handleLinkNameChange,
-    removeIntegration,
+    removeDevice,
     changeAvailability,
     visitingFormCollectionStrategyChange,
   };

@@ -17,13 +17,13 @@ const SlTooltip = dynamic(
 
 type CardPageLinkType = Omit<
   ExtendedLink,
-  "callStrategy" | "settings" | "_id" | "connectedDevices"
+  "callStrategy" | "settings" | "_id" 
 >;
 
 type PageProps = CardPageLinkType 
 
 function Card(props: PageProps) {
-  const [menuVisibilityState, setMenuVisibilityState] = useState(false);
+  const [isDropdownVisible, setDropDownVisibility] = useState(false);
 
   const elementRef = useRef<HTMLDivElement | null>(null);
 
@@ -32,7 +32,7 @@ function Card(props: PageProps) {
       elementRef.current &&
       !elementRef.current.contains(event.target as Node)
     ) {
-      setMenuVisibilityState(false); // Close or perform an action
+      setDropDownVisibility(false); // Close or perform an action
     }
   };
 
@@ -87,17 +87,17 @@ function Card(props: PageProps) {
       <div className="col-span-2">
         <div className="mt-6">
           <div className="text-sm text-gray-400">Minutes</div>{" "}
-          <div className="text-sm">{props.timeLength} minute</div>
+          <div className="text-sm">{Math.round(props.totalCallDuration/60)} minute</div>
         </div>{" "}
         <div className="mt-6">
           <div className="text-sm text-gray-400">Integrations</div>{" "}
-          <div className="text-sm">{props.integrations.length} integration</div>
+          <div className="text-sm">{props.connectedDevices.length} integration</div>
         </div>
       </div>{" "}
       <div className="index-card-footer">
         <button
           className="index-card-footer-button"
-          onClick={() => setMenuVisibilityState((state) => !state)}
+          onClick={() => setDropDownVisibility((state) => !state)}
         >
           <svg
             width="16"
@@ -130,7 +130,7 @@ function Card(props: PageProps) {
           </svg>{" "}
           <div className="inline-block">Open</div>
         </Link>{" "}
-        {menuVisibilityState && (
+        {isDropdownVisible && (
           <div
             ref={elementRef}
             role="menu"

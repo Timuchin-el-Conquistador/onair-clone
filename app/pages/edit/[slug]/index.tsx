@@ -4,14 +4,27 @@ import dynamic from "next/dynamic";
 
 import "@/styles/pages.new.scss";
 import ScheduleComponent from "@/components/availability";
+import ConnectedDevice from "@/components/Integrations/connected-device";
 
 import useLinkForm from "@/hooks/useLinkForm";
 
-import { type Link } from "@/lib/types/links";
-import Integration from "@/components/integration";
+import { ExtendedLink, type Link as ILink } from "@/lib/types/links";
+import { type Integration } from "@/lib/types/user";
+import { type Device } from "@/lib/types/device";
+import { Settings } from "@/lib/types/links";
+
+import { Fragment, useState } from "react";
+import Link from "next/link";
 
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
+  {
+    loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
+const SlCheckbox = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/checkbox/index.js"),
   {
     loading: () => <>Loading...</>,
     ssr: false,
@@ -25,13 +38,34 @@ const SlTooltip = dynamic(
   }
 );
 
+const SlDialog = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),
+  {
+    loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
+
 type PageProps = {
-  link: Omit<Link, "timeLength">;
+  link: ILink;
+
+  devices: Device[];
+  hasConnectedDevices: boolean;
+  hasDevices: boolean;
+  /* updateLink: (
+    slug: string,
+    linkName: string,
+    callStrategy: string | null,
+    connectedDevices: string[],
+    integrations: string[],
+    availability: string,
+    settings: Settings
+  ) => Promise<string | Error>;*/
 };
-
 function EditLink(props: PageProps) {
-  const { form, removeIntegration, handleSlugChange,changeAvailability } = useLinkForm(props.link);
-
+  const { form, removeDevice, handleSlugChange, changeAvailability } =
+    useLinkForm(props.link);
+  const [isDevicesModalOpen, setDevicesModalState] = useState(false);
   return (
     <div id="main" className="p-6 mb-20">
       <div className="p-6 bg-white">
@@ -147,31 +181,63 @@ function EditLink(props: PageProps) {
               </p>
             </div>{" "}
             <div className="lg:w-1/2">
-              {form.link.integrations.map((el) => (
-                <Integration
-                  integration={el}
-                  removeIntegration={removeIntegration}
-                />
+              {form.link.connectedDevices.map((el) => (
+                <Fragment key={el._id}>
+                  <ConnectedDevice
+                    device={el}
+                    removeDeviceFromLink={removeDevice}
+                  />
+                </Fragment>
               ))}
-              <a className="text-blue-700 text-sm cursor-pointer mt-2 block">
-                + Add Device
-              </a>{" "}
-              <div className="flex items-start mt-7 text-sm">
-                <input
-                  id="call-all-devices"
-                  value="all"
-                  name="notify-all"
-                  type="radio"
-                  className="h-4 w-4 cursor-pointer border-gray-300"
-                  defaultChecked={true}
-                />{" "}
-                <label
-                  htmlFor="call-all-devices"
-                  className="ml-3 block leading-6 cursor-pointer text-gray-900 -mt-1"
+
+              {!props.hasDevices ? (
+                <div className="lg:w-full">
+                  {" "}
+                  <div
+                    role="alert"
+                    className="mt-2 md:mt-auto bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-2 rounded-lg"
+                  >
+                    <p className="font-medium">Connect your phone</p>{" "}
+                    <p className="text-xs mt-1">
+                      You did not connect a phone to receive calls when someone
+                      uses this link.
+                    </p>{" "}
+                    <Link
+                      href="/integrations/new/mobile"
+                      className="mt-2 inline-block text-xs font-semibold text-yellow-800 hover:text-yellow-600 hover:underline"
+                    >
+                      + Add Device
+                    </Link>
+                  </div>{" "}
+                </div>
+              ) : (
+                <SlButton
+                  className="text-blue-700 text-sm cursor-pointer mt-2 block"
+                  onClick={() => {
+                    setDevicesModalState(true);
+                  }}
                 >
-                  Call all devices at once
-                </label>
-              </div>{" "}
+                  + Add Device
+                </SlButton>
+              )}
+              {props.hasConnectedDevices && (
+                <div className="flex items-start mt-7 text-sm">
+                  <input
+                    id="call-all-devices"
+                    value="all"
+                    name="notify-all"
+                    type="radio"
+                    className="h-4 w-4 cursor-pointer border-gray-300"
+                    defaultChecked={true}
+                  />{" "}
+                  <label
+                    htmlFor="call-all-devices"
+                    className="ml-3 block leading-6 cursor-pointer text-gray-900 -mt-1"
+                  >
+                    Call all devices at once
+                  </label>
+                </div>
+              )}
               <div className="flex items-start mt-2 text-sm w-full">
                 {/*}    <input
                     id="notifications-strategy"
@@ -215,7 +281,10 @@ function EditLink(props: PageProps) {
             </div>
           </div>
           <hr />
-          <ScheduleComponent availability={form.link.availability} changeAvailability={changeAvailability}/>
+          <ScheduleComponent
+            availability={form.link.availability}
+            changeAvailability={changeAvailability}
+          />
           <hr />{" "}
           {/*   <label className="font-medium text-md">Advanced Settings</label>
           <label className="advanced-options-label">
@@ -277,6 +346,68 @@ function EditLink(props: PageProps) {
           </div>
         </div>
       </div>
+
+      <SlDialog
+        label="Devices"
+        className="with-header"
+        style={{ width: "660px" }}
+        open={isDevicesModalOpen}
+        onSlAfterHide={() => {
+          setDevicesModalState(false);
+        }}
+      >
+        <p className="text-gray-400 text-sm">Select a maximum of 8 devices</p>{" "}
+        <div className="bg-white rounded-md border border-gray-200">
+          <div className="divide-y divide-gray-200 max-h-[40vh] overflow-scroll">
+            <div className="flex flex-row pl-3 py-3 hover:bg-stone-100 text-sm h-16 cursor-pointer">
+              <SlCheckbox
+                size="small"
+                form=""
+                data-optional=""
+                data-valid=""
+                className="mx-2 small-checkbox"
+              ></SlCheckbox>{" "}
+              <div className="flex flex-col w-full truncate ml-1">
+                <p className="text-gray-900 truncate font-medium">
+                  Cingiz Hamidov
+                </p>{" "}
+                <p className="text-gray-500 text-xs truncate items-center">
+                  Mobile
+                  <span className="ml-0.5">(Cingiz's Android)</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>{" "}
+        <div className="mt-2 text-sm">
+          <Link href="/integrations" target="_blank" className="text-blue-500">
+            + Add Device
+          </Link>
+        </div>{" "}
+        <div className="flex justify-between mt-16">
+          <SlButton
+            slot="footer"
+            variant="default"
+            size="medium"
+            data-optional=""
+            data-valid=""
+            onClick={() => {
+              setDevicesModalState(false);
+            }}
+          >
+            Cancel
+          </SlButton>{" "}
+          <SlButton
+            slot="footer"
+            variant="primary"
+            size="medium"
+            data-optional=""
+            data-valid=""
+          >
+            Save
+          </SlButton>
+        </div>
+      </SlDialog>
     </div>
   );
 }

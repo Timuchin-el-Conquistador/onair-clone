@@ -10,7 +10,7 @@ async function ActiveCallSessionPage(props: {
   params: { slug: string; sessionId: string };
 }) {
   const session = await verifySession();
-console.log(session, 'current session')
+
   const slug = props.params.slug;
 
   const urlResponse = await publicRetrieveUrlAction(slug);

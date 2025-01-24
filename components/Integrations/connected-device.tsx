@@ -1,7 +1,9 @@
 
 import dynamic from "next/dynamic"
 
-import { type Integration } from "@/lib/types/links";
+import { type Device } from "@/lib/types/device";
+
+import Image from "next/image";
 
 const SlTooltip = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/tooltip/index.js"),
@@ -13,12 +15,12 @@ const SlTooltip = dynamic(
 
 
 type PageProps = {
-    removeIntegration:(integrationId:string) => void,
-    integration:Integration
+  removeDeviceFromLink:(deviceId:string) => void,
+    device:Device
 }
 
 
-function Integration(props:PageProps){
+function ConnectedDevice(props:PageProps){
 
 
     return(
@@ -47,15 +49,15 @@ function Integration(props:PageProps){
           style={{ maxWidth: "200px" }}
         >
           <div className="text-sm font-medium truncate flex items-center">
-            <img src="/external-logos/mobile.svg" width="25px" />{" "}
-            <span className="truncate ml-4">Cingiz's Android</span>
+            <Image src="/external-logos/mobile.svg" width={25} height={25} alt='device integration' />{" "}
+            <span className="truncate ml-4">{props.device.description}</span>
           </div>
         </SlTooltip>{" "}
         <button
           type="button"
           aria-label="Close"
           className="ml-auto text-gray-500 rounded-full p-1 hover:bg-gray-50 inline-flex items-center justify-center h-8 w-8"
-          onClick={() => props.removeIntegration(props.integration._id)}
+          onClick={() => props.removeDeviceFromLink(props.device._id)}
         >
           <svg
             width="24"
@@ -78,4 +80,4 @@ function Integration(props:PageProps){
 
 
 
-export default Integration
+export default ConnectedDevice

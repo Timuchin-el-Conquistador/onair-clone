@@ -1,10 +1,5 @@
 import { type Device } from "./device";
-
-export type Integration = {
-  _id: string;
-  name: string;
-  type: string;
-};
+import { type Integration } from "./user";
 
 export interface Link {
   _id?: string;
@@ -13,7 +8,7 @@ export interface Link {
   callStrategy: string | null;
   availability: string;
   linkName: string;
-  integrations: Integration[];
+  //integrations: Integration;
   settings: Settings;
 
 }
@@ -27,6 +22,6 @@ export interface Settings {
 
 export interface ExtendedLink
   extends Link{
-  timeLength: number;
+    totalCallDuration: number;
   hasConnectedDevice: boolean;
 }

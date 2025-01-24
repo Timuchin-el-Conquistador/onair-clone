@@ -1,3 +1,5 @@
+import { Device } from "./device";
+
 export interface User {
   fullName: string;
   email: string;
@@ -20,3 +22,8 @@ export interface SessionUser {
   [key: string]: unknown; // Allows additional string keys
 
 }
+
+
+export interface  Integration  {
+  devices:Device[]
+};

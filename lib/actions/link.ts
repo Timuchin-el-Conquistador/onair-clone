@@ -6,8 +6,8 @@ import { redirect } from "next/navigation";
 
 import { fakeBackend } from "../axios";
 
-import { type ExtendedLink, type Integration, type Settings } from "../types/links";
-import { type Device } from "../types/device";
+import { type ExtendedLink, type Settings } from "../types/links";
+
 
 export async function createUrlAction(
   slug: string,
@@ -70,38 +70,3 @@ export async function retrieveUrlAction(slug:string) {
 }
 
 
-
-export async function retrieveIntegrations() {
-  try {
-    const session = await verifySession();
-
-    if (!session) return redirect("/users/sign_in");
-
-    const path = `api/v1/user/${session.email}/integrations/`;
-    const response: { message: string; integrations: Integration[] } = await fakeBackend.get(
-      path
-    );
-
-    return response.integrations;
-  } catch (error) {
-    return error instanceof Error ? error : new Error(String(error));
-  }
-}
-
-
-export async function retrieveConnectedDevices() {
-  try {
-    const session = await verifySession();
-
-    if (!session) return redirect("/users/sign_in");
-
-    const path = `api/v1/user/${session.email}/devices/`;
-    const response: { message: string; connectedDevices: Device[] } = await fakeBackend.get(
-      path
-    );
-
-    return response.connectedDevices;
-  } catch (error) {
-    return error instanceof Error ? error : new Error(String(error));
-  }
-}

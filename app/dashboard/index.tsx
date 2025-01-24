@@ -1,15 +1,15 @@
 "use client";
 
-import Card from "@/components/cards";
+import Card from "@/components/cards/link";
 
 import "@/styles/dashboard.scss";
 
 import { type  ExtendedLink } from "@/lib/types/links";
 
 
-type  DashboardPageLinkType = Omit<ExtendedLink, "callStrategy" | "settings">
+
 type PageProps = {
-  links: DashboardPageLinkType[];
+  links: ExtendedLink[];
 
 };
 
@@ -23,8 +23,8 @@ function Dashboard(props: PageProps) {
           slug={link.slug}
           availability={link.availability}
           linkName={link.linkName}
-          integrations={link.integrations}
-          timeLength={link.timeLength}
+          connectedDevices={link.connectedDevices}
+          totalCallDuration={link.totalCallDuration}
           hasConnectedDevice={link.connectedDevices.length>0}
 
         />

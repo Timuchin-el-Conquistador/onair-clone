@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 
 import Layout from "@/components/layouts/private";
 import DailyAvailability from "@/components/availability";
-import Integration from "@/components/integration";
+import ConnectedDevice from "@/components/Integrations/connected-device";
 import Danger from "@/components/Alerts/danger";
 import Success from "@/components/Alerts/success";
 import Spinner from "@/components/Loaders/spinner";
@@ -21,7 +21,7 @@ import {
 import { type Device } from "@/lib/types/device";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { socket } from "@/utils/socket";
 
@@ -72,7 +72,7 @@ const SlIcon = dynamic(
 type PageProps = {
   integrations: IIntegration[];
   connectedDevices: Device[];
-  hasConnectedDevices: boolean;
+  hasDevices: boolean;
   createUrlAction: (
     slug: string,
     linkName: string,
@@ -89,7 +89,7 @@ function NewLink(props: PageProps) {
     form,
     handleSlugChange,
     handleLinkNameChange,
-    removeIntegration,
+    removeDevice,
     changeAvailability,
     visitingFormCollectionStrategyChange,
   } = useLinkForm({
@@ -252,13 +252,16 @@ function NewLink(props: PageProps) {
                 </p>
               </div>{" "}
               <div className="lg:w-1/2">
-                {/*form.link.integrations.map((el) => (
-                  <Integration
-                    integration={el}
-                    removeIntegration={removeIntegration}
+                {form.link.connectedDevices.map((el) => (
+                
+                  <Fragment key={el._id}>
+                  <ConnectedDevice
+                    device={el}
+                    removeDeviceFromLink={removeDevice}
                   />
-                ))*/}
-                {!props.hasConnectedDevices ? (
+                  </Fragment>
+                ))}
+                {!props.hasDevices ? (
                   <div className="lg:w-full">
                     {" "}
                     <div
@@ -286,7 +289,7 @@ function NewLink(props: PageProps) {
                     + Add Device
                   </Link>
                 )}
-                {props.hasConnectedDevices && (
+                {form.link.connectedDevices.length> 0 && (
                   <div className="flex items-start mt-7 text-sm">
                     <input
                       id="call-all-devices"
