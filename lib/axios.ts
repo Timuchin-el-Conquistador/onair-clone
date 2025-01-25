@@ -137,8 +137,10 @@ class FakeBackend {
 
 const url =
   typeof window !== "undefined"
-    ? process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL || "http://localhost:4000"
-    : process.env.PRODUCTION_BACKEND_URL || "http://localhost:4000";
+    ? "https://" + process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL ||
+      "http://localhost:4000"
+    : "https://" + process.env.PRODUCTION_BACKEND_URL ||
+      "http://localhost:4000";
 
 const fakeBackend = FakeBackend.getInstance(url);
 //const axiosInstance = backend.getAxiosInstance();

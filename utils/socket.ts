@@ -5,8 +5,8 @@ const URL =
   process.env.NODE_ENV === "production"
     ? `${
      typeof window == "undefined"
-          ? process.env.PRODUCTION_BACKEND_URL
-          : process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
+          ? 'https://' + process.env.PRODUCTION_BACKEND_URL
+          : 'https://' +process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
       }`
     : "http://localhost:8877";
 
