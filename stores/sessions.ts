@@ -1,10 +1,10 @@
 import { verifySession } from "@/lib/dal";
-import { Session } from "@/lib/types/call";
+import { Call } from "@/lib/types/call";
 import { createStore } from "zustand/vanilla";
 import { fakeBackend } from "@/lib/axios";
 
 export type SessionState = {
-  sessions: Session[];
+  sessions: Call[];
   joinSession: string | null;
   loaded: boolean;
   error: Error | null;
@@ -13,7 +13,7 @@ export type SessionState = {
 
 export type SessionActions = {
   retrieveActiveSessions: (slug: string, router: any) => void;
-  pushSession: (session: Session, router:any) => void;
+  pushSession: (session: Call, router:any) => void;
   removeSession: (callId: string) => void;
 };
 
@@ -42,7 +42,7 @@ export const createSessionStore = (
 
         const path = `api/v1/user/${session.email}/urls/${slug}/calls/sessions`;
 
-        const response: { sessions: Session[]; message: string } =
+        const response: { sessions: Call[]; message: string } =
           await fakeBackend.get(path);
         set((prevState) => ({
           ...prevState,
@@ -58,7 +58,7 @@ export const createSessionStore = (
         }));
       }
     },
-    pushSession:  async (activeSession: Session, router) => {
+    pushSession:  async (activeSession: Call, router) => {
       try {
         const session = await verifySession();
 

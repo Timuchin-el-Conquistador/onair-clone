@@ -115,9 +115,9 @@ function IntegratedDevice(props:PageProps) {
               height="16"
               fill="none"
               stroke="#222"
-              stroke-width="1"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               id=""
               style={{ display: "inline-block" }}
             >

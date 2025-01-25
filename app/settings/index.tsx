@@ -12,14 +12,14 @@ import Link from "next/link";
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
   {
-   // loading: () => <>Loading...</>,
+    // loading: () => <>Loading...</>,
     ssr: false,
   }
 );
 const SlSwitch = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/switch/index.js"),
   {
-  //  loading: () => <>Loading...</>,
+    //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
@@ -27,34 +27,33 @@ const SlDialog = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
   () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),
   {
-  //  loading: () => <p>Loading...</p>,
+    //  loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
 
 type PageProps = {
-  initialSettings: {
-    user:{
-      fullName:string,
-      email:string,
-
-    },
-    browserNotifications:boolean,
-    monthlyMinutesCapacity:number,
-    monthlyMinutesConsumed:number
-
+  user: {
+    fullName: string;
+    email: string;
   };
-
-
+  browserNotifications: boolean;
+  monthlyMinutesCapacity: number;
+  monthlyMinutesConsumed: number;
 };
 
 function Settings(props: PageProps) {
-  const [user, updateUser] = useState<{fullName:string,email:string}>({
-    fullName: props.initialSettings.user.fullName,
-    email: props.initialSettings.user.email,
+  const [user, updateUser] = useState<{
+    firstName: string;
+    lastName: string;
+    email: string;
+  }>({
+    firstName: props.user.fullName.split(" ")[0],
+    lastName: props.user.fullName.split(" ")[1],
+    email: props.user.email,
   });
   const [notificationsState, setNotificationsState] = useState<boolean>(
-    props.initialSettings.browserNotifications
+    props.browserNotifications
   );
   const [editableFields, setEditableFields] = useState<string[]>([]);
   return (
@@ -71,8 +70,17 @@ function Settings(props: PageProps) {
                     name="first_name"
                     type="text"
                     placeholder="First Name"
-                    value={user.fullName.split(" ")[0]}
+                    value={user.firstName}
                     className="p-1.5 rounded w-full block"
+                    onChange={(event) => {
+                      const firstName = (
+                        event.target as HTMLInputElement
+                      ).value;
+                      updateUser((prevState) => ({
+                        ...prevState,
+                        firstName,
+                      }));
+                    }}
                   />
                 </div>{" "}
                 <div className="sm:ml-3 ml-0 sm:mt-0 mt-3 sm:w-80 w-full">
@@ -81,8 +89,17 @@ function Settings(props: PageProps) {
                     name="last_name"
                     type="text"
                     placeholder="Last Name"
-                    value={user.fullName.split(" ")[1]}
+                    value={user.lastName}
                     className="p-1.5 rounded block w-full"
+                    onChange={(event) => {
+                      const lastName = (
+                        event.target as HTMLInputElement
+                      ).value;
+                      updateUser((prevState) => ({
+                        ...prevState,
+                        lastName,
+                      }));
+                    }}
                   />
                 </div>{" "}
                 <div className="items-left sm:ml-3 sm:mt-6  ml-0 sm:mt-0  flex items-end">
@@ -98,7 +115,7 @@ function Settings(props: PageProps) {
             <div>
               <dt>Name</dt>{" "}
               <dd className="group relative">
-                {user.fullName}
+                {user.firstName + ' ' + user.lastName}
                 <SlButton
                   size="small"
                   variant="default"
@@ -118,23 +135,22 @@ function Settings(props: PageProps) {
             <form method="post">
               <div className="sm:flex block w-full">
                 <div className="sm:w-80 w-full">
-                  <span>First Name</span>{" "}
+                  <span>Email</span>{" "}
                   <input
-                    name="first_name"
+                    name="email"
                     type="text"
-                    placeholder="First Name"
-                    value={user.fullName.split(" ")[0]}
+                    placeholder="Email"
+                    value={user.email}
                     className="p-1.5 rounded w-full block"
-                  />
-                </div>{" "}
-                <div className="sm:ml-3 ml-0 sm:mt-0 mt-3 sm:w-80 w-full">
-                  <span>Last Name</span>{" "}
-                  <input
-                    name="last_name"
-                    type="text"
-                    placeholder="Last Name"
-                    value={user.fullName.split(" ")[1]}
-                    className="p-1.5 rounded block w-full"
+                    onChange={(event) => {
+                      const email = (
+                        event.target as HTMLInputElement
+                      ).value.trim();
+                      updateUser((prevState) => ({
+                        ...prevState,
+                        email,
+                      }));
+                    }}
                   />
                 </div>{" "}
                 <div className="items-left sm:ml-3 sm:mt-6  ml-0 sm:mt-0  flex items-end">
@@ -148,9 +164,9 @@ function Settings(props: PageProps) {
             </form>
           ) : (
             <div>
-              <dt>Name</dt>{" "}
+              <dt>Email</dt>{" "}
               <dd className="group relative">
-                {user.fullName}
+                {user.email}
                 <SlButton
                   size="small"
                   variant="default"

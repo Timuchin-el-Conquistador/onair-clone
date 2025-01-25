@@ -43,9 +43,10 @@ function Session(props: PageProps) {
   const peerId = useRef<string | null>(null);
   useEffect(() => {
     peerRef.current = new Peer({
-      host: "localhost",
-      port: 9000,
-      path: "/myapp",
+      host: '34.221.165.158',  // Your public IP or domain
+      port: 80,  // The port your PeerJS server is running on
+      path: '/myapp',  // The path to your PeerJS server (configured in Apache)
+      secure: false  // Set to true if using https
     });
   }, []);
   useEffect(() => {
@@ -63,9 +64,9 @@ function Session(props: PageProps) {
 
   const intervalFn = () => {
     const interval = setInterval(() => {
-      if(isP2PConEstablished){
+      if (isP2PConEstablished) {
         clearInterval(interval);
-        return 
+        return;
       }
       if (peerId.current) {
         socket.emit("offer", {
@@ -112,7 +113,7 @@ function Session(props: PageProps) {
         if (remoteAudioRef.current) {
           remoteAudioRef.current.srcObject = stream;
         }
-        startAudioProcessing(stream)
+        startAudioProcessing(stream);
       });
     });
   }, []);
@@ -134,7 +135,7 @@ function Session(props: PageProps) {
           audio: {
             noiseSuppression: true, // Enable noise suppression
             echoCancellation: true, // Optional: Reduce echo
-            autoGainControl: true,  // Optional: Normalize audio levels
+            autoGainControl: true, // Optional: Normalize audio levels
           },
         });
         setLocalStream(stream);
@@ -151,7 +152,6 @@ function Session(props: PageProps) {
 
     return () => {
       peerRef.current?.disconnect();
-      
     };
   }, []);
 
@@ -206,18 +206,10 @@ function Session(props: PageProps) {
     props.endCall(props.sessionId, time);
   };
 
-
-
-
-
-
-
-
-
-  async function startAudioProcessing(stream:MediaStream) {
+  async function startAudioProcessing(stream: MediaStream) {
     try {
-    
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
       const analyser = audioContext.createAnalyser();
       const microphone = audioContext.createMediaStreamSource(stream);
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
@@ -225,28 +217,28 @@ function Session(props: PageProps) {
       analyser.fftSize = 512;
       microphone.connect(analyser);
 
-       const calculateVolume = () =>  {
+      const calculateVolume = () => {
         analyser.getByteFrequencyData(dataArray);
-        const volume = dataArray.reduce((sum, value) => sum + value) / dataArray.length;
+        const volume =
+          dataArray.reduce((sum, value) => sum + value) / dataArray.length;
 
         // Scale volume to a shadow intensity (adjust these values as needed)
-        const shadowIntensity = Math.min(Math.max((volume ) ** 1.5, 5), 50);
+        const shadowIntensity = Math.min(Math.max(volume ** 1.5, 5), 50);
 
         setBoxShadow(
-          `0 0 ${shadowIntensity}px ${shadowIntensity / 2}px rgba(0, 150, 255, 0.8)`
+          `0 0 ${shadowIntensity}px ${
+            shadowIntensity / 2
+          }px rgba(0, 150, 255, 0.8)`
         );
 
         requestAnimationFrame(calculateVolume);
-      }
+      };
 
       calculateVolume();
     } catch (err) {
       console.error("Error accessing microphone:", err);
     }
   }
-
-
-
 
   return (
     <div id="conference">
@@ -321,7 +313,7 @@ function Session(props: PageProps) {
               alt="Profile Picture"
               width="80"
               height="80"
-              style={{ boxShadow:boxShadow }}
+              style={{ boxShadow: boxShadow }}
             />{" "}
             <div className="text-2xl font-normal flex items-center">
               <span className="mr-2">🇦🇿</span>

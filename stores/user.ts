@@ -116,7 +116,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
       try {
         const response: { message: string; user: User } =
           await fakeBackend.post(path + "/signin", { ...user, role: "web" });
-        console.log("CREATING SESSION");
+ 
         await createSession({
           userId: response.user._id,
           email: response.user.email,
@@ -131,6 +131,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         }));
         router.replace("/dashboard");
       } catch (error) {
+        console.log('error',error)
         set((prevState) => ({
           ...prevState,
           loading: false,

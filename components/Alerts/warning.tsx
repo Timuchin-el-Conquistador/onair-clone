@@ -7,14 +7,14 @@ import "@/styles/pages.new.scss";
 const SlAlert = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/alert/index.js"),
   {
-    loading: () => <>Loading...</>,
+   // loading: () => <>Loading...</>,
     ssr: false,
   }
 );
 const SlIcon = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
   {
-    loading: () => <>Loading...</>,
+ //   loading: () => <>Loading...</>,
     ssr: false,
   }
 );

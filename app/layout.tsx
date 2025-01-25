@@ -23,8 +23,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-
   const session = await verifySession();
+
+
+
   return (
     <html lang="en">
       <head>
@@ -53,7 +55,7 @@ export default async function RootLayout({
         ) : (
           <UserStoreProvider>
             <PublicLayout>
-            <ShoelaceSetup>{children}</ShoelaceSetup>
+              <ShoelaceSetup>{children}</ShoelaceSetup>
             </PublicLayout>
           </UserStoreProvider>
         )}

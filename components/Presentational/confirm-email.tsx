@@ -7,9 +7,9 @@ function ConfirmEmail() {
           height="64"
           fill="none"
           stroke="#2ECC70"
-          stroke-width="1"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="1"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           style={{ display: "inline-block" }}
           className=""
           id=""

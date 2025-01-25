@@ -4,12 +4,12 @@ import Layout from "@/components/layouts/private";
 
 import {  createUrlAction } from "@/lib/actions/link";
 
-import { retrieveDevices, retrieveIntegrations } from "@/lib/actions/user";
+import { retrieveDevices } from "@/lib/actions/user";
 
 async function NewLinkPage(props: { params: { slug: string } }) {
  
-    const integrationsResponse = await retrieveIntegrations();
-    const integrations  = integrationsResponse instanceof Error || integrationsResponse == null ? [] : integrationsResponse;
+    //const integrationsResponse = await retrieveIntegrations();
+   // const integrations  = integrationsResponse instanceof Error || integrationsResponse == null ? [] : integrationsResponse;
     const devicesResponse =  await retrieveDevices();
     const devices  = devicesResponse instanceof Error || devicesResponse == null ? [] : devicesResponse;
 
@@ -19,8 +19,8 @@ async function NewLinkPage(props: { params: { slug: string } }) {
       <NewLink
 
          hasDevices={devices.length>0}
-         connectedDevices={devices}
-         integrations={integrations}
+         devices={devices}
+        // integrations={integrations}
          createUrlAction={createUrlAction}
       />
     </Layout>

@@ -14,10 +14,7 @@ import { useVisibility } from "@/hooks/useVisibility";
 
 import "@/styles/pages.new.scss";
 
-import {
-  type Settings,
-  type Integration as IIntegration,
-} from "@/lib/types/links";
+import { type Settings } from "@/lib/types/links";
 import { type Device } from "@/lib/types/device";
 
 import { useRouter } from "next/navigation";
@@ -27,12 +24,10 @@ import { socket } from "@/utils/socket";
 
 import Link from "next/link";
 
-
-
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
   {
-  //  loading: () => <>Loading...</>,
+    //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
@@ -40,14 +35,14 @@ const SlButton = dynamic(
 const SlCheckbox = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/checkbox/index.js"),
   {
-  //  loading: () => <>Loading...</>,
+    //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
 const SlTooltip = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/tooltip/index.js"),
   {
-  //  loading: () => <>Loading...</>,
+    //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
@@ -55,7 +50,7 @@ const SlDialog = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
   () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),
   {
-   // loading: () => <p>Loading...</p>,
+    // loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
@@ -64,21 +59,21 @@ const SlIcon = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
   () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
   {
- //   loading: () => <p>Loading...</p>,
+    //   loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
 
 type PageProps = {
-  integrations: IIntegration[];
-  connectedDevices: Device[];
+  //integrations: IIntegration[];
+  devices: Device[];
   hasDevices: boolean;
   createUrlAction: (
     slug: string,
     linkName: string,
     callStrategy: string | null,
     connectedDevices: string[],
-    integrations: string[],
+    //integrations: string[],
     availability: string,
     settings: Settings
   ) => Promise<string | Error>;
@@ -91,12 +86,15 @@ function NewLink(props: PageProps) {
     handleLinkNameChange,
     removeDevice,
     changeAvailability,
-    visitingFormCollectionStrategyChange,
+    visitorFormFieldsChange,
+    connectDevices,
+    changeOnlineMessage,
+    changeOfflineMessage,
   } = useLinkForm({
     slug: "",
     availability: "online",
     linkName: "",
-    integrations: [],
+    // integrations: [],
     callStrategy: null,
     connectedDevices: [],
     settings: {
@@ -107,25 +105,24 @@ function NewLink(props: PageProps) {
     },
   });
 
-  const [error,setError]  = useState<Error|null>(null)
-  const [loading,setLoading] = useState<boolean>(false)
-  const [message,setMessage] = useState<string|null>(null)
+  const [error, setError] = useState<Error | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string | null>(null);
 
-  const {
-    isDangerAlertVisible,
-    setDangerAlertVisibility,
-    isSuccessAlertVisible,
-    isPasswordVisible,
-    setPasswordVisibility,
-  } = useVisibility(() => {}, error, loading, message);
 
-  const [modalIsOpenState, setModalIsOpenState] = useState(false);
+
+  const [isDevicesModalOpen, setDevicesModalState] = useState(false);
 
   const [settingsVisibility, setSettingsVisibility] = useState({
     visitorForm: false,
     customMessages: false,
   });
 
+  const checkedDevices: Device[] = [];
+  const saveDevices = () => {
+    connectDevices(checkedDevices);
+    setDevicesModalState(false);
+  };
   return (
     <>
       <div id="main" className="p-6 mb-20">
@@ -151,7 +148,7 @@ function NewLink(props: PageProps) {
                     // value={form.link.slug}
                     onChange={(event) => {
                       const value = event.target.value.trim();
-                      handleSlugChange(value);
+                      handleSlugChange(value, false);
                       setTimeout(() => {
                         socket.emit("slug-validation", { slug: value });
                       }, 1000);
@@ -253,12 +250,11 @@ function NewLink(props: PageProps) {
               </div>{" "}
               <div className="lg:w-1/2">
                 {form.link.connectedDevices.map((el) => (
-                
                   <Fragment key={el._id}>
-                  <ConnectedDevice
-                    device={el}
-                    removeDeviceFromLink={removeDevice}
-                  />
+                    <ConnectedDevice
+                      device={el}
+                      removeDeviceFromLink={removeDevice}
+                    />
                   </Fragment>
                 ))}
                 {!props.hasDevices ? (
@@ -282,14 +278,16 @@ function NewLink(props: PageProps) {
                     </div>{" "}
                   </div>
                 ) : (
-                  <Link
-                    href="/integrations/new"
+                  <SlButton
                     className="text-blue-700 text-sm cursor-pointer mt-2 block"
+                    onClick={() => {
+                      setDevicesModalState(true);
+                    }}
                   >
                     + Add Device
-                  </Link>
+                  </SlButton>
                 )}
-                {form.link.connectedDevices.length> 0 && (
+                {form.link.connectedDevices.length > 0 && (
                   <div className="flex items-start mt-7 text-sm">
                     <input
                       id="call-all-devices"
@@ -397,10 +395,7 @@ function NewLink(props: PageProps) {
                 onSlChange={(event) => {
                   const checked = (event.target as HTMLInputElement).checked;
 
-                  visitingFormCollectionStrategyChange(
-                    checked ? "push" : "pull",
-                    "email"
-                  );
+                  visitorFormFieldsChange({ checked, field: "email" });
                 }}
               >
                 Collect email from visitors
@@ -415,14 +410,15 @@ function NewLink(props: PageProps) {
                 onSlChange={(event) => {
                   const checked = (event.target as HTMLInputElement).checked;
 
-                  visitingFormCollectionStrategyChange(
-                    checked ? "push" : "pull",
-                    "phone"
-                  );
+                  visitorFormFieldsChange({ checked, field: "phone" });
                 }}
               >
                 Collect phone from visitors
               </SlCheckbox>{" "}
+              <div className="mt-2 ml-6 block text-xs text-gray-400">
+                Tip: you can auto-fill using query strings, e.g.
+                onair.io/demo?name=John
+              </div>
             </div>
             <label
               className="advanced-options-label"
@@ -469,6 +465,11 @@ function NewLink(props: PageProps) {
                     placeholder="Maximum 180 characters"
                     rows={3}
                     className="border border-gray-300 text-gray-700 text-sm rounded-lg focus:border-blue-300 focus:shadow-none focus:ring-0 focus:outline-none block w-full py-2 px-3"
+                    defaultValue={form.link.settings.onlineMessage}
+                    onChange={(event) => {
+                      const value = (event.target as HTMLTextAreaElement).value;
+                      changeOnlineMessage(value);
+                    }}
                   ></textarea>{" "}
                   <span className="text-xs text-gray-400">34/180</span>
                 </div>
@@ -486,15 +487,20 @@ function NewLink(props: PageProps) {
                     placeholder="Maximum 180 characters"
                     rows={3}
                     className="border border-gray-300 text-gray-700 text-sm rounded-lg focus:border-blue-300 focus:shadow-none focus:ring-0 focus:outline-none block w-full py-2 px-3"
+                    defaultValue={form.link.settings.offlineMessage}
+                    onChange={(event) => {
+                      const value = (event.target as HTMLTextAreaElement).value;
+                      changeOfflineMessage(value);
+                    }}
                   ></textarea>{" "}
                   <span className="text-xs text-gray-400">21/180</span>
                 </div>
               </div>
             </div>
-            {/*<div className="mt-2 ml-6 block text-xs text-gray-400">
+            <div className="mt-2 ml-6 block text-xs text-gray-400">
               Tip: you can auto-fill using query strings, e.g.
               onair.io/demo?name=John
-            </div>*/}
+            </div>
             <div className="w-full flex items-center justify-between mt-16 mb-1">
               <SlButton
                 variant="default"
@@ -515,24 +521,25 @@ function NewLink(props: PageProps) {
                 data-valid=""
                 className="inline-block"
                 onClick={async () => {
-                  try{
-                  setLoading(true)
-                  await props.createUrlAction(
-                    form.link.slug,
-                    form.link.linkName,
-                    form.link.callStrategy,
-                    form.link.connectedDevices.map(el=> (el._id)),
-                    form.link.integrations.map(el=> (el._id)),
-                    form.link.availability,
-                    form.link.settings
-                  );
-                  setLoading(false)
-                  
-       
-                }catch(err){
-                  setLoading(false)
-                  setError(  err instanceof Error ? err : new Error(String(err)),)
-                }
+                  try {
+                    setLoading(true);
+                    await props.createUrlAction(
+                      form.link.slug,
+                      form.link.linkName,
+                      form.link.callStrategy,
+                      form.link.connectedDevices.map((el) => el._id),
+                      form.link.availability,
+                      form.link.settings
+                    );
+                    setLoading(false);
+
+                    router.replace("/dashboard");
+                  } catch (err) {
+                    setLoading(false);
+                    setError(
+                      err instanceof Error ? err : new Error(String(err))
+                    );
+                  }
                 }}
               >
                 Save
@@ -545,30 +552,49 @@ function NewLink(props: PageProps) {
       <SlDialog
         label="Devices"
         className="dialog-overview with-header"
-        open={modalIsOpenState}
+        open={isDevicesModalOpen}
         onSlAfterHide={() => {
-          setModalIsOpenState(false);
+          setDevicesModalState(false);
         }}
       >
         <div className="bg-white rounded-md border border-gray-200">
           <div className="divide-y divide-gray-200 max-h-[40vh] overflow-scroll">
             <div className="flex flex-row pl-3 py-3 hover:bg-stone-100 text-sm h-16 cursor-pointer">
-              <SlCheckbox
-                size="small"
-                form=""
-                data-optional=""
-                data-valid=""
-                className="mx-2 small-checkbox"
-              ></SlCheckbox>{" "}
-              <div className="flex flex-col w-full truncate ml-1">
-                <p className="text-gray-900 truncate font-medium">
-                  Cingiz Hemidov
-                </p>{" "}
-                <p className="text-gray-500 text-xs truncate items-center">
-                  Mobile
-                  <span className="ml-0.5">(Cingiz's Android)</span>
-                </p>
-              </div>
+              {props.devices.map((device: Device) => (
+                <Fragment key={device._id}>
+                  <SlCheckbox
+                    size="small"
+                    form=""
+                    data-optional=""
+                    data-valid=""
+                    className="mx-2 small-checkbox"
+                    onSlChange={(event) => {
+                      const checked = (event.target as HTMLInputElement)
+                        .checked;
+
+                      if (checked) {
+                        checkedDevices.push(device);
+                      } else {
+                        removeDevice(device._id);
+                      }
+                    }}
+                    checked={
+                      form.link.connectedDevices.findIndex(
+                        (el: Device) => el._id == device._id
+                      ) > -1
+                    }
+                  ></SlCheckbox>{" "}
+                  <div className="flex flex-col w-full truncate ml-1">
+                    <p className="text-gray-900 truncate font-medium">
+                      {device.ownerFullName}
+                    </p>{" "}
+                    <p className="text-gray-500 text-xs truncate items-center">
+                      Mobile
+                      <span className="ml-0.5">{device.description}</span>
+                    </p>
+                  </div>
+                </Fragment>
+              ))}
             </div>
           </div>
         </div>
@@ -586,6 +612,9 @@ function NewLink(props: PageProps) {
             size="medium"
             data-optional=""
             data-valid=""
+            onClick={() => {
+              setDevicesModalState(false);
+            }}
           >
             Cancel
           </SlButton>{" "}
@@ -595,31 +624,15 @@ function NewLink(props: PageProps) {
             size="medium"
             data-optional=""
             data-valid=""
+            onClick={saveDevices}
           >
             Save
           </SlButton>
         </div>
       </SlDialog>
 
-      {isSuccessAlertVisible ? (
-        <div className="fixed bottom-0 w-screen flex justify-center">
-          <Success message={message!}>
-            <Link href="/users/sign_in" className="link">
-              Login
-            </Link>
-          </Success>
-        </div>
-      ) : null}
-      {isDangerAlertVisible ? (
-        <div className="fixed bottom-0 w-screen flex justify-center">
-          <Danger
-            message={error?.message || ""}
-            click={() => {
-              setDangerAlertVisibility(false);
-            }}
-          />
-        </div>
-      ) : null}
+
+    
 
       {loading ? <Spinner /> : null}
     </>

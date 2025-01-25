@@ -15,12 +15,11 @@ const SlTooltip = dynamic(
   }
 );
 
-type CardPageLinkType = Omit<
-  ExtendedLink,
-  "callStrategy" | "settings" | "_id" 
->;
+interface CardPageLink  extends Omit<ExtendedLink, "callStrategy" | "settings" | "_id"> {
+  removeLink:(slug:string)=>void
+}
 
-type PageProps = CardPageLinkType 
+type PageProps = CardPageLink
 
 function Card(props: PageProps) {
   const [isDropdownVisible, setDropDownVisibility] = useState(false);
@@ -73,7 +72,9 @@ function Card(props: PageProps) {
         <h3 className="w-full truncate">{props.slug}</h3>{" "}
         <div className="index-card-top-right"></div>
       </div>{" "}
-      {!props.hasConnectedDevice && (
+      {props.hasConnectedDevice ? (
+        <div className="flex items-center col-span-3"></div>
+      ) : (
         <div className="flex items-center col-span-3">
           <SlTooltip
             content="No Devices"
@@ -87,13 +88,17 @@ function Card(props: PageProps) {
       <div className="col-span-2">
         <div className="mt-6">
           <div className="text-sm text-gray-400">Minutes</div>{" "}
-          <div className="text-sm">{Math.round(props.totalCallDuration/60)} minute</div>
+          <div className="text-sm">
+            {Math.round(props.totalCallDuration / 60)} minute
+          </div>
         </div>{" "}
         <div className="mt-6">
           <div className="text-sm text-gray-400">Integrations</div>{" "}
-          <div className="text-sm">{props.connectedDevices.length} integration</div>
+          <div className="text-sm">
+            {props.connectedDevices.length} integration
+          </div>
         </div>
-      </div>{" "}
+      </div>
       <div className="index-card-footer">
         <button
           className="index-card-footer-button"
@@ -157,12 +162,16 @@ function Card(props: PageProps) {
               </a>
             </div>{" "}*/}
             <div role="none" className="py-1">
-              <a
+              <button
                 role="menuitem"
-                className="expandable-section-menu-item delete-button"
+                className="expandable-section-menu-item delete-button w-full text-left"
+                onClick={() => {
+                  props.removeLink(props.slug)
+                  setDropDownVisibility(false); // Close or perform an action
+                }}
               >
                 Delete
-              </a>
+              </button>
             </div>
           </div>
         )}

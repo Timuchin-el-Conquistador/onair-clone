@@ -4,7 +4,7 @@ import { verifySession } from "../dal";
 
 import { redirect } from "next/navigation";
 
-import { type Integration } from "../types/links";
+import { type Integration } from "../types/user";
 import { type Device } from "../types/device";
 
 import { fakeBackend } from "../axios";

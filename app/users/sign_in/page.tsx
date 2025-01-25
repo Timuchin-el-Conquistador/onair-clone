@@ -36,6 +36,9 @@ function Login() {
 
   const emailRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
+
+
+  console.log(error)
   return (
     <>
       <div className="mx-auto w-full text-center">

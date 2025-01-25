@@ -14,7 +14,7 @@ export async function createUrlAction(
   linkName: string,
   callStrategy: string|null,
   connectedDevices:string[],
-  integrations:string[],
+//  integrations:string[],
   availability: string,
   settings: Settings
 ) {
@@ -27,7 +27,7 @@ export async function createUrlAction(
     const path = `api/v1/user/${session.email}/urls/`;
     const response: { message: string } = await fakeBackend.post(
       path,
-      { slug, linkName, callStrategy,connectedDevices,integrations, availability, settings }
+      { slug, linkName, callStrategy,connectedDevices, availability, settings }
     );
 
     return response.message;
@@ -37,7 +37,57 @@ export async function createUrlAction(
   }
 }
 
-export async function retrieveUrls() {
+
+export async function updateUrlAction(
+  urlId:string,
+  slug: string,
+  linkName: string,
+  callStrategy: string|null,
+  connectedDevices:string[],
+  availability: string,
+  settings: Settings
+) {
+  'use server'
+  try {
+    const session = await verifySession();
+
+    if (!session) return redirect("/users/sign_in");
+
+    const path = `api/v1/user/${session.email}/urls/${slug}`;
+
+    const response: { message: string } = await fakeBackend.put(
+      path,
+      { slug, linkName, callStrategy,connectedDevices, availability, settings, urlId }
+    );
+
+    return response.message;
+  } catch (error) {
+    console.log(error)
+     throw error;
+
+  }
+}
+
+export async function removeLinkAction(slug:string) {
+  'user server'
+  try {
+    const session = await verifySession();
+
+    if (!session) return redirect("/users/sign_in");
+
+    const path = `api/v1/user/${session.email}/urls/${slug}`;
+    const response: { message: string } = await fakeBackend.delete(
+      path
+    );
+
+    return response.message;
+  } catch (error) {
+    return error instanceof Error ? error : new Error(String(error));
+  }
+}
+
+export async function retrieveUrlsAction() {
+  'use server'
   try {
     const session = await verifySession();
 

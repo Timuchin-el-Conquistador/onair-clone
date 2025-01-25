@@ -66,7 +66,7 @@ function ActiveCallSession(props: PageProps) {
     socket.emit("end", { callId, duration });
     setStatus("ended");
   };
-console.log(props.isAuth)
+
   if (status == "declined") {
     return <CallDeclined />;
   }

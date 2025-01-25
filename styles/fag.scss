@@ -1,0 +1,56 @@
+
+#faq
+{
+    margin-top: 40px;
+    margin-bottom: 20px;
+    opacity: 0;
+}
+
+#faq h3
+{
+    font-family: 'HelveticaNeue', sans-serif;
+    font-weight: normal;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 5px;
+    color: #666;
+}
+
+#faq h3 svg
+{
+    position: relative;
+    font-size: 1.2rem;
+    top: 0px;
+    margin-right: 0.5rem;
+}
+
+#faq h3:hover svg
+{
+    color: #61B4E9;
+}
+
+#faq .answer
+{
+    font-size: 0.85rem;
+    margin-left: 2rem;
+    margin-top: 0.5px;
+    height: 0px;
+    max-width: 50rem;
+    color: #666;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+#faq .answer.open
+{
+    height: auto;
+    margin-bottom: 2rem;
+}
+
+#faq .open pre
+{
+    background: #F5F5F5;
+    border: solid 1px #F5F5F5;
+    border-radius: 5px;
+    padding: 5px;
+}

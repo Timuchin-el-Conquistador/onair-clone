@@ -33,9 +33,10 @@ function Session(props: PageProps) {
 
   useEffect(() => {
     peerRef.current = new Peer({
-      host: "localhost",
-      port: 9000,
-      path: "/myapp",
+      host: '34.221.165.158',  // Your public IP or domain
+      port: 80,  // The port your PeerJS server is running on
+      path: '/myapp',  // The path to your PeerJS server (configured in Apache) only in local on production i use reverse proxy
+      secure: false  // Set to true if using https
     });
   }, []);
   useEffect(() => {

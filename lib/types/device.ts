@@ -1,9 +1,12 @@
+import { User } from "./user";
 
 export interface Device {
     _id:string,
     createdOn: string;
     lastLogin:string,
     description: string;
+   // owner:User
+   ownerFullName:string,
     //appVersion: string;
     //country: string;
     //city: string;

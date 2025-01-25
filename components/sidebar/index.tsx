@@ -126,9 +126,9 @@ function Sidebar({ page }: { page: string }) {
                   <a href="/settings" className={`advanced-buttons ${page == 'settings' && 'selected'}`}>
                     <span className="text-gray-300">&gt; &nbsp;</span> Settings
                   </a>{" "}
-                  <a href="/billing" className={`advanced-buttons ${page == 'billing' && 'selected'}`}>
+                {/*}  <a href="/billing" className={`advanced-buttons ${page == 'billing' && 'selected'}`}>
                     <span className="text-gray-300">&gt; &nbsp;</span> Billing
-                  </a>
+                  </a>*/}
                 </div>
               </div>
             </nav>

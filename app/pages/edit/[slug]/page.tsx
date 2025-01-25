@@ -2,7 +2,7 @@ import Edit from ".";
 
 import Layout from "@/components/layouts/private";
 
-import { retrieveUrlAction } from "@/lib/actions/link";
+import { retrieveUrlAction, updateUrlAction } from "@/lib/actions/link";
 import { retrieveDevices } from "@/lib/actions/user";
 
 async function EditPage(props: { params: { slug: string } }) {
@@ -17,7 +17,7 @@ async function EditPage(props: { params: { slug: string } }) {
       ? []
       : devicesResponse;
 
-  console.log(devices);
+
 
   if(url == null) return
   return (
@@ -37,7 +37,7 @@ async function EditPage(props: { params: { slug: string } }) {
             recording: true,
           },
         }}
-       // updateLink={()=> ()}
+        updateUrlAction={updateUrlAction}
         hasConnectedDevices={url.connectedDevices.length>0}
         hasDevices={devices.length>0}
         devices={devices}

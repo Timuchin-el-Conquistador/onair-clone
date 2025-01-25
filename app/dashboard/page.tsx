@@ -1,26 +1,24 @@
 
 import Layout from "@/components/layouts/private";
 
-import "@/styles/dashboard.scss";
-
 import Dashboard from ".";
 
-import { retrieveUrls } from "@/lib/actions/link";
+import { retrieveUrlsAction, removeLinkAction } from "@/lib/actions/link";
 
-
+import { retrieveDevices } from "@/lib/actions/user";
 
 async function DashboardPage() {
 
 
 
-  const response = await retrieveUrls();
-  const links  = response instanceof Error || response == null ? [] : response;
+    const devicesResponse =  await retrieveDevices();
+    const devices  = devicesResponse instanceof Error || devicesResponse == null ? [] : devicesResponse;
 
-  
+
 
   return (
-    <Layout page="dashboard">
-      <Dashboard links={links}/>
+    <Layout page="dashboard" hasActiveDevices={devices.length>0}>
+      <Dashboard  removeLinkAction={removeLinkAction} retrieveUrlsAction={retrieveUrlsAction}/>
     </Layout>
   );
 }

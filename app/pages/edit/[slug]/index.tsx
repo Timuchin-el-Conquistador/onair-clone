@@ -3,18 +3,22 @@
 import dynamic from "next/dynamic";
 
 import "@/styles/pages.new.scss";
-import ScheduleComponent from "@/components/availability";
+
+import DailyAvailability from "@/components/availability";
 import ConnectedDevice from "@/components/Integrations/connected-device";
 
 import useLinkForm from "@/hooks/useLinkForm";
 
-import { ExtendedLink, type Link as ILink } from "@/lib/types/links";
-import { type Integration } from "@/lib/types/user";
+import { type Link as ILink } from "@/lib/types/links";
 import { type Device } from "@/lib/types/device";
-import { Settings } from "@/lib/types/links";
+import { type Settings } from "@/lib/types/links";
 
-import { Fragment, useState } from "react";
+import { Fragment, useRef, useState } from "react";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+import { socket } from "@/utils/socket";
 
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
@@ -46,26 +50,61 @@ const SlDialog = dynamic(
   }
 );
 
+const SlIcon = dynamic(
+  // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
+  () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
+  {
+    //   loading: () => <p>Loading...</p>,
+    ssr: false,
+  }
+);
+
 type PageProps = {
   link: ILink;
-
   devices: Device[];
   hasConnectedDevices: boolean;
   hasDevices: boolean;
-  /* updateLink: (
+  updateUrlAction: (
+    urlId: string,
     slug: string,
     linkName: string,
     callStrategy: string | null,
     connectedDevices: string[],
-    integrations: string[],
     availability: string,
     settings: Settings
-  ) => Promise<string | Error>;*/
+  ) => Promise<string | Error>;
 };
 function EditLink(props: PageProps) {
-  const { form, removeDevice, handleSlugChange, changeAvailability } =
-    useLinkForm(props.link);
+  const router = useRouter();
+  const {
+    form,
+    removeDevice,
+    handleSlugChange,
+    handleLinkNameChange,
+    changeAvailability,
+    visitorFormFieldsChange,
+    changeOnlineMessage,
+    changeOfflineMessage,
+    connectDevices,
+  } = useLinkForm(props.link);
   const [isDevicesModalOpen, setDevicesModalState] = useState(false);
+
+  const [error, setError] = useState<Error | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const [settingsVisibility, setSettingsVisibility] = useState({
+    visitorForm: false,
+    customMessages: false,
+  });
+
+  const checkedDevices: Device[] = [];
+
+  const saveDevices = () => {
+    connectDevices(checkedDevices);
+    setDevicesModalState(false);
+  };
+
   return (
     <div id="main" className="p-6 mb-20">
       <div className="p-6 bg-white">
@@ -88,6 +127,14 @@ function EditLink(props: PageProps) {
                   placeholder="yourname"
                   className="rounded-none rounded-e-md border border-gray-300 text-gray-700 focus:border-blue-300 focus:outline-none block w-full text-sm py-2 pl-3 pr-10 !truncate"
                   defaultValue={form.link.slug}
+                  onChange={(event) => {
+                    const value = event.target.value.trim();
+                    handleSlugChange(value, props.link.slug == value);
+                    if (props.link.slug == value) return;
+                    setTimeout(() => {
+                      socket.emit("slug-validation", { slug: value });
+                    }, 1000);
+                  }}
                 />{" "}
                 <span className="absolute inset-y-0 right-0 pr-3 flex items-center">
                   {form.slugStatus == "pending" ? (
@@ -160,6 +207,10 @@ function EditLink(props: PageProps) {
                 placeholder="Enter unique name for your page"
                 className="border border-gray-300 text-gray-700 text-sm rounded-md focus:border-blue-300 focus:outline-none block w-full py-2 px-3 !truncate"
                 defaultValue={form.link.linkName}
+                onChange={(event) => {
+                  const value = event.target.value.trim();
+                  handleLinkNameChange(value);
+                }}
               />
             </div>
           </div>{" "}
@@ -281,33 +332,55 @@ function EditLink(props: PageProps) {
             </div>
           </div>
           <hr />
-          <ScheduleComponent
+          <DailyAvailability
             availability={form.link.availability}
             changeAvailability={changeAvailability}
           />
           <hr />{" "}
-          {/*   <label className="font-medium text-md">Advanced Settings</label>
-          <label className="advanced-options-label">
+          <label className="font-medium text-md">Advanced Settings</label>
+          <label
+            className="advanced-options-label"
+            onClick={() => {
+              setSettingsVisibility((state) => ({
+                ...state,
+                visitorForm: !state.visitorForm,
+              }));
+            }}
+          >
             <SlIcon
               name="dash-square"
               aria-hidden="true"
               library="default"
-              className="close-icon mr-2 h-3 hidden"
-            ></SlIcon>{" "}
+              className={`close-icon mr-2 h-3 ${
+                !settingsVisibility.visitorForm && "hidden"
+              }`}
+            ></SlIcon>
             <SlIcon
               name="plus-square"
               aria-hidden="true"
               library="default"
-              className="open-icon mr-2 h-3"
+              className={`close-icon mr-2 h-3 ${
+                settingsVisibility.visitorForm && "hidden"
+              }`}
             ></SlIcon>
             Visitor Form
           </label>
-          <div className="mt-1 mb-8 expandable-section hidden">
+          <div
+            className={`mt-1 mb-8 expandable-section ${
+              !settingsVisibility.visitorForm && "hidden"
+            }`}
+          >
             <SlCheckbox
               size="medium"
               data-optional=""
               data-valid=""
               className="mt-1 ml-6 block"
+              checked={form.link.settings.visitorForm.includes("email")}
+              onSlChange={(event) => {
+                const checked = (event.target as HTMLInputElement).checked;
+
+                visitorFormFieldsChange({ checked, field: "email" });
+              }}
             >
               Collect email from visitors
             </SlCheckbox>{" "}
@@ -317,13 +390,97 @@ function EditLink(props: PageProps) {
               data-optional=""
               data-valid=""
               className="mt-1 ml-6 block"
+              checked={form.link.settings.visitorForm.includes("phone")}
+              onSlChange={(event) => {
+                const checked = (event.target as HTMLInputElement).checked;
+
+                visitorFormFieldsChange({ checked, field: "phone" });
+              }}
             >
               Collect phone from visitors
-            </SlCheckbox>{" "}*/}
-          {/*<div className="mt-2 ml-6 block text-xs text-gray-400">
+            </SlCheckbox>{" "}
+            <div className="mt-2 ml-6 block text-xs text-gray-400">
               Tip: you can auto-fill using query strings, e.g.
               onair.io/demo?name=John
-            </div>*/}
+            </div>
+          </div>
+          <label
+            className="advanced-options-label"
+            onClick={() => {
+              setSettingsVisibility((state) => ({
+                ...state,
+                customMessages: !state.customMessages,
+              }));
+            }}
+          >
+            <SlIcon
+              name="dash-square"
+              aria-hidden="true"
+              library="default"
+              className={`close-icon mr-2 h-3 ${
+                !settingsVisibility.customMessages && "hidden"
+              }`}
+            ></SlIcon>
+            <SlIcon
+              name="plus-square"
+              aria-hidden="true"
+              library="default"
+              className={`close-icon mr-2 h-3 ${
+                settingsVisibility.customMessages && "hidden"
+              }`}
+            ></SlIcon>
+            Custom Messages
+          </label>
+          <div
+            className={`mt-1 mb-8 expandable-section ${
+              !settingsVisibility.customMessages && "hidden"
+            }`}
+          >
+            <div className="md:flex mt-1 w-full">
+              <div className="md:w-1/2">
+                <label>Online message</label>{" "}
+                <p className="text-xs text-gray-400 mb-2 md:mb-auto">
+                  Shown to visitors when you're online
+                </p>
+              </div>{" "}
+              <div className="md:w-1/2">
+                <textarea
+                  name="online-message"
+                  placeholder="Maximum 180 characters"
+                  rows={3}
+                  className="border border-gray-300 text-gray-700 text-sm rounded-lg focus:border-blue-300 focus:shadow-none focus:ring-0 focus:outline-none block w-full py-2 px-3"
+                  defaultValue={form.link.settings.onlineMessage}
+                  onChange={(event) => {
+                    const value = (event.target as HTMLTextAreaElement).value;
+                    changeOnlineMessage(value);
+                  }}
+                ></textarea>{" "}
+                <span className="text-xs text-gray-400">34/180</span>
+              </div>
+            </div>{" "}
+            <div className="md:flex w-full mt-4">
+              <div className="md:w-1/2">
+                <label>Offline message</label>{" "}
+                <p className="text-xs text-gray-400 mb-2 md:mb-auto">
+                  Shown to visitors when you're offline
+                </p>
+              </div>{" "}
+              <div className="md:w-1/2">
+                <textarea
+                  name="offline-message"
+                  placeholder="Maximum 180 characters"
+                  rows={3}
+                  className="border border-gray-300 text-gray-700 text-sm rounded-lg focus:border-blue-300 focus:shadow-none focus:ring-0 focus:outline-none block w-full py-2 px-3"
+                  defaultValue={form.link.settings.offlineMessage}
+                  onChange={(event) => {
+                    const value = (event.target as HTMLTextAreaElement).value;
+                    changeOfflineMessage(value);
+                  }}
+                ></textarea>{" "}
+                <span className="text-xs text-gray-400">21/180</span>
+              </div>
+            </div>
+          </div>
           <div className="w-full flex items-center justify-between mt-16 mb-1">
             <SlButton
               variant="default"
@@ -331,6 +488,9 @@ function EditLink(props: PageProps) {
               data-optional=""
               data-valid=""
               className="inline-block"
+              onClick={() => {
+                router.back();
+              }}
             >
               Cancel
             </SlButton>{" "}
@@ -340,6 +500,27 @@ function EditLink(props: PageProps) {
               data-optional=""
               data-valid=""
               className="inline-block"
+              onClick={async () => {
+                try {
+                  setLoading(true);
+
+                  await props.updateUrlAction(
+                    form.link._id!,
+                    form.link.slug,
+                    form.link.linkName,
+                    form.link.callStrategy,
+                    form.link.connectedDevices.map((el) => el._id),
+                    form.link.availability,
+                    form.link.settings
+                  );
+                  setLoading(false);
+
+                  router.replace("/dashboard");
+                } catch (err) {
+                  setLoading(false);
+                  setError(err instanceof Error ? err : new Error(String(err)));
+                }
+              }}
             >
               Save
             </SlButton>
@@ -360,22 +541,41 @@ function EditLink(props: PageProps) {
         <div className="bg-white rounded-md border border-gray-200">
           <div className="divide-y divide-gray-200 max-h-[40vh] overflow-scroll">
             <div className="flex flex-row pl-3 py-3 hover:bg-stone-100 text-sm h-16 cursor-pointer">
-              <SlCheckbox
-                size="small"
-                form=""
-                data-optional=""
-                data-valid=""
-                className="mx-2 small-checkbox"
-              ></SlCheckbox>{" "}
-              <div className="flex flex-col w-full truncate ml-1">
-                <p className="text-gray-900 truncate font-medium">
-                  Cingiz Hamidov
-                </p>{" "}
-                <p className="text-gray-500 text-xs truncate items-center">
-                  Mobile
-                  <span className="ml-0.5">(Cingiz's Android)</span>
-                </p>
-              </div>
+              {props.devices.map((device: Device) => (
+                <Fragment key={device._id}>
+                  <SlCheckbox
+                    size="small"
+                    form=""
+                    data-optional=""
+                    data-valid=""
+                    className="mx-2 small-checkbox"
+                    onSlChange={(event) => {
+                      const checked = (event.target as HTMLInputElement)
+                        .checked;
+
+                      if (checked) {
+                        checkedDevices.push(device);
+                      } else {
+                        removeDevice(device._id);
+                      }
+                    }}
+                    checked={
+                      form.link.connectedDevices.findIndex(
+                        (el: Device) => el._id == device._id
+                      ) > -1
+                    }
+                  ></SlCheckbox>{" "}
+                  <div className="flex flex-col w-full truncate ml-1">
+                    <p className="text-gray-900 truncate font-medium">
+                      {device.ownerFullName}
+                    </p>{" "}
+                    <p className="text-gray-500 text-xs truncate items-center">
+                      Mobile
+                      <span className="ml-0.5">{device.description}</span>
+                    </p>
+                  </div>
+                </Fragment>
+              ))}
             </div>
           </div>
         </div>{" "}
@@ -403,6 +603,7 @@ function EditLink(props: PageProps) {
             size="medium"
             data-optional=""
             data-valid=""
+            onClick={saveDevices}
           >
             Save
           </SlButton>

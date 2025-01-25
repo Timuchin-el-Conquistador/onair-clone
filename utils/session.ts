@@ -33,7 +33,7 @@ export async function decrypt(token: string|undefined='' ) {
 export async function validateToken(token: string) {
   const session = await decrypt(token);
   if (!session || !session.userId) return null;
-
+  //ill need to write backed user validation (send request to check if user exist)
   return {
     isAuth: true,
     userId: session.userId,

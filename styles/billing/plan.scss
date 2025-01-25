@@ -1,0 +1,64 @@
+
+#plans .plan
+{
+    display: grid;
+    gap: 1rem;
+    border-radius: 0.5rem;
+    border-width: 2px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));	
+    margin: 1rem 0rem 1rem 0rem;
+    padding: 1rem;
+    cursor: pointer;
+}
+
+#plans .plan:hover
+{
+    background-color: #F5F5F5;
+}
+
+.plan input
+{
+    display: none;
+}
+
+.plan h4
+{
+    display: inline-block;
+    line-height: 150%;
+    font-weight: bold;
+}
+
+.plan span
+{
+    display: block;
+    color: #666;
+}
+
+.plan .discounted-badge
+{
+    display: inline-block;
+    margin-left: 0.5rem;
+    tab-size: 4;
+    font-family: inherit;
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: #e5e7eb;
+    border-radius: 9999px;
+    background-color: rgba(254, 243, 199, 1);
+    font-weight: 500;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem;
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
+    color: rgba(146, 64, 14, 1);
+}
+
+@media (max-width: 768px) {
+    #plans .plan
+    {
+        display: block;
+    }
+}
