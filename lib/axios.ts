@@ -135,14 +135,14 @@ class FakeBackend {
   }
 }
 
-const url =
-  typeof window !== "undefined"
-    ? "https://" + process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL ||
-      "http://localhost:4000"
-    : "https://" + process.env.PRODUCTION_BACKEND_URL ||
-      "http://localhost:4000";
+const productionUrl =
+  typeof window !== undefined
+    ? "https://" + process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
+    : "https://" + process.env.PRODUCTION_BACKEND_URL;
 
-const fakeBackend = FakeBackend.getInstance(url);
+const fakeBackend = FakeBackend.getInstance(
+  process.env.NODE_ENV == "production" ? productionUrl : "http://localhost:4000"
+);
 //const axiosInstance = backend.getAxiosInstance();
 
 export { fakeBackend };

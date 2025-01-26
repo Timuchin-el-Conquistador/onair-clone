@@ -293,7 +293,8 @@ function Sessions(props: PageProps) {
                   isOpen: false,
                 }));
                 socket.emit("answer", { callId: viewSession!._id });
-                router.replace(`/session/${props.slug}/${viewSession!._id}`);
+                //router.replace(`/session/${props.slug}/${viewSession!._id}`);
+                window.open(`/session/${props.slug}/${viewSession!._id}`, '_blank');
               }}
             >
               Join Call

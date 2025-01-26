@@ -69,7 +69,8 @@ function P2PLayout({ children, userId }: { children: React.ReactNode,userId:stri
   const answerCall = (slug:string,callId: string) => {
     socket.emit("answer", { callId });
     setIncommingCalls((prevState) => prevState.filter((el) => el.id != callId));
-    router.push(`/session/${slug}/${callId}`)
+    //router.push(`/session/${slug}/${callId}`)
+    window.open(`/session/${slug}/${callId}`, '_blank');
   };
 
   const declineCall = (callId: string) => {

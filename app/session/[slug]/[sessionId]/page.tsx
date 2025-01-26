@@ -20,7 +20,7 @@ async function ActiveCallSessionPage(props: {
   const callResponse = await retrieveActiveCallSession(props.params.sessionId);
   const call =
     callResponse instanceof Error || callResponse == null ? null : callResponse;
-
+console.log(url)
   return (
     <ActiveCallSession
       url={url!}

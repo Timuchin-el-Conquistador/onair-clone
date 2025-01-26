@@ -41,14 +41,8 @@ function Session(props: PageProps) {
   const callAudioRecordBlobRef = useRef<Blob | null>(null);
 
   const peerId = useRef<string | null>(null);
-  useEffect(() => {
-    peerRef.current = new Peer({
-      host: process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL,  // Your public IP or domain
-      //port: 80,  // The port your PeerJS server is running on
-      path: '/myapp',  // The path to your PeerJS server (configured in Apache)
-      secure: true  // Set to true if using https
-    });
-  }, []);
+
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTime((prevTime) => prevTime + 1);
@@ -56,35 +50,42 @@ function Session(props: PageProps) {
 
     return () => clearInterval(interval); // cleanup on unmount
   }, []);
-  useEffect(() => {
-    const interval = intervalFn();
 
-    return () => clearInterval(interval); // cleanup on unmount
-  }, []);
-
-  const intervalFn = () => {
-    const interval = setInterval(() => {
-      if (isP2PConEstablished) {
-        clearInterval(interval);
-        return;
+  const toggleMute = () => {
+    if (localStream) {
+      const audioTrack = localStream.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = isMuted; // Toggle mute state
+        setIsMuted(!isMuted);
       }
-      if (peerId.current) {
-        socket.emit("offer", {
-          callId: props.sessionId,
-          peerId: peerId.current,
-        });
-      }
-    }, 5000);
-
-    return interval;
+    }
   };
 
-  useEffect(() => {
+
+  function createPeer({ iceServers }: any) {
+
+    peerRef.current = new Peer({
+      host:
+        process.env.NODE_ENV == "production"
+          ? process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
+          : "localhost", // Your public IP or domain
+      port: process.env.NODE_ENV == 'production' ? 443 : 9000,  // The port your PeerJS server is running on
+      path: "/myapp", // The path to your PeerJS server (configured in Apache)
+      secure: process.env.NODE_ENV == "production", // Set to true if using https
+      config: {
+        iceServers,
+      },
+    });
+    offerConnection();
+
+
     peerRef.current?.on("open", function (id) {
+      console.log(id)
       peerId.current = id;
     });
 
     peerRef.current?.on("connection", (connection) => {
+      console.log(connection, 'connection')
       setP2PConnectionState(true);
       peerRef.current!.connect(connection.peer);
       connRef.current = connection;
@@ -98,7 +99,7 @@ function Session(props: PageProps) {
       connRef.current.on("close", () => {
         setP2PConnectionState(false);
         setCallConnectionState(false);
-        intervalFn();
+        offerConnection();
       });
 
       const call = peerRef.current!.call(
@@ -116,17 +117,42 @@ function Session(props: PageProps) {
         startAudioProcessing(stream);
       });
     });
+  }
+  const offerConnection = () => {
+    const interval = setInterval(() => {
+      console.log(isP2PConEstablished)
+      if (isP2PConEstablished) {
+        clearInterval(interval);
+        return;
+      }
+      if (peerId.current) {
+        socket.emit("offer", {
+          callId: props.sessionId,
+          peerId: peerId.current,
+        });
+      }
+    }, 5000);
+
+    return interval;
+  };
+
+
+
+  useEffect(() => {
+
+    socket.emit("join-session");
+    socket.on("ice-servers", createPeer);
+    return () => {
+      socket.off("ice-servers", createPeer);
+    };
   }, []);
 
-  const toggleMute = () => {
-    if (localStream) {
-      const audioTrack = localStream.getAudioTracks()[0];
-      if (audioTrack) {
-        audioTrack.enabled = isMuted; // Toggle mute state
-        setIsMuted(!isMuted);
-      }
-    }
-  };
+
+
+
+
+
+
 
   useEffect(() => {
     const getLocalStream = async () => {

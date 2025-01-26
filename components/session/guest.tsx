@@ -30,15 +30,6 @@ function Session(props: PageProps) {
 
   const localAudioRef = useRef<HTMLAudioElement | null>(null);
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    peerRef.current = new Peer({
-      host: process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL,  // Your public IP or domain
-      //port: 80,  // The port your PeerJS server is running on
-      path: '/myapp',  // The path to your PeerJS server (configured in Apache) only in local on production i use reverse proxy
-      secure: true  // Set to true if using https
-    });
-  }, []);
   useEffect(() => {
     const interval = setInterval(() => {
       setTime((prevTime) => prevTime + 1);
@@ -46,15 +37,61 @@ function Session(props: PageProps) {
 
     return () => clearInterval(interval); // cleanup on unmount
   }, []);
+
+  const toggleMute = () => {
+    if (localStream) {
+      const audioTrack = localStream.getAudioTracks()[0];
+      if (audioTrack) {
+        console.log(isMuted, "enabled");
+        audioTrack.enabled = isMuted; // Toggle mute state
+        setIsMuted(!isMuted);
+      }
+    }
+  };
+
+  function createPeer({ iceServers }: any) {
+    console.log(iceServers);
+    peerRef.current = new Peer({
+      host:
+        process.env.NODE_ENV == "production"
+          ? process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
+          : "localhost", // Your public IP or domain
+      port: process.env.NODE_ENV == "production" ? 443 : 9000, // The port your PeerJS server is running on
+      path: "/myapp", // The path to your PeerJS server (configured in Apache)
+      secure: process.env.NODE_ENV == "production", // Set to true if using https
+      config: {
+        iceServers,
+      },
+    });
+
+    peerRef.current?.on("open", function (id) {
+      console.log(id);
+    });
+    peerRef.current!.on("call", (call) => {
+      console.log("CALLL");
+      call.answer(localAudioRef.current!.srcObject as MediaStream); // Answer the call
+      call.on("stream", (stream) => {
+        setCallConnectionState(true);
+        console.log("STREMMMMM");
+        console.log(stream);
+        if (remoteAudioRef.current) {
+          remoteAudioRef.current.srcObject = stream;
+        }
+      });
+    });
+  }
+
   useEffect(() => {
-    socket.emit("call-connect", { callId: props.sessionId });
+    socket.emit("join-session", { callId: props.sessionId });
+    socket.on("ice-servers", createPeer);
+    return () => {
+      socket.off("ice-servers", createPeer);
+    };
   }, [socket]);
 
   useEffect(() => {
-    peerRef.current?.on("open", function (id) {});
-  }, []);
-  useEffect(() => {
-    function setConnection(data: { peerId: string; iceServers: any }) {
+    function setConnection(data: { peerId: string }) {
+      console.log("offer connection");
       connRef.current = peerRef.current!.connect(data.peerId);
 
       connRef.current.on("open", function () {
@@ -76,25 +113,17 @@ function Session(props: PageProps) {
     };
   }, [socket]);
 
-  const toggleMute = () => {
-    if (localStream) {
-      const audioTrack = localStream.getAudioTracks()[0];
-      if (audioTrack) {
-        console.log(isMuted, "enabled");
-        audioTrack.enabled = isMuted; // Toggle mute state
-        setIsMuted(!isMuted);
-      }
-    }
-  };
-
   useEffect(() => {
     const getLocalStream = async () => {
       try {
+        const selectedDeviceId = localStorage.getItem("audio-input-device-id")
+        // Request media stream with the specified deviceId
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: {
+            deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined, // Use exact if available, fallback to default
             noiseSuppression: true, // Enable noise suppression
-            echoCancellation: true, // Optional: Reduce echo
-            autoGainControl: true,  // Optional: Normalize audio levels
+            echoCancellation: true, // Reduce echo
+            autoGainControl: true, // Normalize audio levels
           },
         });
 
@@ -108,27 +137,7 @@ function Session(props: PageProps) {
       }
     };
 
-    // Simulating a Peer.js connection (Replace this with actual Peer.js logic)
-    const setupRemoteStream = () => {
-      peerRef.current!.on("call", (call) => {
-        call.answer(localAudioRef.current!.srcObject as MediaStream); // Answer the call
-        call.on("stream", (stream) => {
-          setCallConnectionState(true);
-          console.log("STREMMMMM");
-          console.log(stream);
-          if (remoteAudioRef.current) {
-            remoteAudioRef.current.srcObject = stream;
-          }
-        });
-      });
-    };
-
     getLocalStream();
-    setupRemoteStream();
-
-    return () => {
-      peerRef.current?.disconnect();
-    };
   }, []);
 
   const endCall = () => {};

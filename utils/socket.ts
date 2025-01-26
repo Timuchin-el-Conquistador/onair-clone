@@ -1,17 +1,17 @@
 import { io } from "socket.io-client";
 
-// "undefined" means the URL will be computed from the `window.location` object
-const URL =
-  process.env.NODE_ENV === "production"
-    ? `${
-     typeof window == "undefined"
-          ? 'https://' + process.env.PRODUCTION_BACKEND_URL
-          : 'https://' +process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
-      }`
-    : "http://localhost:8877";
+const productionUrl =
+  typeof window !== undefined
+    ? "https://" + process.env.PRODUCTION_BACKEND_URL
+    : "https://" + process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL;
 
 const config =
   process.env.NODE_ENV === "production"
     ? { autoConnect: false, path: "/shopline/socket.io" }
     : { autoConnect: false };
-export const socket = io(URL, config);
+export const socket = io(
+  process.env.NODE_ENV == "production"
+    ? productionUrl
+    : "http://localhost:8877",
+  config
+);

@@ -69,10 +69,14 @@ function Visitor(props: PageProps) {
   const phoneRef = useRef<string | null>(null);
 
   const enableAuidioPermission = async (permissionState: boolean) => {
-    if (!permissionState) return;
+    if (!permissionState) {
+      setAudioInputDevices([])
+      localStorage.removeItem('audio-input-device-id')
+      return
+    }
 
     try {
-      //await navigator.mediaDevices.getUserMedia({ audio: true });
+      await navigator.mediaDevices.getUserMedia({ audio: true });
 
       // Get the list of available audio devices after permission is granted
       const devices = await navigator.mediaDevices.enumerateDevices();
