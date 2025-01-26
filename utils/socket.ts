@@ -2,8 +2,8 @@ import { io } from "socket.io-client";
 
 const productionUrl =
   typeof window !== undefined
-    ? "https://" + process.env.PRODUCTION_BACKEND_URL
-    : "https://" + process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL;
+    ? "https://" + process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
+    : "https://" + process.env.PRODUCTION_BACKEND_URL;
 
 const config =
   process.env.NODE_ENV === "production"
