@@ -42,7 +42,6 @@ function Session(props: PageProps) {
 
   const peerId = useRef<string | null>(null);
 
-
   useEffect(() => {
     const interval = setInterval(() => {
       setTime((prevTime) => prevTime + 1);
@@ -61,31 +60,32 @@ function Session(props: PageProps) {
     }
   };
 
-
   function createPeer({ iceServers }: any) {
-
     peerRef.current = new Peer({
       host:
         process.env.NODE_ENV == "production"
           ? process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
           : "localhost", // Your public IP or domain
-      port: process.env.NODE_ENV == 'production' ? 443 : 9000,  // The port your PeerJS server is running on
+      port: process.env.NODE_ENV == "production" ? 443 : 9000, // The port your PeerJS server is running on
       path: "/myapp", // The path to your PeerJS server (configured in Apache)
       secure: process.env.NODE_ENV == "production", // Set to true if using https
       config: {
-        iceServers,
+        iceServers: iceServers.urls.map((url: string) => ({
+          urls: url, // Each URL should be a string
+          username: iceServers.username, // TURN server username
+          credential: iceServers.credential, // TURN server credential
+        })),
       },
     });
     offerConnection();
 
-
     peerRef.current?.on("open", function (id) {
-      console.log(id)
+      console.log(id);
       peerId.current = id;
     });
 
     peerRef.current?.on("connection", (connection) => {
-      console.log(connection, 'connection')
+      console.log(connection, "connection");
       setP2PConnectionState(true);
       peerRef.current!.connect(connection.peer);
       connRef.current = connection;
@@ -120,7 +120,7 @@ function Session(props: PageProps) {
   }
   const offerConnection = () => {
     const interval = setInterval(() => {
-      console.log(isP2PConEstablished)
+      console.log(isP2PConEstablished);
       if (isP2PConEstablished) {
         clearInterval(interval);
         return;
@@ -136,23 +136,13 @@ function Session(props: PageProps) {
     return interval;
   };
 
-
-
   useEffect(() => {
-
     socket.emit("join-session");
     socket.on("ice-servers", createPeer);
     return () => {
       socket.off("ice-servers", createPeer);
     };
   }, []);
-
-
-
-
-
-
-
 
   useEffect(() => {
     const getLocalStream = async () => {

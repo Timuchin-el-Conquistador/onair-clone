@@ -60,7 +60,11 @@ function Session(props: PageProps) {
       path: "/myapp", // The path to your PeerJS server (configured in Apache)
       secure: process.env.NODE_ENV == "production", // Set to true if using https
       config: {
-        iceServers,
+        iceServers: iceServers.urls.map((url: string) => ({
+          urls: url, // Each URL should be a string
+          username: iceServers.username, // TURN server username
+          credential: iceServers.credential, // TURN server credential
+        })),
       },
     });
 
@@ -116,11 +120,13 @@ function Session(props: PageProps) {
   useEffect(() => {
     const getLocalStream = async () => {
       try {
-        const selectedDeviceId = localStorage.getItem("audio-input-device-id")
+        const selectedDeviceId = localStorage.getItem("audio-input-device-id");
         // Request media stream with the specified deviceId
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: {
-            deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined, // Use exact if available, fallback to default
+            deviceId: selectedDeviceId
+              ? { exact: selectedDeviceId }
+              : undefined, // Use exact if available, fallback to default
             noiseSuppression: true, // Enable noise suppression
             echoCancellation: true, // Reduce echo
             autoGainControl: true, // Normalize audio levels
