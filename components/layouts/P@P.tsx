@@ -2,11 +2,9 @@
 
 import { socket } from "@/utils/socket";
 
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
-import { useUserStore } from "@/providers/user";
 
-import { DataConnection, Peer } from "peerjs";
 import WebCallNotification from "../Notifications/call";
 
 import { type Call } from "@/lib/types/call";

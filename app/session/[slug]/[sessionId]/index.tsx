@@ -28,7 +28,7 @@ function ActiveCallSession(props: PageProps) {
   const { session, goOnline, goOffline } = useSession(props.url);
 
   useEffect(() => {
-    if (props.isAuth) return;
+    //if (props.isAuth) return;
     function online() {
       alert("online");
       goOnline();
@@ -102,6 +102,7 @@ function ActiveCallSession(props: PageProps) {
         <GuestCall
           slug={session.link.slug}
           sessionId={props.sessionId}
+          endCall={endCall}
         />
       );
     } else if (status == "waiting") {

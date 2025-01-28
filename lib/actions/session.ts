@@ -15,7 +15,7 @@ export async function retrieveActiveSessions(slug:string) {
     
     if (!session)   return  redirect("/users/sign_in");
 
-    const path = `api/v1/user/${session.email}/urls/${slug}/calls/sessions`;
+    const path = `api/v1/user/${session.email}/urls/${slug}/calls/active-sessions`;
 
     const response:{sessions:Call[],message:string} = await fakeBackend.get(
       path,

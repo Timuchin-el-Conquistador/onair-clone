@@ -9,6 +9,7 @@ const protectedRoutes = [
   /^\/dashboard$/,
   // /^(\/[a-zA-Z0-9]+)?$/,
   /^\/calls$/,
+  /^\/calls\/([a-zA-Z0-9]+)$/,
  // /^\/session\/([a-zA-Z0-9]+)\/([a-zA-Z0-9]+)$/,
   /^\/settings$/,
   /^\/integrations$/,

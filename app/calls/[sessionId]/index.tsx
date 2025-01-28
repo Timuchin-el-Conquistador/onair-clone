@@ -4,23 +4,54 @@ import dynamic from "next/dynamic";
 
 import Pulse from "@/components/Loaders/pulse";
 
+import { Caller } from "@/lib/types/call";
 
 import "@/styles/calls/session.scss";
+import Link from "next/link";
 
 const SlTooltip = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react/tooltip/index.js"),
-)
+  () => import("@shoelace-style/shoelace/dist/react/tooltip/index.js")
+);
+const SlRelativeTime = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/relative-time/index.js"),
+  {
+    //  loading: () => <p>Loading...</p>,
+    ssr: false,
+  }
+);
 
+type PageProps = {
+  caller: Caller;
+  linkName: string;
+  callId: string;
+  callStartedTime: string;
+  callAnsweredTime: string;
+  callEndedTime: string;
+  duration:number
+};
 
-function CallSession() {
+function CallSession(props: PageProps) {
+    // Step 1: Remove the ordinal suffix (e.g., "nd")
+          
+    const cleanedDateString = props.callAnsweredTime.replace(
+      /(\d+)(st|nd|rd|th)/,
+      "$1"
+    );
+
+    // Step 2: Parse the date
+    const date = new Date(cleanedDateString);
+
+    // Step 3: Convert to ISO 8601 format
+    const isoDate = date.toISOString();
+
   return (
     <div id="session" className="p-6">
       <div className="bg-white p-6">
         <div>
           <div className="mb-6 border-b border-gray-200">
             <nav className="-mb-px flex overflow-y-scroll remove-scroll">
-              <a
-                href="/calls/Xfz9eFtcl5N8hiry"
+              <Link
+                href={`/calls/${props.callId}`}
                 className="
 							whitespace-nowrap py-4 px-2 sm:px-6 border-b-2 border-transparent font-medium text-sm focus:outline-none
 							hover:text-blue-500 hover:border-blue-300
@@ -28,8 +59,8 @@ function CallSession() {
 						"
               >
                 Details
-              </a>{" "}
-              <a
+              </Link>{" "}
+            {/*}  <a
                 href="/calls/Xfz9eFtcl5N8hiry/transcription"
                 className="
 							whitespace-nowrap py-4 px-2 sm:px-6 border-b-2 border-transparent font-medium text-sm focus:outline-none
@@ -38,7 +69,7 @@ function CallSession() {
 						"
               >
                 Transcription
-              </a>
+              </a>*/}
             </nav>
           </div>
         </div>{" "}
@@ -46,15 +77,22 @@ function CallSession() {
           <table className="details-table">
             <tbody>
               <tr>
-                <td>Name</td> <td>Chingiz</td>
-              </tr>{" "}
+                <td>Name</td> <td>{props.caller.fullName}</td>
+              </tr>
+              {props.caller.email != null && (
+                <tr>
+                  <td>E-mail</td> <td>{props.caller.email}</td>
+                </tr>
+              )}
+              {props.caller.phone != null && (
+                <tr>
+                  <td>E-mail</td> <td>{props.caller.phone}</td>
+                </tr>
+              )}
               <tr>
-                <td>E-mail</td> <td>test@gmail.com</td>
-              </tr>{" "}
-              <tr>
-                <td>Device</td>{" "}
+                <td>Device</td>
                 <td>
-                  Azerbaijan 🇦🇿 <small>(Windows Chrome/132)</small>
+                  Azerbaijan 🇦🇿 <small>{props.caller.info.browser}</small>
                 </td>
               </tr>{" "}
               <tr>
@@ -65,20 +103,20 @@ function CallSession() {
               <tr>
                 <td>Link</td>{" "}
                 <td>
-                  <a href="https://onair.io/testing">TEST</a>
+                  <a href="https://onair.io/testing">{props.linkName}</a>
                 </td>
               </tr>{" "}
               <tr>
-                <td>Identifier</td> <td>Xfz9eFtcl5N8hiry</td>
+                <td>Identifier</td> <td>{props.callId}</td>
               </tr>{" "}
               <tr>
                 <td>Answered By</td> <td>Cingiz Hamidov</td>
               </tr>{" "}
               <tr>
-                <td>Date</td> <td>4 hours ago</td>
+                <td>Date</td> <td>{<SlRelativeTime date={isoDate}/>}</td>
               </tr>{" "}
               <tr>
-                <td>Duration</td> <td>3 minutes</td>
+                <td>Duration</td> <td>{props.duration} minutes</td>
               </tr>{" "}
               <tr>
                 <td colSpan={2}>
@@ -97,7 +135,7 @@ function CallSession() {
                 <li className="mb-2.5 ms-4 w-fit cursor-pointer">
                   <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white"></div>{" "}
                   <time className="inline-block mt-1.5 text-small font-normal leading-none text-gray-400">
-                    Jan 24, 2025 @ 12:13pm
+                  {props.callStartedTime}
                   </time>{" "}
                   <h3 className="text-gray-900 text-small">Call started</h3>
                 </li>
@@ -110,7 +148,7 @@ function CallSession() {
                 <li className="mb-2.5 ms-4 w-fit cursor-pointer">
                   <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white"></div>{" "}
                   <time className="inline-block mt-1.5 text-small font-normal leading-none text-gray-400">
-                    Jan 24, 2025 @ 12:13pm
+                  {props.callAnsweredTime}
                   </time>{" "}
                   <h3 className="text-gray-900 text-small">
                     Answered by Cingiz Hamidov
@@ -125,7 +163,7 @@ function CallSession() {
                 <li className="mb-2.5 ms-4 w-fit cursor-pointer">
                   <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white"></div>{" "}
                   <time className="inline-block mt-1.5 text-small font-normal leading-none text-gray-400">
-                    Jan 24, 2025 @ 12:16pm
+                   {props.callEndedTime}
                   </time>{" "}
                   <h3 className="text-gray-900 text-small">Call ended</h3>
                 </li>

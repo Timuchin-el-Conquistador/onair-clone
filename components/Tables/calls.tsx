@@ -68,7 +68,7 @@ type PageProps = {
 };
 
 function Table(props: PageProps) {
-  console.log(props.calls);
+
   return (
     <>
       <div id="sessions" className="mb-6 mx-0 sm:mx-0 hidden sm:block">
@@ -98,7 +98,6 @@ function Table(props: PageProps) {
 
                 // Step 3: Convert to ISO 8601 format
                 const isoDate = date.toISOString();
-                //const isoDate= moment(call.callStartedTime).toISOString();
 
                 return (
                   <tr key={call._id}>

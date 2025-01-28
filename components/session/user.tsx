@@ -10,6 +10,8 @@ import { formatHHMMSSTime } from "@/utils/timer";
 
 import Image from "next/image";
 
+import { KrispNoiseFilter } from "@livekit/krisp-noise-filter";
+
 type PageProps = {
   slug: string;
   sessionId: string;
@@ -17,8 +19,8 @@ type PageProps = {
 };
 
 function Session(props: PageProps) {
-  const [isP2PConEstablished, setP2PConnectionState] = useState(false);
-  const [isCallConEstablished, setCallConnectionState] = useState(false);
+  //  const [isP2PConEstablished, setP2PConnectionState] = useState(false);
+  const [isCallConEstablished, setCallConnectionState] = useState(false); //online offline
 
   const [time, setTime] = useState(0); // time in seconds
 
@@ -26,6 +28,7 @@ function Session(props: PageProps) {
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
 
   const [isMuted, setIsMuted] = useState(false);
+  const [isRemoteStreamMuted, setRemoteStreamIsMuted] = useState(false);
 
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
@@ -41,6 +44,8 @@ function Session(props: PageProps) {
   const callAudioRecordBlobRef = useRef<Blob | null>(null);
 
   const peerId = useRef<string | null>(null);
+
+  const isP2PConEstablishedRef = useRef(false); // Create a ref to store the latest state
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -59,6 +64,26 @@ function Session(props: PageProps) {
       }
     }
   };
+
+  async function demonBeastTransform(stream: MediaStream) {
+    const ctx = new AudioContext();
+    const gainNode = ctx.createGain();
+    const audioDest = ctx.createMediaStreamDestination();
+    const source = ctx.createMediaStreamSource(stream);
+
+    // gainNode is set to 0.5
+    gainNode.connect(audioDest);
+    gainNode.gain.value = 0.5;
+    source.connect(gainNode);
+
+    const audio = new Audio();
+    audio.controls = true;
+    audio.autoplay = true;
+    audio.srcObject = audioDest.stream;
+    // audio.play();
+    // document.getElementById('audioContainer').appendChild(audio);
+    return audioDest.stream;
+  }
 
   function createPeer({ iceServers }: any) {
     peerRef.current = new Peer({
@@ -86,7 +111,7 @@ function Session(props: PageProps) {
 
     peerRef.current?.on("connection", (connection) => {
       console.log(connection, "connection");
-      setP2PConnectionState(true);
+      isP2PConEstablishedRef.current = true;
       peerRef.current!.connect(connection.peer);
       connRef.current = connection;
 
@@ -97,7 +122,8 @@ function Session(props: PageProps) {
 
       // Handle disconnection of the remote peer
       connRef.current.on("close", () => {
-        setP2PConnectionState(false);
+        console.log("peer con lost");
+        isP2PConEstablishedRef.current = false;
         setCallConnectionState(false);
         offerConnection();
       });
@@ -111,6 +137,7 @@ function Session(props: PageProps) {
         setCallConnectionState(true);
         setRemoteStream(stream); // Set the remote stream
 
+  
         if (remoteAudioRef.current) {
           remoteAudioRef.current.srcObject = stream;
         }
@@ -120,8 +147,8 @@ function Session(props: PageProps) {
   }
   const offerConnection = () => {
     const interval = setInterval(() => {
-      console.log(isP2PConEstablished);
-      if (isP2PConEstablished) {
+      console.log(isP2PConEstablishedRef.current);
+      if (isP2PConEstablishedRef.current) {
         clearInterval(interval);
         return;
       }
@@ -154,8 +181,11 @@ function Session(props: PageProps) {
             autoGainControl: true, // Optional: Normalize audio levels
           },
         });
+
+        // Set the audio stream as the local stream
         setLocalStream(stream);
 
+        // Assign the stream to an audio element reference (for playback)
         if (localAudioRef.current) {
           localAudioRef.current.srcObject = stream;
         }
@@ -168,6 +198,9 @@ function Session(props: PageProps) {
 
     return () => {
       peerRef.current?.disconnect();
+      if (localStream) {
+        localStream.getTracks().forEach((track) => track.stop());
+      }
     };
   }, []);
 
@@ -220,6 +253,9 @@ function Session(props: PageProps) {
     }
 
     props.endCall(props.sessionId, time);
+    if (localStream) {
+      localStream.getTracks().forEach((track) => track.stop());
+    }
   };
 
   async function startAudioProcessing(stream: MediaStream) {
@@ -340,6 +376,9 @@ function Session(props: PageProps) {
             </div>{" "}
             {!isCallConEstablished && (
               <div className="mt-1 text-red-500 text-sm font-thin">Offline</div>
+            )}
+            {isRemoteStreamMuted && (
+              <div className="mt-1 text-red-500 text-sm font-thin">Muted</div>
             )}
           </div>{" "}
           <div className="audio-call-controls">

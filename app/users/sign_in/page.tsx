@@ -2,6 +2,8 @@
 
 import "@/styles/login.scss";
 
+import dynamic from "next/dynamic";
+
 import Image from "next/image";
 
 import { useRef } from "react";
@@ -15,12 +17,21 @@ import "@/styles/login.scss";
 
 import Logo from "@/public/logo.svg";
 import Danger from "@/components/Alerts/danger";
-import Spinner from "@/components/Loaders/spinner";
+
 
 import { useVisibility } from "@/hooks/useVisibility";
 
 import { useRouter } from "next/navigation";
 
+
+
+const SlSpinner = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/spinner/index.js"),
+  {
+    //  loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
 function Login() {
   const router = useRouter();
 
@@ -38,7 +49,7 @@ function Login() {
   const passwordRef = useRef<HTMLInputElement | null>(null);
 
 
-  console.log(error)
+
   return (
     <>
       <div className="mx-auto w-full text-center">
@@ -137,6 +148,7 @@ function Login() {
                   }}
                 />
               )}
+              {loading && <SlSpinner></SlSpinner>}
             <div className="mb-6">
               {/*<div className="m-auto mb-6 grid grid-rows-2 gap-4">
       <a href="/oauth/google" className="social-sign-in-button bg-blue-500">
@@ -222,7 +234,7 @@ function Login() {
         </div>
       </div>
 
-      {loading && <Spinner />}
+
     </>
   );
 }

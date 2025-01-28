@@ -10,9 +10,13 @@ import { formatHHMMSSTime } from "@/utils/timer";
 
 import Image from "next/image";
 
+import { KrispNoiseFilter } from '@livekit/krisp-noise-filter';
+
+
 type PageProps = {
   slug: string;
   sessionId: string;
+  endCall: (callId: string, duration: number) => void;
 };
 
 function Session(props: PageProps) {
@@ -23,6 +27,7 @@ function Session(props: PageProps) {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 
   const [isMuted, setIsMuted] = useState(false);
+  const [isRemoteStreamMuted, setRemoteStreamIsMuted] = useState(false);
 
   const peerRef = useRef<Peer | null>(null);
 
@@ -49,6 +54,28 @@ function Session(props: PageProps) {
     }
   };
 
+
+  async function demonBeastTransform(stream: MediaStream) {
+    const ctx = new AudioContext();
+    const gainNode = ctx.createGain();
+    const audioDest = ctx.createMediaStreamDestination();
+    const source = ctx.createMediaStreamSource(stream);
+
+    // gainNode is set to 0.5
+    gainNode.connect(audioDest);
+    gainNode.gain.value = 0.5;
+    source.connect(gainNode);
+
+    const audio = new Audio();
+    audio.controls = true;
+    audio.autoplay = true;
+    audio.srcObject = audioDest.stream;
+    // audio.play();
+    // document.getElementById('audioContainer').appendChild(audio);
+    return audioDest.stream;
+  }
+
+
   function createPeer({ iceServers }: any) {
     console.log(iceServers);
     peerRef.current = new Peer({
@@ -65,6 +92,7 @@ function Session(props: PageProps) {
           username: iceServers.username, // TURN server username
           credential: iceServers.credential, // TURN server credential
         })),
+      
       },
     });
 
@@ -78,6 +106,8 @@ function Session(props: PageProps) {
         setCallConnectionState(true);
         console.log("STREMMMMM");
         console.log(stream);
+
+    
         if (remoteAudioRef.current) {
           remoteAudioRef.current.srcObject = stream;
         }
@@ -95,7 +125,7 @@ function Session(props: PageProps) {
 
   useEffect(() => {
     function setConnection(data: { peerId: string }) {
-      console.log("offer connection");
+      console.log("recieved offer to  connect");
       connRef.current = peerRef.current!.connect(data.peerId);
 
       connRef.current.on("open", function () {
@@ -117,24 +147,27 @@ function Session(props: PageProps) {
     };
   }, [socket]);
 
+
   useEffect(() => {
     const getLocalStream = async () => {
       try {
         const selectedDeviceId = localStorage.getItem("audio-input-device-id");
+
         // Request media stream with the specified deviceId
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: {
-            deviceId: selectedDeviceId
-              ? { exact: selectedDeviceId }
-              : undefined, // Use exact if available, fallback to default
-            noiseSuppression: true, // Enable noise suppression
+            deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined, // Use exact if available, fallback to default
+            noiseSuppression: true, // Enable basic noise suppression
             echoCancellation: true, // Reduce echo
             autoGainControl: true, // Normalize audio levels
           },
         });
 
-        setLocalStream(stream);
+  // Set the audio stream as the local stream
+  setLocalStream(stream);
 
+
+        // Assign the stream to an audio element reference (for playback)
         if (localAudioRef.current) {
           localAudioRef.current.srcObject = stream;
         }
@@ -144,9 +177,22 @@ function Session(props: PageProps) {
     };
 
     getLocalStream();
-  }, []);
 
-  const endCall = () => {};
+    // Cleanup: stop the stream when the component is unmounted
+    return () => {
+      if (localStream) {
+        localStream.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, []); // Empty array to ensure this effect runs once on mount
+
+
+  const endCall = () => {
+    props.endCall(props.sessionId, time);
+    if (localStream) {
+      localStream.getTracks().forEach((track) => track.stop());
+    }
+  };
   return (
     <div id="conference">
       <div id="active-audio">
@@ -231,6 +277,9 @@ function Session(props: PageProps) {
             </div>{" "}
             {!isCallConEstablished && (
               <div className="mt-1 text-red-500 text-sm font-thin">Offline</div>
+            )}
+                       {isRemoteStreamMuted && (
+              <div className="mt-1 text-red-500 text-sm font-thin">Muted</div>
             )}
           </div>{" "}
           <div className="audio-call-controls">
