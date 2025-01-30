@@ -6,7 +6,7 @@ import { useRef, useState,useEffect } from "react";
 
 import Link from "next/link"
 
-import { Device } from "@/lib/types/device";
+import { type Integration as IIntegration } from "@/lib/types//user";
 
 const SlRelativeTime = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/relative-time/index.js"),
@@ -26,11 +26,11 @@ const SlTooltip = dynamic(
 
 type PageProps = {
 
-    device:Device
+  integration:IIntegration
 }
 
 
-function IntegratedDevice(props:PageProps) {
+function Integration(props:PageProps) {
       const [isDropdownVisible, setDropDownVisibility] = useState(false);
     
       const elementRef = useRef<HTMLDivElement | null>(null);
@@ -57,7 +57,7 @@ function IntegratedDevice(props:PageProps) {
 
                // Step 1: Remove the ordinal suffix (e.g., "nd")
           
-               const cleanedDateString = props.device.lastLogin.replace(
+               const cleanedDateString = props.integration.lastLogin.replace(
                 /(\d+)(st|nd|rd|th)/,
                 "$1"
               );
@@ -80,7 +80,7 @@ function IntegratedDevice(props:PageProps) {
       />{" "}
       <div className="index-card-header relative">
         <h4 className="w-full truncate">Mobile</h4>{" "}
-        <h3 className="w-full truncate"> {props.device.description}</h3>{" "}
+        <h3 className="w-full truncate"> {props.integration.name}</h3>{" "}
         <div className="index-card-top-right"></div>
       </div>{" "}
       <div className="flex items-center col-span-3"></div>{" "}
@@ -133,10 +133,11 @@ function IntegratedDevice(props:PageProps) {
             aria-orientation="vertical"
             aria-labelledby="options-menu"
             className="expandable-section-menu bg-white divide-y divide-gray-100 focus:outline-none"
+            style={{bottom: '-15%'}}
           >
             <div role="none" className="py-1">
               <Link
-                href={`/integrations/update/${props.device._id}`}
+                href={`/integrations/update/${props.integration._id}`}
                 role="menuitem"
                 className="expandable-section-menu-item"
               >
@@ -153,4 +154,4 @@ function IntegratedDevice(props:PageProps) {
 }
 
 
-export default IntegratedDevice
+export default Integration

@@ -1,34 +1,41 @@
 "use client";
 
-import Card from "@/components/cards/link";
+import { Fragment, useEffect, useState } from "react";
+
+import Link from "next/link";
 
 import "@/styles/dashboard.scss";
 
-import { type Link, type ExtendedLink } from "@/lib/types/links";
-import { Fragment, useEffect, useState } from "react";
-
+import Card from "@/components/cards/link";
 import Pulse from "@/components/Loaders/pulse";
 
+import { type ExtendedLink } from "@/lib/types/links";
+
+import { useUserStore } from "@/providers/user";
+
 type PageProps = {
-  //links: ExtendedLink[];
-  retrieveUrlsAction:()=> Promise<ExtendedLink[]|Error>
+  retrieveUrlsAction: () => Promise<ExtendedLink[] | Error>;
   removeLinkAction: (slug: string) => Promise<string | Error>;
 };
 
 function Dashboard(props: PageProps) {
   const [links, setLinks] = useState<ExtendedLink[]>([]);
-  const [loaded,setLoadedState] = useState(false)
+  const [loaded, setLoadedState] = useState(false);
 
-  useEffect(()=>{
-    const fetchLinks  = async ()=>{
-    const response = await props.retrieveUrlsAction();
-    const links = response instanceof Error || response == null ? [] : response;
-    setLinks(links)
-    setLoadedState(true)
-    }
-    fetchLinks()
-      
-  }, [props.retrieveUrlsAction])
+  const { subscription } = useUserStore((state) => state);
+  const maxLinks = subscription?.links || 0;
+
+  useEffect(() => {
+    const fetchLinks = async () => {
+      const response = await props.retrieveUrlsAction();
+      const links =
+        response instanceof Error || response == null ? [] : response;
+      setLinks(links);
+      setLoadedState(true);
+    };
+    fetchLinks();
+  }, [props.retrieveUrlsAction]);
+
   return (
     <div id="pages-grid" className="index-card-grid">
       {links.map((link) => (
@@ -49,7 +56,7 @@ function Dashboard(props: PageProps) {
           />
         </Fragment>
       ))}
-            {!loaded && <Pulse />}
+      {!loaded && <Pulse />}
       <div className="index-card bordered">
         <div className="p-6">
           <h4 className="text-lg font-bold">New Link</h4>{" "}
@@ -61,14 +68,14 @@ function Dashboard(props: PageProps) {
               {" "}
               <div className="sp-tooltip-element">
                 <span className="bg-white flex justify-center border text-sm text-center px-2 rounded-2xl w-16 m-auto items-center text-gray-400">
-                  {links.length} / 10
+                  {links.length} / {maxLinks}
                 </span>
               </div>{" "}
             </div>
           </div>{" "}
-          <a href="/pages/new" className="block btn btn-blue mt-8">
+          <Link href="/pages/new" className="block btn btn-blue mt-8">
             New Link
-          </a>
+          </Link>
         </div>
       </div>
     </div>

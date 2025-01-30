@@ -30,11 +30,11 @@ export async function retrieveCall(callId:string) {
 
     if (!session) return redirect("/users/sign_in");
     const path = `api/v1/user/${session.email}/calls/${callId}`;
-    console.log(path)
+
     const response: { message: string; session: Call } = await fakeBackend.get(
       path
     );
-    console.log(response)
+
     return response.session;
   } catch (error) {
     return error instanceof Error ? error : new Error(String(error));

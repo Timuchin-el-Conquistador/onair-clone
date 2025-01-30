@@ -1,25 +1,32 @@
 "use client";
 
-import Card from "@/components/cards/device";
-
-import "@/styles/dashboard.scss";
+import { Fragment, useEffect,useState } from "react";
 
 import Link from "next/link"
 
-import { Fragment } from "react";
+import Card from "@/components/cards/integration";
 
-import { Device } from "@/lib/types/device";
+import "@/styles/dashboard.scss";
 
+
+
+import { type Integration } from "@/lib/types/user";
+
+import { useUserStore } from "@/providers/user";
 type PageProps = {
-  devices: Device[];
+  integrations: Integration[];
 };
 
 function Integrations(props: PageProps) {
+
+  const { subscription } = useUserStore((state) => state);
+  const maxIntegrations = subscription?.integrations || 0;
+  
   return (
     <div id="pages-grid" className="index-card-grid">
-      {props.devices.map((device) => (
-        <Fragment key={device._id}>
-        <Card  device={device}/>
+      {props.integrations.map((integration) => (
+        <Fragment key={integration._id}>
+        <Card  integration={integration}/>
         </Fragment>
       ))}
       <div className="index-card bordered">
@@ -34,7 +41,7 @@ function Integrations(props: PageProps) {
               {" "}
               <div className="sp-tooltip-element">
                 <span className="bg-white flex justify-center border text-sm text-center px-2 rounded-2xl w-16 m-auto items-center text-gray-400">
-                  {props.devices.length} / 3
+                  {props.integrations.length} / {maxIntegrations}
                 </span>
               </div>{" "}
             </div>

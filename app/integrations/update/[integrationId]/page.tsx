@@ -1,17 +1,20 @@
-"use client";
-
 import "@/styles/integrations/new-integration.scss";
 
-import Primary from "@/components/Badges/primary";
 import Layout from "@/components/layouts/private";
-import Device from "@/components/Integrations/device";
+import Integration from "@/components/Integrations/";
 
+import { retrieveIntegration } from "@/lib/actions/user";
 
-
-function EditDeviceIntegration() {
+async function EditDeviceIntegration(props: {
+  params: { integrationId: string };
+}) {
+  const response = await retrieveIntegration(props.params.integrationId);
+  const integration =
+    response instanceof Error || response == null ? null: response;
+console.log(integration)
   return (
     <Layout page="integrations">
-      <Device />
+      <Integration integration={integration} />
     </Layout>
   );
 }

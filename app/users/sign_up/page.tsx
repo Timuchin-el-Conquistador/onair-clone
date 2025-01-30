@@ -21,7 +21,6 @@ import { useRef } from "react";
 
 import { useRouter } from "next/navigation";
 
-
 const SlSpinner = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/spinner/index.js"),
   {
@@ -139,25 +138,25 @@ function Signup() {
           <div className="w-full sp-form auth-form py-4 px-4 md:py-16 md:px-16">
             {/*Social signin partial*/}
             {isSuccessAlertVisible ? (
-        <div className="fixed bottom-0 w-screen flex justify-center">
-          <Success message={message!}>
-            <Link href="/users/sign_in" className="link">
-              Login
-            </Link>
-          </Success>
-        </div>
-      ) : null}
-      {isDangerAlertVisible ? (
-        <div className="fixed bottom-0 w-screen flex justify-center">
-          <Danger
-            message={error?.message || ""}
-            click={() => {
-              setDangerAlertVisibility(false);
-            }}
-          />
-        </div>
-      ) : null}
-                    {loading && <SlSpinner></SlSpinner>}
+
+                <Success message={message!}>
+                  <Link href="/users/sign_in" className="link">
+                    Login
+                  </Link>
+                </Success>
+ 
+            ) : null}
+            {isDangerAlertVisible ? (
+          
+                <Danger
+                  message={error?.message || "ERROR"}
+                  click={() => {
+                    setDangerAlertVisibility(false);
+                  }}
+                />
+   
+            ) : null}
+            {loading && <SlSpinner></SlSpinner>}
             <div className="mb-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -273,10 +272,6 @@ function Signup() {
           </div>
         </div>
       </div>
-
-  
-
-
     </>
   );
 }

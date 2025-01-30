@@ -2,15 +2,14 @@
 
 import "@/styles/calls/waiting-room.scss";
 
-import VisitorForm from "@/components/Form/visitor";
-import ConnectingCall from "@/components/Presentational/connecting";
+import VisitorForm from "./Form/visitor";
 import UrlIsOffline from "./Presentational/offline";
 
 import { socket } from "@/utils/socket";
 
 import { useEffect, useRef } from "react";
 
-import { ExtendedLink, Settings } from "@/lib/types/links";
+import { ExtendedLink } from "@/lib/types/links";
 
 import useSession from "@/hooks/useSession";
 
@@ -34,16 +33,7 @@ function Visitor(props: PageProps) {
   });
 
   useEffect(() => {
-    /*async function fetchLocation() {
-      try {
-        const response = await axios.get("/api/ip");
-        console.log(response);
-      } catch (err) {
-        console.log(err);
-      }
-    }
 
-    fetchLocation()*/
 
     const userAgent = window.navigator.userAgent.toLowerCase();
 

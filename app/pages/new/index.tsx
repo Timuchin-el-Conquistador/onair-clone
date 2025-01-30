@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-import Layout from "@/components/layouts/private";
+import Layout from "@/components/layouts/notifications";
 import DailyAvailability from "@/components/availability";
 import ConnectedDevice from "@/components/Integrations/connected-device";
 import Danger from "@/components/Alerts/danger";

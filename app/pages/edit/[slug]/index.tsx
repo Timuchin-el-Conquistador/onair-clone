@@ -30,14 +30,14 @@ const SlButton = dynamic(
 const SlCheckbox = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/checkbox/index.js"),
   {
-    loading: () => <>Loading...</>,
+  //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
 const SlTooltip = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/tooltip/index.js"),
   {
-    loading: () => <>Loading...</>,
+  //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
@@ -45,7 +45,7 @@ const SlTooltip = dynamic(
 const SlDialog = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),
   {
-    loading: () => <>Loading...</>,
+  //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
@@ -540,9 +540,9 @@ function EditLink(props: PageProps) {
         <p className="text-gray-400 text-sm">Select a maximum of 8 devices</p>{" "}
         <div className="bg-white rounded-md border border-gray-200">
           <div className="divide-y divide-gray-200 max-h-[40vh] overflow-scroll">
-            <div className="flex flex-row pl-3 py-3 hover:bg-stone-100 text-sm h-16 cursor-pointer">
+            <div className="flex flex-col pl-3 py-3 hover:bg-stone-100 text-sm h-16 cursor-pointer">
               {props.devices.map((device: Device) => (
-                <Fragment key={device._id}>
+                <div key={device._id}  className="flex flex-row pl-3 py-3 hover:bg-stone-100 text-sm h-16 cursor-pointer">
                   <SlCheckbox
                     size="small"
                     form=""
@@ -574,7 +574,7 @@ function EditLink(props: PageProps) {
                       <span className="ml-0.5">{device.description}</span>
                     </p>
                   </div>
-                </Fragment>
+                </div>
               ))}
             </div>
           </div>

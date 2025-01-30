@@ -119,16 +119,16 @@ function Sidebar({ page }: { page: string }) {
                     <span className="text-gray-300">&gt; &nbsp;</span>{" "}
                     Organizations
                   </a>{" "}*/}
-                  <a href="/integrations" className={`advanced-buttons ${page == 'integrations' && 'selected'}`}>
+                  <Link href="/integrations" className={`advanced-buttons ${page == 'integrations' && 'selected'}`}>
                     <span className="text-gray-300">&gt; &nbsp;</span>{" "}
                     Integrations
-                  </a>{" "}
-                  <a href="/settings" className={`advanced-buttons ${page == 'settings' && 'selected'}`}>
+                  </Link>{" "}
+                  <Link href="/settings" className={`advanced-buttons ${page == 'settings' && 'selected'}`}>
                     <span className="text-gray-300">&gt; &nbsp;</span> Settings
-                  </a>{" "}
-                {/*}  <a href="/billing" className={`advanced-buttons ${page == 'billing' && 'selected'}`}>
+                  </Link>{" "}
+               <Link href="/billing" className={`advanced-buttons ${page == 'billing' && 'selected'}`}>
                     <span className="text-gray-300">&gt; &nbsp;</span> Billing
-                  </a>*/}
+                  </Link>
                 </div>
               </div>
             </nav>

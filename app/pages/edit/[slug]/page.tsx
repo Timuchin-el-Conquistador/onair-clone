@@ -17,7 +17,7 @@ async function EditPage(props: { params: { slug: string } }) {
       ? []
       : devicesResponse;
 
-
+console.log(devices)
 
   if(url == null) return
   return (
@@ -29,11 +29,12 @@ async function EditPage(props: { params: { slug: string } }) {
           availability: url.availability,
           callStrategy: url.callStrategy,
           connectedDevices: url.connectedDevices,
-          linkName: "Meeting with Cingiz",
+          integrations:url.integrations,
+          linkName: url.linkName,
           settings: {
-            visitorForm: ["email"],
-            onlineMessage: "Introduce yourself and press call.",
-            offlineMessage: "We'll get back soon..",
+            visitorForm: url.settings.visitorForm,
+            onlineMessage: url.settings.onlineMessage,
+            offlineMessage: url.settings.offlineMessage,
             recording: true,
           },
         }}

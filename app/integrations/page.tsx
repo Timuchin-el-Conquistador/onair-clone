@@ -1,11 +1,11 @@
 import Layout from "@/components/layouts/private";
 import Integrations from ".";
 
-import { retrieveDevices } from "@/lib/actions/user";
+import { retrieveIntegrations } from "@/lib/actions/user";
 
 async function IntegrationsPage() {
-  const response = await retrieveDevices();
-  const devices =
+  const response = await retrieveIntegrations();
+  const integrations =
   response instanceof Error ||
   response == null
       ? []
@@ -15,7 +15,7 @@ async function IntegrationsPage() {
   return (
     <Layout page="integrations">
       <Integrations
-        devices={devices}
+        integrations={integrations}
       />
     </Layout>
   );

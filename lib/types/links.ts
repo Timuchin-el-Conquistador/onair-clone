@@ -8,7 +8,7 @@ export interface Link {
   callStrategy: string | null;
   availability: string;
   linkName: string;
-  //integrations: Integration;
+  integrations: Integration[];
   settings: Settings;
 
 }

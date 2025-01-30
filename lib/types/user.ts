@@ -1,4 +1,4 @@
-import { Device } from "./device";
+import { Link } from "./links";
 
 export interface User {
   fullName: string;
@@ -25,5 +25,15 @@ export interface SessionUser {
 
 
 export interface  Integration  {
-  devices:Device[]
+  integrationType: string;
+  owner: User;
+  integratedOn: string;
+  _id: string;
+  createdOn: string;
+  lastLogin: string;
+  name: string;
+  uuid: string;
+  [key: string]: unknown;
+  links:Link[]
+  toObject: () => Integration;
 };

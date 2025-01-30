@@ -7,6 +7,7 @@ import { verifySession } from "@/lib/dal";
 import { type NewUser, type User } from "@/lib/types/user";
 
 import { createSession } from "@/lib/session";
+import { Plan } from "@/lib/types/billing";
 
 const path = "/api/v1/user";
 
@@ -18,6 +19,7 @@ export type UserState = {
   resetPasswordToken: string | null;
   token: string | null;
   peerId: string | null;
+  subscription: Plan | null;
 };
 
 export type UserActions = {
@@ -34,7 +36,7 @@ export type UserActions = {
   ) => void;
   //private
   getUser: () => void;
-
+  setCurrentSubscription: (plan: Plan) => void;
   /* editProfilePicture: (file: File, router: any) => void;
   editProfile: (user: {
     fullName: string;
@@ -52,6 +54,7 @@ export const defaultInitState: UserState = {
   error: null,
   message: null,
   user: null,
+  subscription: null,
   resetPasswordToken: null,
   token: null,
   peerId: null,
@@ -116,7 +119,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
       try {
         const response: { message: string; user: User } =
           await fakeBackend.post(path + "/signin", { ...user, role: "web" });
- 
+
         await createSession({
           userId: response.user._id,
           email: response.user.email,
@@ -131,7 +134,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         }));
         router.replace("/dashboard");
       } catch (error) {
-        console.log('error',error)
+        console.log("error", error);
         set((prevState) => ({
           ...prevState,
           loading: false,
@@ -314,7 +317,12 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         }));
       }
     },
-
+    setCurrentSubscription: (plan: Plan) => {
+      set((prevState) => ({
+        ...prevState,
+        subscription: plan,
+      }));
+    },
     reset: () => {
       set((prevState) => ({
         ...prevState,

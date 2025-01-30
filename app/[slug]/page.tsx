@@ -1,13 +1,16 @@
 import Layout from "@/components/layouts/private";
+
 import Sessions from "./sessions";
+
 import Visitor from "../../components/visitor";
 
-import { retrieveSession } from "@/lib/actions/user";
+
 import { retrieveUrlAction as publicRetrieveUrlAction } from "@/lib/actions/public";
 import { retrieveUrlAction as privateRetrieveUrlAction } from "@/lib/actions/link";
+import { verifySession } from "@/lib/dal";
 
 async function Page(props: { params: { slug: string } }) {
-  const session = await retrieveSession();
+  const session = await verifySession();
 
   const slug = props.params.slug;
 
@@ -21,7 +24,7 @@ async function Page(props: { params: { slug: string } }) {
   const url = response instanceof Error || response == null ? null : response;
 
 
-  console.log(session, 'session')
+
   return (
     <>
       {session && url != null ? (

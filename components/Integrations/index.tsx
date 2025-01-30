@@ -1,16 +1,24 @@
+
+'use client'
+
 import dynamic from "next/dynamic";
 
 import '@/styles/integrations/device.scss'
 
+import { type Integration as IIntegration } from "@/lib/types/user";
+
 const SlTooltip = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/tooltip/index.js"),
   {
-    loading: () => <>Loading...</>,
+   // loading: () => <>Loading...</>,
     ssr: false,
   }
 );
+type PageProps = {
+  integration:IIntegration|null
+}
 
-function Device() {
+function Integration(props:PageProps) {
   return (
     <div className="p-6">
       <div className="bg-white p-6">
@@ -18,7 +26,7 @@ function Device() {
           <div className="mb-6 border-b border-gray-200">
             <div className="flex items-center justify-between flex-wrap sm:flex-nowrap">
               <h3 className="text-2xl text-gray-900 pb-4">
-                Mobile<span className="text-gray-400 ml-2"></span>
+                {props.integration?.integrationType}<span className="text-gray-400 ml-2"></span>
               </h3>
             </div>
           </div>
@@ -44,6 +52,7 @@ function Device() {
                     type="text"
                     placeholder="My Phone, Joe's Phone"
                     className="w-full sm:text-sm"
+                    defaultValue={props.integration?.name}
                   />{" "}
                   <span className="text-sm text-gray-500">
                     Help to identify the linked devices.
@@ -103,4 +112,4 @@ function Device() {
 }
 
 
-export default Device
+export default Integration

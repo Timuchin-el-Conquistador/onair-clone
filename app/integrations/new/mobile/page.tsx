@@ -1,5 +1,5 @@
 
-import Layout from '@/components/layouts/private';
+import Layout from '@/components/layouts/notifications';
 import '@/styles/integrations/mobile.scss'
 
 function MobileIntegration() {

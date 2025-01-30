@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import "@/styles/globals.scss";
 import "@shoelace-style/shoelace/dist/themes/light.css";
+import ShoelaceSetup from "./shoelace-setup";
 
 export const metadata: Metadata = {
   title: "Test Mentor",
@@ -11,21 +12,12 @@ export const metadata: Metadata = {
 import { UserStoreProvider } from "@/providers/user";
 import { SessionStoreProvider } from "@/providers/session";
 
-import P2PLayout from "@/components/layouts/P@P";
 import PublicLayout from "@/components/layouts/public";
-
-import ShoelaceSetup from "./shoelace-setup";
 
 import { verifySession } from "@/lib/dal";
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function RootLayout(props: { children: React.ReactNode }) {
   const session = await verifySession();
-
-
 
   return (
     <html lang="en">
@@ -47,15 +39,13 @@ export default async function RootLayout({
         {session != null ? (
           <UserStoreProvider>
             <SessionStoreProvider>
-              <P2PLayout userId={session.userId as string}>
-                <ShoelaceSetup>{children}</ShoelaceSetup>
-              </P2PLayout>
+                <ShoelaceSetup>{props.children}</ShoelaceSetup>
             </SessionStoreProvider>
           </UserStoreProvider>
         ) : (
           <UserStoreProvider>
             <PublicLayout>
-              <ShoelaceSetup>{children}</ShoelaceSetup>
+              <ShoelaceSetup>{props.children}</ShoelaceSetup>
             </PublicLayout>
           </UserStoreProvider>
         )}
