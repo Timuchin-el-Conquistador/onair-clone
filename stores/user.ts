@@ -121,10 +121,10 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           await fakeBackend.post(path + "/signin", { ...user, role: "web" });
 
         await createSession({
-          userId: response.user._id,
+          id: response.user.id,
           email: response.user.email,
           fullName: response.user.fullName,
-          subscriptionId: response.user.subscriptionId,
+          isSubscriptionActive:response.user.isSubscriptionActive
         });
 
         set((prevState) => ({
@@ -186,7 +186,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         const path = `api/v1/test-app/user/confirm-otp`;
         const response: { message: string; token: string } =
           await fakeBackend.post(path, { OTP: otp });
-        console.log(response);
+ 
         set((prevState) => ({
           ...prevState,
           loading: false,

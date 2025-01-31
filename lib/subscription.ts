@@ -25,7 +25,7 @@ export async function subscribe(
         {
           customerId: stripeCustomerId,
           paymentMethod: paymentMethod?.id,
-          user_id: session.userId,
+          user_id: session.id,
         }
       );
     } else {
@@ -38,7 +38,7 @@ export async function subscribe(
             //phone: session.phoneNumber,
           },
           paymentMethod: paymentMethod?.id,
-          user_id: session.userId,
+          user_id: session.id,
         }
       );
     }
@@ -48,7 +48,7 @@ export async function subscribe(
       //if already subscribed and want to upgrade or downgrade package
 
       response = await axios.post<AxiosResponse>(
-        `${process.env.REACT_APP_PRODUCTION_HOST}/api/v1/test-app/customer/change-subscription/${session.userId}`,
+        `${process.env.REACT_APP_PRODUCTION_HOST}/api/v1/test-app/customer/change-subscription/${session.id}`,
         {
           subscriptionId,
           priceId,
@@ -61,7 +61,7 @@ export async function subscribe(
       {
         customerId: stripeCustomerId,
         priceId,
-        user_id: session.userId,
+        user_id: session.id,
       } as SubscriptionRequest
     );
     // }
@@ -77,7 +77,7 @@ export async function cancelSubscription(subscriptionId: string) {
   if (!session) return null;
   try {
     const response: AxiosResponse = await axios.delete<AxiosResponse>(
-      `${process.env.PRODUCTION_URL}/api/v1/test-app/user/${session.userId}/cancel-subscription/${subscriptionId}`
+      `${process.env.PRODUCTION_URL}/api/v1/test-app/user/${session.id}/cancel-subscription/${subscriptionId}`
     );
     console.log(response)
     return response.data;

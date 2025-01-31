@@ -28,7 +28,7 @@ async function Page(props: { params: { slug: string } }) {
   return (
     <>
       {session && url != null ? (
-        <Layout page="dashboard">
+        <Layout page="dashboard" sidebar={true} notifications={true}>
           <Sessions
             domain={process.env.LOCAL_URL || ""}
             slug={slug}

@@ -13,7 +13,7 @@ async function IntegrationsPage() {
 
 
   return (
-    <Layout page="integrations">
+    <Layout page="integrations" sidebar={true} notifications={true}>
       <Integrations
         integrations={integrations}
       />

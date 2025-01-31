@@ -14,6 +14,8 @@ import { socket } from "@/utils/socket";
 import { ExtendedLink } from "@/lib/types/links";
 import { Call } from "@/lib/types/call";
 
+
+
 type PageProps = {
   url: ExtendedLink;
   isAuth: boolean;
@@ -29,12 +31,11 @@ function ActiveCallSession(props: PageProps) {
 
   useEffect(() => {
     //if (props.isAuth) return;
+
     function online() {
-      alert("online");
       goOnline();
     }
     function offline() {
-      alert("online");
       goOffline();
     }
     function callDeclined() {
@@ -62,7 +63,6 @@ function ActiveCallSession(props: PageProps) {
   }, [socket]);
 
   const endCall = (callId: string, duration: number) => {
-    console.log(duration);
     socket.emit("end", { callId, duration });
     setStatus("ended");
   };
@@ -74,25 +74,30 @@ function ActiveCallSession(props: PageProps) {
   if (props.isAuth) {
     if (status == "live") {
       return (
-        <UserCall
-          slug={session.link.slug}
-          sessionId={props.sessionId}
-          endCall={endCall}
-        />
+
+          <UserCall
+            slug={session.link.slug}
+            sessionId={props.sessionId}
+            callerInfo={props.call.callerInfo}
+            endCall={endCall}
+          />
+
       );
     } else {
       return (
         <>
-        <div id="animated-background" className="">
-          <div className="waiting-room-bg"></div>
-          <div className="waiting-room-bg waiting-room-bg2"></div>
-          <div className="waiting-room-bg waiting-room-bg3"></div>
-        </div>
-        <CallEnded
-          isAuth={true}
-          slug={props.slug}
-          domain={process.env.NEXT_PUBLIC_FRONTEND_LOCAL_URL!}
-        />
+          <div id="animated-background" className="">
+            <div className="waiting-room-bg"></div>
+            <div className="waiting-room-bg waiting-room-bg2"></div>
+            <div className="waiting-room-bg waiting-room-bg3"></div>
+          </div>
+          <div className="flex justify-center items-center w-full h-full">
+            <CallEnded
+              isAuth={true}
+              slug={props.slug}
+              domain={process.env.NEXT_PUBLIC_FRONTEND_LOCAL_URL!}
+            />
+          </div>
         </>
       );
     }
@@ -113,7 +118,9 @@ function ActiveCallSession(props: PageProps) {
             <div className="waiting-room-bg waiting-room-bg2"></div>
             <div className="waiting-room-bg waiting-room-bg3"></div>
           </div>
-          <ConnectingCall linkName={session.link.linkName} />
+          <div className="flex justify-center items-center w-full h-full">
+            <ConnectingCall linkName={session.link.linkName} />
+          </div>
         </>
       );
     } else if (status == "ended") {
@@ -124,11 +131,13 @@ function ActiveCallSession(props: PageProps) {
             <div className="waiting-room-bg waiting-room-bg2"></div>
             <div className="waiting-room-bg waiting-room-bg3"></div>
           </div>
-          <CallEnded
-            isAuth={false}
-            slug={props.slug}
-            domain={process.env.NEXT_PUBLIC_FRONTEND_LOCAL_URL!}
-          />
+          <div className="flex justify-center items-center w-full h-full">
+            <CallEnded
+              isAuth={false}
+              slug={props.slug}
+              domain={process.env.NEXT_PUBLIC_FRONTEND_LOCAL_URL!}
+            />
+          </div>
         </>
       );
     }

@@ -10,9 +10,6 @@ import { formatHHMMSSTime } from "@/utils/timer";
 
 import Image from "next/image";
 
-import { KrispNoiseFilter } from '@livekit/krisp-noise-filter';
-
-
 type PageProps = {
   slug: string;
   sessionId: string;
@@ -33,8 +30,11 @@ function Session(props: PageProps) {
 
   const connRef = useRef<DataConnection | null>(null);
 
+  const [boxShadow, setBoxShadow] = useState("none"); // Initial box-shadow
+
   const localAudioRef = useRef<HTMLAudioElement | null>(null);
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTime((prevTime) => prevTime + 1);
@@ -53,7 +53,6 @@ function Session(props: PageProps) {
       }
     }
   };
-
 
   async function demonBeastTransform(stream: MediaStream) {
     const ctx = new AudioContext();
@@ -75,7 +74,6 @@ function Session(props: PageProps) {
     return audioDest.stream;
   }
 
-
   function createPeer({ iceServers }: any) {
     console.log(iceServers);
     peerRef.current = new Peer({
@@ -92,7 +90,6 @@ function Session(props: PageProps) {
           username: iceServers.username, // TURN server username
           credential: iceServers.credential, // TURN server credential
         })),
-      
       },
     });
 
@@ -107,15 +104,16 @@ function Session(props: PageProps) {
         console.log("STREMMMMM");
         console.log(stream);
 
-    
         if (remoteAudioRef.current) {
           remoteAudioRef.current.srcObject = stream;
         }
+        startAudioProcessing(stream);
       });
     });
   }
 
   useEffect(() => {
+    console.log("JOINING");
     socket.emit("join-session", { callId: props.sessionId });
     socket.on("ice-servers", createPeer);
     return () => {
@@ -147,7 +145,6 @@ function Session(props: PageProps) {
     };
   }, [socket]);
 
-
   useEffect(() => {
     const getLocalStream = async () => {
       try {
@@ -156,16 +153,17 @@ function Session(props: PageProps) {
         // Request media stream with the specified deviceId
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: {
-            deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined, // Use exact if available, fallback to default
+            deviceId: selectedDeviceId
+              ? { exact: selectedDeviceId }
+              : undefined, // Use exact if available, fallback to default
             noiseSuppression: true, // Enable basic noise suppression
             echoCancellation: true, // Reduce echo
             autoGainControl: true, // Normalize audio levels
           },
         });
 
-  // Set the audio stream as the local stream
-  setLocalStream(stream);
-
+        // Set the audio stream as the local stream
+        setLocalStream(stream);
 
         // Assign the stream to an audio element reference (for playback)
         if (localAudioRef.current) {
@@ -186,6 +184,39 @@ function Session(props: PageProps) {
     };
   }, []); // Empty array to ensure this effect runs once on mount
 
+  async function startAudioProcessing(stream: MediaStream) {
+    try {
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
+      const analyser = audioContext.createAnalyser();
+      const microphone = audioContext.createMediaStreamSource(stream);
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      analyser.fftSize = 512;
+      microphone.connect(analyser);
+
+      const calculateVolume = () => {
+        analyser.getByteFrequencyData(dataArray);
+        const volume =
+          dataArray.reduce((sum, value) => sum + value) / dataArray.length;
+
+        // Scale volume to a shadow intensity (adjust these values as needed)
+        const shadowIntensity = Math.min(Math.max(volume ** 1.5, 5), 50);
+
+        setBoxShadow(
+          `0 0 ${shadowIntensity}px ${
+            shadowIntensity / 2
+          }px rgba(0, 150, 255, 0.8)`
+        );
+
+        requestAnimationFrame(calculateVolume);
+      };
+
+      calculateVolume();
+    } catch (err) {
+      console.error("Error accessing microphone:", err);
+    }
+  }
 
   const endCall = () => {
     props.endCall(props.sessionId, time);
@@ -266,19 +297,16 @@ function Session(props: PageProps) {
               alt="Profile Picture"
               width="80"
               height="80"
-              style={{ boxShadow: "none" }}
+              style={{ boxShadow: boxShadow }}
             />{" "}
             <div className="text-2xl font-normal flex items-center">
-              <span className="mr-2">🇦🇿</span>
-              Magush3
-            </div>{" "}
-            <div className="mt-1 text-gray-400 text-xl font-thin">
-              test@gmail.com
+              <span className="mr-2"></span>
+              Onair
             </div>{" "}
             {!isCallConEstablished && (
               <div className="mt-1 text-red-500 text-sm font-thin">Offline</div>
             )}
-                       {isRemoteStreamMuted && (
+            {isRemoteStreamMuted && (
               <div className="mt-1 text-red-500 text-sm font-thin">Muted</div>
             )}
           </div>{" "}

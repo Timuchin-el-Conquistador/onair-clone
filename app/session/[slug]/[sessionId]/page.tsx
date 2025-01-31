@@ -6,6 +6,8 @@ import {
   retrieveActiveCallSession,
 } from "@/lib/actions/public";
 
+import Layout from "@/components/layouts/private";
+
 async function ActiveCallSessionPage(props: {
   params: { slug: string; sessionId: string };
 }) {
@@ -20,7 +22,19 @@ async function ActiveCallSessionPage(props: {
   const callResponse = await retrieveActiveCallSession(props.params.sessionId);
   const call =
     callResponse instanceof Error || callResponse == null ? null : callResponse;
-
+  if (session) {
+    return (
+      <Layout page="" sidebar={false} notifications={false}>
+        <ActiveCallSession
+          url={url!}
+          isAuth={session != null}
+          call={call!}
+          slug={slug}
+          sessionId={props.params.sessionId}
+        />
+      </Layout>
+    );
+  }
   return (
     <ActiveCallSession
       url={url!}

@@ -12,7 +12,7 @@ async function CallsPage(props: { params: { sessionId: string } }) {
 
   if(call == null) return
   return (
-    <Layout page="calls">
+    <Layout page="calls" sidebar={true} notifications={true}>
       <CallSession
         caller={call.callerInfo}
         linkName={call.link.linkName}
@@ -21,6 +21,8 @@ async function CallsPage(props: { params: { sessionId: string } }) {
         callAnsweredTime={call.callAnsweredTime}
         callEndedTime={call.callEndedTime}
         duration={Math.round(call.duration/60)}
+        callStatus={call.callStatus}
+        ownerFullName={call.owner.fullName}
       />
     </Layout>
   );

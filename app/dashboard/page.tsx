@@ -12,7 +12,7 @@ async function DashboardPage() {
 
 
   return (
-    <Layout page="dashboard" >
+    <Layout page="dashboard" sidebar={true} notifications={true}>
       <Dashboard  removeLinkAction={removeLinkAction} retrieveUrlsAction={retrieveUrlsAction}/>
     </Layout>
   );

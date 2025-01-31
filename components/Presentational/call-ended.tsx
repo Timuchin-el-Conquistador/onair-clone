@@ -27,12 +27,11 @@ const SlSpinner = dynamic(
 );
 
 function CallEnded(props: { isAuth: boolean; slug: string; domain: string }) {
-  console.log("CALL IS ENDED");
   return (
     <div
       id="visitor-dialog"
       className="modal-dialog no-transition visible"
-      style={{ marginLeft: "-230.812px", marginTop: "-111.75px" }}
+      style={{ position: "relative", top: "0", left: "0", height:'fit-content' }}
     >
       <div id="conference-container">
         <div className="text-center" style={{ display: "none" }}>

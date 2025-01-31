@@ -13,7 +13,7 @@ async function EditDeviceIntegration(props: {
     response instanceof Error || response == null ? null: response;
 console.log(integration)
   return (
-    <Layout page="integrations">
+    <Layout page="integrations" sidebar={true} notifications={true}>
       <Integration integration={integration} />
     </Layout>
   );

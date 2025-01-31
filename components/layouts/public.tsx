@@ -2,13 +2,11 @@
 
 import { socket } from "@/utils/socket";
 
-import {  useEffect } from "react";
+import { useEffect } from "react";
 
-function P2PLayout({ children }: { children: React.ReactNode}) {
-
-
+function Public({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    socket.connect()
+    socket.connect();
     function onConnect() {
       console.log("connected");
     }
@@ -24,14 +22,7 @@ function P2PLayout({ children }: { children: React.ReactNode}) {
     };
   }, [socket]);
 
-
-
-  return (
-    <>
-
-      {children}
-    </>
-  );
+  return <>{children}</>;
 }
 
-export default P2PLayout;
+export default Public;

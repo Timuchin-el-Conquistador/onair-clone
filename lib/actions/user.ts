@@ -67,30 +67,14 @@ export async function retrieveIntegration(integrationId:string) {
     if (!session) return redirect("/users/sign_in");
 
     const path = `api/v1/user/${session.email}/integrations/${integrationId}`;
-    console.log(path, 'HEY')
+
     const response: { message: string; integration:Integration  } = await fakeBackend.get(
       path
     );
-console.log(response,path, 'HEY')
+
     return response.integration
   } catch (error) {
     return error instanceof Error ? error : new Error(String(error));
   }
 }
 
-export async function retrieveSubscription() {
-  try {
-    const session = await verifySession();
-
-    if (!session) return redirect("/users/sign_in");
-
-    const path = `api/v1/user/${session.email}/subscription/`;
-    const response: { message: string; subscription:any } = await fakeBackend.get(
-      path
-    );
-
-    return response.subscription;
-  } catch (error) {
-    return error instanceof Error ? error : new Error(String(error));
-  }
-}

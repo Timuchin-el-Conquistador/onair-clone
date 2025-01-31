@@ -13,7 +13,7 @@ export type SessionState = {
 
 export type SessionActions = {
   retrieveActiveSessions: (slug: string, router: any) => void;
-  pushSession: (session: Call, router:any) => void;
+  pushSession: (session: Call, router: any) => void;
   removeSession: (callId: string) => void;
 };
 
@@ -38,9 +38,7 @@ export const createSessionStore = (
 
         if (!session) return router.replace("/users/sign_in");
 
-    
-
-        const path = `api/v1/user/${session.email}/urls/${slug}/calls/sessions`;
+        const path = `api/v1/user/${session.email}/urls/${slug}/calls/active-sessions`;
 
         const response: { sessions: Call[]; message: string } =
           await fakeBackend.get(path);
@@ -58,22 +56,19 @@ export const createSessionStore = (
         }));
       }
     },
-    pushSession:  async (activeSession: Call, router) => {
+    pushSession: async (activeSession: Call, router) => {
       try {
         const session = await verifySession();
 
         if (!session) return router.replace("/users/sign_in");
 
-
         set((prevState) => ({
           ...prevState,
-          loaded: false,
-          sessions: [...prevState.sessions, activeSession]
+          sessions: [...prevState.sessions, activeSession],
         }));
       } catch (error) {
         set((prevState) => ({
           ...prevState,
-          loaded: false,
           error: error instanceof Error ? error : new Error(String(error)),
         }));
       }
@@ -82,7 +77,7 @@ export const createSessionStore = (
       try {
         set((prevState) => ({
           ...prevState,
-          sessions: prevState.sessions.filter((el) => el._id != callId)
+          sessions: prevState.sessions.filter((el) => el._id != callId),
         }));
       } catch (error) {
         set((prevState) => ({

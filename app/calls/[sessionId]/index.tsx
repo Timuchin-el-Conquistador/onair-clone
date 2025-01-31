@@ -27,22 +27,21 @@ type PageProps = {
   callStartedTime: string;
   callAnsweredTime: string;
   callEndedTime: string;
-  duration:number
+  duration: number;
+  callStatus: string;
+  ownerFullName: string;
 };
 
 function CallSession(props: PageProps) {
-    // Step 1: Remove the ordinal suffix (e.g., "nd")
-          
-    const cleanedDateString = props.callAnsweredTime.replace(
-      /(\d+)(st|nd|rd|th)/,
-      "$1"
-    );
+  // Step 1: Remove the ordinal suffix (e.g., "nd")
 
-    // Step 2: Parse the date
-    const date = new Date(cleanedDateString);
+  // Step 2: Parse the date
+  const date = new Date(
+    props.callEndedTime.replace(/(\d+)(st|nd|rd|th)/, "$1")
+  );
 
-    // Step 3: Convert to ISO 8601 format
-    const isoDate = date.toISOString();
+  // Step 3: Convert to ISO 8601 format
+  const isoDate = date.toISOString();
 
   return (
     <div id="session" className="p-6">
@@ -60,7 +59,7 @@ function CallSession(props: PageProps) {
               >
                 Details
               </Link>{" "}
-            {/*}  <a
+              {/*}  <a
                 href="/calls/Xfz9eFtcl5N8hiry/transcription"
                 className="
 							whitespace-nowrap py-4 px-2 sm:px-6 border-b-2 border-transparent font-medium text-sm focus:outline-none
@@ -92,7 +91,7 @@ function CallSession(props: PageProps) {
               <tr>
                 <td>Device</td>
                 <td>
-                  Azerbaijan 🇦🇿 <small>{props.caller.info.browser}</small>
+                <small>{props.caller.info.browser}, {props.caller.info.operatingSystem}, {props.caller.info.device}</small>
                 </td>
               </tr>{" "}
               <tr>
@@ -109,15 +108,32 @@ function CallSession(props: PageProps) {
               <tr>
                 <td>Identifier</td> <td>{props.callId}</td>
               </tr>{" "}
-              <tr>
-                <td>Answered By</td> <td>Cingiz Hamidov</td>
-              </tr>{" "}
-              <tr>
-                <td>Date</td> <td>{<SlRelativeTime date={isoDate}/>}</td>
-              </tr>{" "}
-              <tr>
-                <td>Duration</td> <td>{props.duration} minutes</td>
-              </tr>{" "}
+              {props.callStatus == "ended" && (
+                <>
+                  <tr>
+                    <td>Answered By</td> <td> {props.ownerFullName}</td>
+                  </tr>
+                  <tr>
+                    <td>Date</td> <td>{<SlRelativeTime date={isoDate!} />}</td>
+                  </tr>
+                  <tr>
+                    <td>Duration</td> <td>{props.duration} minutes</td>
+                  </tr>
+                </>
+              )}
+              {props.callStatus == "declined" && (
+                <>
+                  <tr>
+                    <td>Declined by</td> <td> {props.ownerFullName}</td>
+                  </tr>
+                  <tr>
+                    <td>Date</td> <td>{<SlRelativeTime date={isoDate!} />}</td>
+                  </tr>
+                  <tr>
+                    <td>Duration</td> <td>{props.duration} minutes</td>
+                  </tr>
+                </>
+              )}
               <tr>
                 <td colSpan={2}>
                   <div className="divider"></div>
@@ -135,26 +151,46 @@ function CallSession(props: PageProps) {
                 <li className="mb-2.5 ms-4 w-fit cursor-pointer">
                   <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white"></div>{" "}
                   <time className="inline-block mt-1.5 text-small font-normal leading-none text-gray-400">
-                  {props.callStartedTime}
+                    {props.callStartedTime}
                   </time>{" "}
                   <h3 className="text-gray-900 text-small">Call started</h3>
                 </li>
               </SlTooltip>
-              <SlTooltip
-                content="Jan 24, 2025 @ 08:13am UTC"
-                placement="right-start"
-                className="text-xs"
-              >
-                <li className="mb-2.5 ms-4 w-fit cursor-pointer">
-                  <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white"></div>{" "}
-                  <time className="inline-block mt-1.5 text-small font-normal leading-none text-gray-400">
-                  {props.callAnsweredTime}
-                  </time>{" "}
-                  <h3 className="text-gray-900 text-small">
-                    Answered by Cingiz Hamidov
-                  </h3>
-                </li>
-              </SlTooltip>
+              {props.callStatus == "ended" && (
+                <SlTooltip
+                  content="Jan 24, 2025 @ 08:13am UTC"
+                  placement="right-start"
+                  className="text-xs"
+                >
+                  <li className="mb-2.5 ms-4 w-fit cursor-pointer">
+                    <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white"></div>{" "}
+                    <time className="inline-block mt-1.5 text-small font-normal leading-none text-gray-400">
+                      {props.callAnsweredTime}
+                    </time>{" "}
+                    <h3 className="text-gray-900 text-small">
+                      Answered by {props.ownerFullName}
+                    </h3>
+                  </li>
+                </SlTooltip>
+              )}
+
+              {props.callStatus == "declined" && (
+                <SlTooltip
+                  content="Jan 24, 2025 @ 08:13am UTC"
+                  placement="right-start"
+                  className="text-xs"
+                >
+                  <li className="mb-2.5 ms-4 w-fit cursor-pointer">
+                    <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white"></div>{" "}
+                    <time className="inline-block mt-1.5 text-small font-normal leading-none text-gray-400">
+                      {props.callEndedTime}
+                    </time>{" "}
+                    <h3 className="text-gray-900 text-small">
+                      Declined by {props.ownerFullName}
+                    </h3>
+                  </li>
+                </SlTooltip>
+              )}
               <SlTooltip
                 content="Jan 24, 2025 @ 08:16am UTC"
                 placement="right-start"
@@ -163,7 +199,7 @@ function CallSession(props: PageProps) {
                 <li className="mb-2.5 ms-4 w-fit cursor-pointer">
                   <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white"></div>{" "}
                   <time className="inline-block mt-1.5 text-small font-normal leading-none text-gray-400">
-                   {props.callEndedTime}
+                    {props.callEndedTime}
                   </time>{" "}
                   <h3 className="text-gray-900 text-small">Call ended</h3>
                 </li>

@@ -15,7 +15,7 @@ async function NewLinkPage(props: { params: { slug: string } }) {
 
 
   return (
-    <Layout page={`pages/edit`}>
+    <Layout page="pages" sidebar={true} notifications={true}>
       <NewLink
 
          hasDevices={devices.length>0}

@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import "@/styles/billing/billing.scss";
 import "@/styles/billing/plans.scss";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { type Plan } from "@/lib/types/billing";
 
 const SlButton = dynamic(
@@ -48,12 +48,23 @@ const SlIcon = dynamic(
 );
 type PageProps = {
   plans: Plan[];
+  createSubscriptionSessionAction: (
+    planId: string
+  ) => Promise<{ url: string } | Error>;
 };
 function ChoosePlan(props: PageProps) {
-  const [plan, setPlan] = useState({
-    period: "monthly",
-    selected: '',
-  });
+  const [plans, setPlans] = useState(props.plans);
+
+  const [billingPeriod, setBillingPeriod] = useState("monthly");
+
+  const isDisabled = useMemo(() => {
+    return (
+      props.plans.findIndex((el) => el.active) ==
+        plans.findIndex((el) => el.active) ||
+      plans.findIndex((el) => el.active) == -1
+    );
+  }, [props.plans, plans]);
+
   return (
     <div className="p-6">
       <div className="bg-white p-6">
@@ -93,56 +104,76 @@ function ChoosePlan(props: PageProps) {
             <div className="flex w-40 bg-gray-100 rounded-md">
               <button
                 className={`btn text-gray-700 rounded-r-none w-1/2  text-white ${
-                  plan.period == "monthly" && "!btn-brand"
+                  billingPeriod == "monthly" && "!btn-brand"
                 }`}
                 onClick={() => {
-                  setPlan((prevSTate) => ({
-                    ...prevSTate,
-                    period: "monthly",
-                  }));
+                  setBillingPeriod("monthly");
                 }}
               >
                 Monthly
               </button>{" "}
-              <button
+              {/*}  <button
                 className={`btn text-gray-700 rounded-l-none w-1/2 ${
-                  plan.period == "yearly" && "!btn-brand"
+                  billingPeriod == "yearly" && "!btn-brand"
                 }`}
                 onClick={() => {
-                  setPlan((prevSTate) => ({
-                    ...prevSTate,
-                    period: "yearly",
-                  }));
+                  setBillingPeriod("yearly");
                 }}
               >
                 Yearly
-              </button>
+              </button>*/}
             </div>
           </div>{" "}
-          {plan.period == "monthly" ? (
-            <form>
-              {props.plans.map((el: Plan) => (
-                <div key={el.priceTestId}>
-                  <label
-                    className={`plan ${
-                      plan.selected == el.name ||
-                      (el.active && "border-blue-700")
-                    }`}
-                  >
+          {billingPeriod == "monthly" ? (
+            <form
+              onSubmit={async (event) => {
+                event?.preventDefault();
+                const plan = plans.filter((el) => el.active)[0];
+                const response = await props.createSubscriptionSessionAction(
+                  plan.priceTestId
+                );
+                const sessionUrl =
+                  response instanceof Error || response == null
+                    ? null
+                    : response.url;
+                if (sessionUrl) {
+                  window.open(sessionUrl);
+                }
+              }}
+            >
+              {plans.map((plan: Plan) => (
+                <div key={plan.priceTestId}>
+                  <label className={`plan ${plan.active && "border-blue-700"}`}>
                     <div className="flex md:flex-col justify-between col-span-2">
-                      <input hidden name="plan" type="radio" value="basic-9" onClick={()=>{
-						setPlan(prevState=>({
-							...prevState,
-							selected:el.name
-						}))
-					  }}/>{" "}
+                      <input
+                        hidden
+                        name="plan"
+                        type="radio"
+                        value="basic-9"
+                        onClick={() => {
+                          setPlans((prevState) =>
+                            prevState.map((el) => {
+                              if (el.priceTestId == plan.priceTestId) {
+                                return {
+                                  ...el,
+                                  active: true,
+                                };
+                              }
+                              return {
+                                ...el,
+                                active: false,
+                              };
+                            })
+                          );
+                        }}
+                      />{" "}
                       <div>
-                        <h4 className="mb-2">{el.name}</h4>{" "}
+                        <h4 className="mb-2">{plan.name}</h4>{" "}
                         <span className="mb-2"></span>
                       </div>{" "}
                       <div className="md:mt-0 -mt-1">
                         <span className="text-2xl font-bold tracking-tight">
-                          {el.price}
+                          {plan.price}
                           <small className="text-base font-medium">
                             /month
                           </small>{" "}
@@ -150,7 +181,7 @@ function ChoosePlan(props: PageProps) {
                       </div>
                     </div>{" "}
                     <div id="plan-limits" className="col-start-4">
-                      {el.features.map((feature) => (
+                      {plan.features.map((feature) => (
                         <li className="plan-feature" key={feature}>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -214,14 +245,17 @@ function ChoosePlan(props: PageProps) {
                 <input
                   type="submit"
                   value="Subscribe"
-                  className="inline text-white bg-blue-500 border border-transparent rounded-md px-4 py-2 cursor-pointer"
+                  className={`inline text-white border border-transparent rounded-md px-4 py-2 cursor-pointer ${
+                    !isDisabled && "bg-blue-500"
+                  }`}
+                  disabled={isDisabled}
                 />
               </div>
             </form>
           ) : (
             <form>
               <div>
-                <label className="plan border-blue-700">
+                <label className="plan">
                   <div className="flex md:flex-col justify-between col-span-2">
                     <input hidden name="plan" type="radio" value="basic-90" />{" "}
                     <div>

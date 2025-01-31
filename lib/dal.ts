@@ -8,16 +8,16 @@ export const verifySession = cache(async () => {
   const cookie = (await cookies()).get("session");
   const session = await decrypt(cookie?.value);
 
-  if (!session?.userId) {
+  if (!session?.id) {
     return null;
   }
 
   return {
     isAuth: true,
-    userId: session.userId,
+    id: session.id,
     email: session.email,
     fullName: session.fullName,
-    subscriptionId:session.subscriptionId
+    isSubscriptionActive:session.isSubscriptionActive
   };
 });
 

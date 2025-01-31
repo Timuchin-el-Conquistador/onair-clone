@@ -10,11 +10,12 @@ import { formatHHMMSSTime } from "@/utils/timer";
 
 import Image from "next/image";
 
-import { KrispNoiseFilter } from "@livekit/krisp-noise-filter";
+import { type Caller } from "@/lib/types/call";
 
 type PageProps = {
   slug: string;
   sessionId: string;
+  callerInfo: Caller;
   endCall: (callId: string, duration: number) => void;
 };
 
@@ -86,6 +87,8 @@ function Session(props: PageProps) {
   }
 
   function createPeer({ iceServers }: any) {
+    console.log("creating PEER");
+    console.log(iceServers);
     peerRef.current = new Peer({
       host:
         process.env.NODE_ENV == "production"
@@ -137,7 +140,6 @@ function Session(props: PageProps) {
         setCallConnectionState(true);
         setRemoteStream(stream); // Set the remote stream
 
-  
         if (remoteAudioRef.current) {
           remoteAudioRef.current.srcObject = stream;
         }
@@ -164,7 +166,7 @@ function Session(props: PageProps) {
   };
 
   useEffect(() => {
-    socket.emit("join-session");
+    socket.emit("join-session", { callId: props.sessionId });
     socket.on("ice-servers", createPeer);
     return () => {
       socket.off("ice-servers", createPeer);
@@ -368,11 +370,11 @@ function Session(props: PageProps) {
               style={{ boxShadow: boxShadow }}
             />{" "}
             <div className="text-2xl font-normal flex items-center">
-              <span className="mr-2">🇦🇿</span>
-              Magush3
+              <span className="mr-2"></span>
+              {props.callerInfo.fullName}
             </div>{" "}
             <div className="mt-1 text-gray-400 text-xl font-thin">
-              test@gmail.com
+              {props.callerInfo.email}
             </div>{" "}
             {!isCallConEstablished && (
               <div className="mt-1 text-red-500 text-sm font-thin">Offline</div>

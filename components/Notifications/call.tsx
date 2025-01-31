@@ -26,7 +26,7 @@ function WebCallNotification(props: PageProps) {
   return (
     <div
       id="web-call-notification-container"
-      className="fixed top-2 right-2 z-[9999] space-y-2"
+
     >
       <audio ref={audioRef}></audio>
       <div className="bg-black shadow-lg rounded-3xl py-2 px-3 flex items-center justify-center">

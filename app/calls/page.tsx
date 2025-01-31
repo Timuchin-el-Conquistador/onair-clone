@@ -12,7 +12,7 @@ async function CallsPage() {
 
 
   return (
-    <Layout page="calls" >
+    <Layout page="calls" sidebar={true} notifications={true}>
       <Calls calls={calls} />
     </Layout>
   );

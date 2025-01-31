@@ -166,7 +166,7 @@ function Visitor(props: PageProps) {
         <div className="waiting-room-bg waiting-room-bg2"></div>
         <div className="waiting-room-bg waiting-room-bg3"></div>
       </div>
-
+      <div className="flex justify-center items-center w-full h-full">
       {session.link.availability == "online" && (
         <VisitorForm
           call={call}
@@ -183,6 +183,7 @@ function Visitor(props: PageProps) {
           message={session.link.settings.offlineMessage}
         />
       )}
+      </div>
     </>
   );
 }

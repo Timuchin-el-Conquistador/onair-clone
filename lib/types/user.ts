@@ -1,10 +1,11 @@
 import { Link } from "./links";
 
 export interface User {
+  id: string;
   fullName: string;
   email: string;
-  subscriptionId: null | string;
-  _id: string;
+  isSubscriptionActive:boolean
+  [key: string]: unknown;
 }
 export interface NewUser {
   fullName: string;
@@ -14,14 +15,6 @@ export interface NewUser {
   // subscription:null|any
 }
 
-export interface SessionUser {
-  fullName: string;
-  email: string;
-  userId: string;
-  subscriptionId: null | string;
-  [key: string]: unknown; // Allows additional string keys
-
-}
 
 
 export interface  Integration  {

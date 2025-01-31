@@ -21,7 +21,7 @@ console.log(devices)
 
   if(url == null) return
   return (
-    <Layout page={`pages/edit`}>
+    <Layout page="pages" sidebar={true} notifications={true}>
       <Edit
         link={{
           _id: url._id,

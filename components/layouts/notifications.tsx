@@ -2,9 +2,7 @@
 
 import "@/styles/layouts.scss";
 
-import Sidebar from "../sidebar";
-
-import { SubscriptionExpired } from "../Alerts/billing";
+import { IncompletePayment, SubscriptionExpired } from "../Alerts/billing";
 import { Plan } from "@/lib/types/billing";
 import { NoDevice } from "../Alerts/warning";
 
@@ -22,17 +20,15 @@ import { useUserStore } from "@/providers/user";
 import { useRouter } from "next/navigation";
 
 function Notifications({
-  children,
-  page,
   hasActiveDevices,
   subscription,
-  userId,
+  id,
+  isNotificationsOn,
 }: {
-  children: React.ReactNode;
-  page: string;
+  isNotificationsOn: boolean;
   hasActiveDevices: boolean;
   subscription: Plan;
-  userId: string;
+  id: string;
 }) {
   const router = useRouter();
 
@@ -45,8 +41,14 @@ function Notifications({
   useEffect(() => {
     socket.connect();
     function onConnect() {
-      socket.emit("web-connect", { userId });
+      socket.emit("web-connect", { id });
     }
+    function onDisconnect() {}
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+
+    if (!isNotificationsOn) return;
     function call(data: { call: Call }) {
       setIncommingCalls((calls) => [
         ...calls,
@@ -60,18 +62,14 @@ function Notifications({
       ]);
       pushSession(data.call, router);
     }
-    function onDisconnect() {}
-
-    socket.on("connect", onConnect);
-
     socket.on("new-session", call);
-
-    socket.on("disconnect", onDisconnect);
 
     return () => {
       socket.off("connect", onConnect);
-      socket.off("new-session", call);
       socket.off("disconnect", onDisconnect);
+      if (isNotificationsOn) {
+        socket.off("new-session", call);
+      }
     };
   }, [socket]);
 
@@ -89,19 +87,19 @@ function Notifications({
   };
 
   useEffect(() => {
-    setCurrentSubscription(subscription)
+    setCurrentSubscription(subscription);
   }, []);
 
-  return (
-    <div className="flex overflow-hidden bg-gray-100 h-screen">
-      <Sidebar page={page} />
-      <div className="flex flex-col w-0 flex-1 overflow-hidden">
-        <main className="flex-1 relative overflow-y-auto focus:outline-none">
-          {!hasActiveDevices && <NoDevice />}
-          {!subscription?.active && <SubscriptionExpired />}
-
+  if (isNotificationsOn) {
+    return (
+      <>
+        {!hasActiveDevices && <NoDevice />}
+        {subscription?.status == "incomplete_expired" ||
+          (subscription.status == "past_due" && <SubscriptionExpired />)}
+        {subscription?.status == "incomplete" && <IncompletePayment />}
+        <div className="fixed top-2 right-2 z-[9999] space-y-2">
           {incommingCalls.map((call) => (
-            <Fragment key={call.email}>
+            <Fragment key={call.id}>
               <WebCallNotification
                 email={call.email}
                 fullName={call.fullName}
@@ -113,11 +111,12 @@ function Notifications({
               />
             </Fragment>
           ))}
-          {children}
-        </main>
-      </div>
-    </div>
-  );
+        </div>
+      </>
+    );
+  } else {
+    return <></>;
+  }
 }
 
 export default Notifications;

@@ -4,7 +4,7 @@ import Layout from "@/components/layouts/private";
 
 function SettingsPage(props: { params: { slug: string } }) {
   return (
-    <Layout page={`settings`}>
+    <Layout page="settings" sidebar={true} notifications={true}>
       <Settings
         user={{
           fullName: "Cengiz Hamidov",

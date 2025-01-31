@@ -6,7 +6,6 @@ import { socket } from "@/utils/socket";
 
 import { useEffect } from "react";
 
-
 type State = {
   link: Link;
   message: null | string;
@@ -14,10 +13,7 @@ type State = {
   slugStatus: "pending" | "fulfilled" | "taken" | null;
 };
 
-type Action =
-  | { type: "ONLINE" }
-  | { type: "OFFLINE" }
-
+type Action = { type: "ONLINE" } | { type: "OFFLINE" };
 
 const formReducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -26,7 +22,7 @@ const formReducer = (state: State, action: Action): State => {
         ...state,
         link: {
           ...state.link,
-         availability:'online'
+          availability: "online",
         },
       };
 
@@ -35,12 +31,9 @@ const formReducer = (state: State, action: Action): State => {
         ...state,
         link: {
           ...state.link,
-      availability:'offline'
+          availability: "offline",
         },
       };
-
-
-
 
     default:
       return { ...state };
@@ -56,24 +49,17 @@ const useSession = (initialLink: Omit<Link, "timeLength">) => {
   });
 
   const goOnline = () => {
-alert('online')
     setForm({ type: "ONLINE" });
   };
 
   const goOffline = () => {
-    alert('offline')
     setForm({ type: "OFFLINE" });
   };
-
-
-
-
 
   return {
     session,
     goOnline,
     goOffline,
-
   };
 };
 

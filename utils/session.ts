@@ -1,4 +1,5 @@
-import { SessionUser } from "@/lib/types/user";
+import { User } from "@/lib/types/user";
+
 import { jwtVerify, SignJWT } from "jose";
 
 const secretKey = process.env.SESSION_SECRET;
@@ -7,7 +8,7 @@ const encodedKey = new TextEncoder().encode(secretKey);
 
 
 // Encrypt (Sign) a Token
-export async function encrypt(payload: SessionUser) {
+export async function encrypt(payload: User) {
   return new SignJWT(payload)
   .setProtectedHeader({ alg: "HS256" })
   .setIssuedAt()
@@ -21,7 +22,7 @@ export async function decrypt(token: string|undefined='' ) {
     const { payload } = await jwtVerify(token, encodedKey, {
       algorithms: ["HS256"],
     });
-    return payload as SessionUser;
+    return payload as User;
   } catch (error) {
     console.log("Failed to verify session");
     return null
@@ -32,13 +33,15 @@ export async function decrypt(token: string|undefined='' ) {
 // Validate a Token (e.g., in middleware)
 export async function validateToken(token: string) {
   const session = await decrypt(token);
-  if (!session || !session.userId) return null;
+  if (!session || !session.id) return null;
   //ill need to write backed user validation (send request to check if user exist)
   return {
     isAuth: true,
-    userId: session.userId,
+    id: session.id,
     email: session.email,
     fullName: session.fullName,
-    subscriptionId: session.subscriptionId,
+    isSubscriptionActive: session.isSubscriptionActive,
   };
 }
+
+

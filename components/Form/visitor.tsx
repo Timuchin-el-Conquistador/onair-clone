@@ -99,7 +99,7 @@ function Visitor(props: PageProps) {
       <div
         id="visitor-dialog"
         className="modal-dialog no-transition visible"
-        style={{ marginLeft: "-180px", marginTop: "-250.75px" }}
+        style={{ position: "relative", top: "0", left: "0", height:'fit-content' }}
       >
         <div className="status-card m-3">
           <div className="status online"></div>{" "}
