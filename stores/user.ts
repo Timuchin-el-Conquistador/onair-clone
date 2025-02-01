@@ -25,6 +25,7 @@ export type UserState = {
 export type UserActions = {
   //auth
   signup: (user: NewUser, router: any) => void;
+  resendEmailConfirmationToken:(email: string, router: any) => void;
   login: (user: { email: string; password: string }, router: any) => void;
   forgotPassword: (email: string, router: any) => void;
   submitOTP: (otp: string, router: any) => void;
@@ -35,8 +36,8 @@ export type UserActions = {
     router: any
   ) => void;
   //private
-  getUser: () => void;
-  setCurrentSubscription: (plan: Plan) => void;
+  //getAccountInformation: () => void;
+ // setCurrentSubscription: (plan: Plan) => void;
   /* editProfilePicture: (file: File, router: any) => void;
   editProfile: (user: {
     fullName: string;
@@ -96,11 +97,44 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           password: user.password,
         });
         // await createSession(response.response._id, response.response.email);
+
+
         set((prevState) => ({
           ...prevState,
           loading: false,
           message: "Success",
         }));
+
+        router.push('/users')
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+
+    resendEmailConfirmationToken: async (email:string,router:any) => {
+      try {
+        set((prevState) => ({
+          ...prevState,
+          loading: true,
+          error: null,
+          message: null,
+        }));
+        const path = `api/v1/user/resend-confirmation`;
+        const response: { message: string } = await fakeBackend.post(path, {
+          email,
+        });
+
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          message: response.message,
+          //  token:response.token
+        }));
+        router.push('/users')
       } catch (error) {
         set((prevState) => ({
           ...prevState,
@@ -124,7 +158,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           id: response.user.id,
           email: response.user.email,
           fullName: response.user.fullName,
-          isSubscriptionActive:response.user.isSubscriptionActive
+          accountStatus:response.user.accountStatus
         });
 
         set((prevState) => ({
@@ -134,7 +168,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         }));
         router.replace("/dashboard");
       } catch (error) {
-        console.log("error", error);
+   
         set((prevState) => ({
           ...prevState,
           loading: false,
@@ -291,7 +325,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         }));
       }
     },
-    getUser: async () => {
+   /* getAccountInformation: async () => {
       try {
         const session = await verifySession();
         if (!session) return null;
@@ -316,13 +350,13 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           error: error instanceof Error ? error : new Error(String(error)),
         }));
       }
-    },
-    setCurrentSubscription: (plan: Plan) => {
+    },*/
+    /*setCurrentSubscription: (plan: Plan) => {
       set((prevState) => ({
         ...prevState,
         subscription: plan,
       }));
-    },
+    },*/
     reset: () => {
       set((prevState) => ({
         ...prevState,

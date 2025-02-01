@@ -41,9 +41,9 @@ export async function createSession(user: User) {
   });
 }
 
-export async function updateSession(isSubscriptionActive: boolean) {
+export async function updateSession(accountStatus: string) {
   'use server'
-  console.log(isSubscriptionActive)
+
   const cookie = await cookies().get("session")?.value;
   const payload = (await decrypt(cookie)) as User;
 
@@ -51,7 +51,7 @@ export async function updateSession(isSubscriptionActive: boolean) {
     return null;
   }
 
-  payload.isSubscriptionActive = isSubscriptionActive;
+  payload.accountStatus = accountStatus;
   const session = await encrypt(payload);
 
   await cookies().set("session", session, {

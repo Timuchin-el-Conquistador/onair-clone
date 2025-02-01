@@ -44,15 +44,23 @@ function Billing(props: PageProps) {
                   You're on a {props.planName}. <br />
                   Your subscription ends after {props.daysLeftToExpiration}{" "}
                   days.
+                  <br />
+                  To change subscription click "Subscribe" below
                 </h2>
-              ) : null}
+              ) : (
+                <h2>
+                  You' have no active subscription plan <br />
+                  Sign up to a paid plan and get full access by clicking on
+                  "Subscribe" below.
+                </h2>
+              )}
             </div>{" "}
             <div className="col-span-3 text-center mt-8">
               <Link
                 href="/billing/choose_plan"
                 className="btn btn-blue text-center mr-4"
               >
-                {props.planStatus == "active" ? "Change" : "Subscribe"}
+                Subscribe
               </Link>
 
               {props.planStatus == "active" && (
@@ -63,7 +71,7 @@ function Billing(props: PageProps) {
             </div>
           </div>
         </div>{" "}
-       {/*} <div id="faq" className="mt-32" style={{ opacity: "1" }}>
+        {/*} <div id="faq" className="mt-32" style={{ opacity: "1" }}>
           <h3>
             <svg
               width="24"

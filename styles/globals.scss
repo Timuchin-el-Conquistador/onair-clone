@@ -270,6 +270,7 @@ input[type="checkbox"]:checked,
 }
 
 
-
-
-
+.border-brand-400 {
+  --tw-border-opacity: 1;
+  border-color: rgb(0 86 255 / var(--tw-border-opacity));
+}

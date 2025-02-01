@@ -36,7 +36,7 @@ function Notifications({
 
   const { pushSession, removeSession } = useSessionStore((state) => state);
 
-  const { setCurrentSubscription } = useUserStore((state) => state);
+ // const { setCurrentSubscription } = useUserStore((state) => state);
 
   useEffect(() => {
     socket.connect();
@@ -87,7 +87,7 @@ function Notifications({
   };
 
   useEffect(() => {
-    setCurrentSubscription(subscription);
+  //  setCurrentSubscription(subscription);
   }, []);
 
   if (isNotificationsOn) {

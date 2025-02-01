@@ -75,10 +75,10 @@ export default async function middleware(req: NextRequest) {
   }
 
 
-  const isSubscriptionActive =  session?.isSubscriptionActive
+  const isAccountActive =  session?.accountStatus == 'active'
 
   // 5. Redirect to /billing if the user is not authenticated
-  if (isRouteRequireActiveSubscription && !isSubscriptionActive) {
+  if (isRouteRequireActiveSubscription && !isAccountActive) {
     return NextResponse.redirect(new URL("/billing", req.nextUrl));
   }
   // 6. Redirect to /dashboard if the user is authenticated

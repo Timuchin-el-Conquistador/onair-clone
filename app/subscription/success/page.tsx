@@ -12,7 +12,7 @@ function PaymentSuccess() {
   useEffect(() => {
     const modifyCookie = async () => {
       const subscription = await retrieveSubscription();
-      await updateSession(subscription.active);
+      await updateSession(subscription.active ? 'active' : 'inactive');
     };
 
     modifyCookie();

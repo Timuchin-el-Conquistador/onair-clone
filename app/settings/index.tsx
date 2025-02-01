@@ -4,9 +4,8 @@ import dynamic from "next/dynamic";
 
 import "@/styles/settings.scss";
 
-import { type Settings as ISettings } from "@/lib/types/settings";
 import { useState } from "react";
-import { type User } from "@/lib/types/user";
+
 import Link from "next/link";
 
 const SlButton = dynamic(
@@ -40,6 +39,9 @@ type PageProps = {
   browserNotifications: boolean;
   monthlyMinutesCapacity: number;
   monthlyMinutesConsumed: number;
+  numberOfCreatedLinks:number
+  plan:string
+  monthlyLinksCapacity:number
 };
 
 function Settings(props: PageProps) {
@@ -185,7 +187,7 @@ function Settings(props: PageProps) {
           <div>
             <dt>Subscription Plan</dt>{" "}
             <dd className="group relative">
-              Basic Plan (trial)
+              {props.plan}
               <a href="/billing">
                 <SlButton
                   size="small"
@@ -210,16 +212,16 @@ function Settings(props: PageProps) {
       <div className="bg-white p-6">
         <dl style={{ marginTop: "-1rem" }}>
           <div>
-            <dt># of Links</dt> <dd>1 link</dd>
+            <dt># of Links</dt> <dd>{props.numberOfCreatedLinks} link</dd>
           </div>{" "}
           <div>
             <dt>Monthly Minutes Capacity</dt>{" "}
             <dd>
-              1,000 (<a href="/billing">increase</a>)
+            {props.monthlyMinutesCapacity} (<Link href="/billing">increase</Link>)
             </dd>
           </div>{" "}
           <div>
-            <dt>Monthly Minutes Consumed</dt> <dd>1 (0%)</dd>
+            <dt>Monthly Minutes Consumed</dt> <dd>{props.monthlyMinutesConsumed} (0%)</dd>
           </div>
         </dl>
       </div>{" "}

@@ -4,7 +4,7 @@ export interface User {
   id: string;
   fullName: string;
   email: string;
-  isSubscriptionActive:boolean
+  accountStatus:string
   [key: string]: unknown;
 }
 export interface NewUser {
@@ -30,3 +30,15 @@ export interface  Integration  {
   links:Link[]
   toObject: () => Integration;
 };
+
+
+export interface Account{
+  name: string,
+  email: string,
+  plan: string,
+  monthlyMinutesCapacity: number,
+  monthlyLinksCapacity: number,
+  numberOfCreatedLinks: number,
+  monthlyMinutesConsumed: number,
+  subscriptionStatus:string
+}

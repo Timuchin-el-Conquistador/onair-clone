@@ -40,7 +40,7 @@ export async function validateToken(token: string) {
     id: session.id,
     email: session.email,
     fullName: session.fullName,
-    isSubscriptionActive: session.isSubscriptionActive,
+    accountStatus: session.accountStatus,
   };
 }
 

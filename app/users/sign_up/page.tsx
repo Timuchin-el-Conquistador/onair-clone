@@ -7,8 +7,7 @@ import "@/styles/signup.scss";
 import Logo from "@/public/logo.svg";
 
 import Danger from "@/components/Alerts/danger";
-import Success from "@/components/Alerts/success";
-import Spinner from "@/components/Loaders/spinner";
+
 
 import Link from "next/link";
 
@@ -49,6 +48,7 @@ function Signup() {
 
   return (
     <>
+     <div id="stripe-bar" className="w-full border-t-4 border-brand-400 absolute top-0 left-0 right-0 z-50" ></div>
       <div className="authenticate-page p-4 sm:p-0">
         <div className="mx-auto w-full text-center">
           <Image className="inline-block w-16 mt-8" src={Logo} alt="OnAir" />
@@ -137,15 +137,7 @@ function Signup() {
           {/*Right panel*/}
           <div className="w-full sp-form auth-form py-4 px-4 md:py-16 md:px-16">
             {/*Social signin partial*/}
-            {isSuccessAlertVisible ? (
-
-                <Success message={message!}>
-                  <Link href="/users/sign_in" className="link">
-                    Login
-                  </Link>
-                </Success>
- 
-            ) : null}
+     
             {isDangerAlertVisible ? (
           
                 <Danger
