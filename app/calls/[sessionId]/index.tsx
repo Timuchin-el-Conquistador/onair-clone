@@ -102,7 +102,7 @@ function CallSession(props: PageProps) {
               <tr>
                 <td>Link</td>{" "}
                 <td>
-                  <a href="https://onair.io/testing">{props.linkName}</a>
+                  <a href="#">{props.linkName}</a>
                 </td>
               </tr>{" "}
               <tr>
