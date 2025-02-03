@@ -21,10 +21,10 @@ const SlSpinner = dynamic(
   }
 );
 
-function ResendConfirmation(props: { error: string }) {
+function ForgotPassword() {
   const router = useRouter();
 
-  const { error, loading, success, reset, resendEmailConfirmationToken } =
+  const { error, loading, success, reset, forgotPassword } =
     useUserStore((state) => state);
   const {
     isDangerAlertVisible,
@@ -40,7 +40,7 @@ function ResendConfirmation(props: { error: string }) {
      <div id="stripe-bar" className="w-full border-t-4 border-brand-400 absolute top-0 left-0 right-0 z-50" ></div>
       <div className="mx-auto w-full text-center">
         <img className="inline-block w-16 mt-8" src="/logo.svg" alt="OnAir" />
-        <h2 className="text-xl mt-4">Resend confirmation instructions</h2>
+        <h2 className="text-xl mt-4">Reset Your Password</h2>
       </div>
       <div className="authenticate-page p-4 sm:p-0">
         <div className="flex flex-col md:flex-row main-panel">
@@ -67,7 +67,7 @@ function ResendConfirmation(props: { error: string }) {
                         id=""
                       >
                         {" "}
-                        <use xlinkHref="/images/feather-sprite.svg#check-circle"></use>{" "}
+                        <use xlinkHref="/feather-sprite.svg#check-circle"></use>{" "}
                       </svg>
                     </div>
                     <p className="ml-3 text-sm text-gray-700">Value prop one</p>
@@ -83,7 +83,7 @@ function ResendConfirmation(props: { error: string }) {
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        style={{ display: "inline-block;" }}
+                        style={{ display: "inline-block" }}
                         className=""
                         id=""
                       >
@@ -104,7 +104,7 @@ function ResendConfirmation(props: { error: string }) {
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        style={{ display: "inline-block;" }}
+                        style={{ display: "inline-block" }}
                         className=""
                         id=""
                       >
@@ -131,43 +131,10 @@ function ResendConfirmation(props: { error: string }) {
                 event.preventDefault();
                 const email = emailRef?.current?.value || "";
 
-                resendEmailConfirmationToken(email, router);
+                forgotPassword(email, router);
               }}
             >
-              <div className="rounded-md bg-red-50 p-4 mb-6">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <svg
-                      className="h-5 w-5 text-red-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                        clip-rule="evenodd"
-                      ></path>
-                    </svg>
-                  </div>
-                  {!loading && (
-                    <div className="ml-3">
-                      <h3 className="text-sm font-medium text-red-800">
-                        Error
-                      </h3>
-                      <div className="mt-2 text-sm text-red-700">
-                        <ul className="list-disc pl-5">
-                          {error?.message ? (
-                            <li className="mt-1">{error.message}</li>
-                          ) : (
-                            <li className="mt-1">{props.error}</li>
-                          )}
-                        </ul>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+          
 
               <div>
                 <label htmlFor="user_email">Email</label>
@@ -186,9 +153,9 @@ function ResendConfirmation(props: { error: string }) {
                 <input
                   type="submit"
                   name="commit"
-                  value="Resend confirmation instructions"
+                  value="Send me reset password instructions"
                   className="w-full btn btn-blue"
-                  data-disable-with="Resend confirmation instructions"
+                  data-disable-with="Send me reset password instructions"
                 />
               </div>
 
@@ -203,11 +170,7 @@ function ResendConfirmation(props: { error: string }) {
               </a>
               <span className="text-gray-500"> for a new account.</span>
               <br />
-
-              <a className="authentication-link" href="/users/password/new">
-                Forgot your password?
-              </a>
-              <br />
+      
             </form>
           </div>
         </div>
@@ -216,4 +179,4 @@ function ResendConfirmation(props: { error: string }) {
   );
 }
 
-export default ResendConfirmation;
+export default ForgotPassword;

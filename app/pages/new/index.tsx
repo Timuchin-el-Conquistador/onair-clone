@@ -94,7 +94,7 @@ function NewLink(props: PageProps) {
     slug: "",
     availability: "online",
     linkName: "",
-    // integrations: [],
+    integrations: [],
     callStrategy: null,
     connectedDevices: [],
     settings: {

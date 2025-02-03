@@ -11,19 +11,17 @@ import Pulse from "@/components/Loaders/pulse";
 
 import { type ExtendedLink } from "@/lib/types/links";
 
-import { useUserStore } from "@/providers/user";
+
 
 type PageProps = {
   retrieveUrlsAction: () => Promise<ExtendedLink[] | Error>;
   removeLinkAction: (slug: string) => Promise<string | Error>;
+  monthlyLinksCapacity:number
 };
 
 function Dashboard(props: PageProps) {
   const [links, setLinks] = useState<ExtendedLink[]>([]);
   const [loaded, setLoadedState] = useState(false);
-
-  const { subscription } = useUserStore((state) => state);
-  const maxLinks = subscription?.links || 0;
 
   useEffect(() => {
     const fetchLinks = async () => {
@@ -43,6 +41,7 @@ function Dashboard(props: PageProps) {
           <Card
             slug={link.slug}
             availability={link.availability}
+            integrations={link.integrations}
             linkName={link.linkName}
             connectedDevices={link.connectedDevices}
             totalCallDuration={link.totalCallDuration}
@@ -68,7 +67,7 @@ function Dashboard(props: PageProps) {
               {" "}
               <div className="sp-tooltip-element">
                 <span className="bg-white flex justify-center border text-sm text-center px-2 rounded-2xl w-16 m-auto items-center text-gray-400">
-                  {links.length} / {maxLinks}
+                  {links.length} / {props.monthlyLinksCapacity}
                 </span>
               </div>{" "}
             </div>

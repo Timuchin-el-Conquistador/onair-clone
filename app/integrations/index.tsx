@@ -15,12 +15,13 @@ import { type Integration } from "@/lib/types/user";
 import { useUserStore } from "@/providers/user";
 type PageProps = {
   integrations: Integration[];
+  monthlyIntegrationsCapacity:number
 };
 
 function Integrations(props: PageProps) {
 
-  const { subscription } = useUserStore((state) => state);
-  const maxIntegrations = subscription?.integrations || 0;
+//  const { subscription } = useUserStore((state) => state);
+  //const maxIntegrations = subscription?.integrations || 0;
   
   return (
     <div id="pages-grid" className="index-card-grid">
@@ -41,7 +42,7 @@ function Integrations(props: PageProps) {
               {" "}
               <div className="sp-tooltip-element">
                 <span className="bg-white flex justify-center border text-sm text-center px-2 rounded-2xl w-16 m-auto items-center text-gray-400">
-                  {props.integrations.length} / {maxIntegrations}
+                  {props.integrations.length} / {props.monthlyIntegrationsCapacity}
                 </span>
               </div>{" "}
             </div>

@@ -1,4 +1,4 @@
-import { User } from "@/lib/types/user";
+import { Session } from "@/lib/types/user";
 
 import { jwtVerify, SignJWT } from "jose";
 
@@ -8,7 +8,7 @@ const encodedKey = new TextEncoder().encode(secretKey);
 
 
 // Encrypt (Sign) a Token
-export async function encrypt(payload: User) {
+export async function encrypt(payload: Session) {
   return new SignJWT(payload)
   .setProtectedHeader({ alg: "HS256" })
   .setIssuedAt()
@@ -22,7 +22,7 @@ export async function decrypt(token: string|undefined='' ) {
     const { payload } = await jwtVerify(token, encodedKey, {
       algorithms: ["HS256"],
     });
-    return payload as User;
+    return payload as Session;
   } catch (error) {
     console.log("Failed to verify session");
     return null
@@ -39,9 +39,17 @@ export async function validateToken(token: string) {
     isAuth: true,
     id: session.id,
     email: session.email,
-    fullName: session.fullName,
-    accountStatus: session.accountStatus,
+    name: session.name,
+    subscriptionStatus: session.subscriptionStatus,
+    planName:session.planName,
+    monthlyMinutesCapacity:session.monthlyMinutesCapacity,
+    monthlyLinksCapacity:session.monthlyLinksCapacity,
+    monthlyIntegrationsCapacity:session.monthlyIntegrationsCapacity,
+    monthlyMinutesConsumed:session.monthlyMinutesConsumed,
   };
+
+
+
 }
 
 

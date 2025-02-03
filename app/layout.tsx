@@ -1,3 +1,5 @@
+
+
 import type { Metadata } from "next";
 
 import "@/styles/globals.scss";
@@ -14,10 +16,13 @@ import { SessionStoreProvider } from "@/providers/session";
 
 import PublicLayout from "@/components/layouts/public";
 
-import { verifySession } from "@/lib/dal";
+
+import { retrieveSession } from "@/lib/session";
+
+
 
 export default async function RootLayout(props: { children: React.ReactNode }) {
-  const session = await verifySession();
+  const session = await retrieveSession();
 
   return (
     <html lang="en">

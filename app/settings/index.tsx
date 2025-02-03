@@ -8,6 +8,12 @@ import { useState } from "react";
 
 import Link from "next/link";
 
+import { useUserStore } from "@/providers/user";
+
+import { useVisibility } from "@/hooks/useVisibility";
+
+import { useRouter } from "next/navigation";
+
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
   {
@@ -31,6 +37,30 @@ const SlDialog = dynamic(
   }
 );
 
+const SlAlert = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/alert/index.js"),
+  {
+    //  loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
+
+const SlIcon = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
+  {
+    //  loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
+
+const SlBadge = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/badge/index.js"),
+  {
+    //  loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
+
 type PageProps = {
   user: {
     fullName: string;
@@ -39,12 +69,25 @@ type PageProps = {
   browserNotifications: boolean;
   monthlyMinutesCapacity: number;
   monthlyMinutesConsumed: number;
-  numberOfCreatedLinks:number
-  plan:string
-  monthlyLinksCapacity:number
+  numberOfCreatedLinks: number;
+  planName: string;
+  monthlyLinksCapacity: number;
+  subscriptionStatus: string;
 };
 
 function Settings(props: PageProps) {
+  const router = useRouter();
+
+  const { error, loading, success, reset, changeEmail, changeName } =
+    useUserStore((state) => state);
+  const {
+    isDangerAlertVisible,
+    setDangerAlertVisibility,
+    isPasswordVisible,
+    setPasswordVisibility,
+    isSuccessAlertVisible,
+  } = useVisibility(reset, error, loading, success);
+
   const [user, updateUser] = useState<{
     firstName: string;
     lastName: string;
@@ -58,13 +101,53 @@ function Settings(props: PageProps) {
     props.browserNotifications
   );
   const [editableFields, setEditableFields] = useState<string[]>([]);
+
+  console.log(props.numberOfCreatedLinks, "props");
   return (
     <div id="settings" className="p-6 mb-24">
+
+        <div
+          style={{
+            position: "fixed",
+            right: "15px",
+            top: "15px",
+            display: isSuccessAlertVisible ? "block" : "hidden",
+          }}
+        >
+          <SlAlert variant="primary" open={isSuccessAlertVisible}>
+            <SlIcon slot="icon" name="info-circle"></SlIcon>
+            <strong>{success}</strong>
+          </SlAlert>
+        </div>
+      
+  
+        <div
+          style={{
+            position: "fixed",
+            right: "15px",
+            top: "15px",
+            display: isDangerAlertVisible ? "block" : "hidden",
+          }}
+        >
+          <SlAlert variant="danger" open={isDangerAlertVisible}>
+            <SlIcon slot="icon" name="exclamation-octagon"></SlIcon>
+            <strong>{error?.message}</strong>
+          </SlAlert>
+        </div>
+    
       <h3 className="font-semibold text-lg mb-1">Profile</h3>{" "}
       <div className="bg-white p-6">
         <dl style={{ marginTop: "-1rem" }}>
           {editableFields.includes("name") ? (
-            <form method="post">
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                changeName(user.firstName + " " + user.lastName, router);
+                setEditableFields((prevState) =>
+                  prevState.filter((el) => el != "name")
+                );
+              }}
+            >
               <div className="sm:flex block w-full">
                 <div className="sm:w-80 w-full">
                   <span>First Name</span>{" "}
@@ -75,9 +158,8 @@ function Settings(props: PageProps) {
                     value={user.firstName}
                     className="p-1.5 rounded w-full block"
                     onChange={(event) => {
-                      const firstName = (
-                        event.target as HTMLInputElement
-                      ).value;
+                      const firstName = (event.target as HTMLInputElement)
+                        .value;
                       updateUser((prevState) => ({
                         ...prevState,
                         firstName,
@@ -94,9 +176,7 @@ function Settings(props: PageProps) {
                     value={user.lastName}
                     className="p-1.5 rounded block w-full"
                     onChange={(event) => {
-                      const lastName = (
-                        event.target as HTMLInputElement
-                      ).value;
+                      const lastName = (event.target as HTMLInputElement).value;
                       updateUser((prevState) => ({
                         ...prevState,
                         lastName,
@@ -117,7 +197,7 @@ function Settings(props: PageProps) {
             <div>
               <dt>Name</dt>{" "}
               <dd className="group relative">
-                {user.firstName + ' ' + user.lastName}
+                {user.firstName + " " + user.lastName}
                 <SlButton
                   size="small"
                   variant="default"
@@ -134,7 +214,15 @@ function Settings(props: PageProps) {
             </div>
           )}
           {editableFields.includes("email") ? (
-            <form method="post">
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                changeEmail(user.email, router);
+                setEditableFields((prevState) =>
+                  prevState.filter((el) => el != "email")
+                );
+              }}
+            >
               <div className="sm:flex block w-full">
                 <div className="sm:w-80 w-full">
                   <span>Email</span>{" "}
@@ -187,7 +275,7 @@ function Settings(props: PageProps) {
           <div>
             <dt>Subscription Plan</dt>{" "}
             <dd className="group relative">
-              {props.plan}
+              {props.planName}
               <a href="/billing">
                 <SlButton
                   size="small"
@@ -215,13 +303,47 @@ function Settings(props: PageProps) {
             <dt># of Links</dt> <dd>{props.numberOfCreatedLinks} link</dd>
           </div>{" "}
           <div>
-            <dt>Monthly Minutes Capacity</dt>{" "}
+            <dt>Monthly Minutes Capacity</dt>
             <dd>
-            {props.monthlyMinutesCapacity} (<Link href="/billing">increase</Link>)
+              {props.monthlyMinutesCapacity}
+              {props.subscriptionStatus != "active" &&
+                props.subscriptionStatus != "trialing" && (
+                  <SlBadge
+                    variant="danger"
+                    className="inline-block sm:ml-2 ml-0 sm:mr-1 mr-0 sm:my-0"
+                    pulse
+                  >
+                    low
+                  </SlBadge>
+                )}
+             {' '} (<Link href="/billing">increase</Link>)
             </dd>
           </div>{" "}
           <div>
-            <dt>Monthly Minutes Consumed</dt> <dd>{props.monthlyMinutesConsumed} (0%)</dd>
+            <dt>Monthly Minutes Consumed</dt>{" "}
+            <dd>
+              {props.monthlyMinutesConsumed} (
+              {props.subscriptionStatus == "active" ||
+              props.subscriptionStatus == "trialing"
+                ? Math.round(
+                    100 -
+                      (props.monthlyMinutesConsumed / 100) *
+                        props.monthlyMinutesCapacity
+                  )
+                : 0}
+              %)
+              {props.subscriptionStatus != "active" &&
+                props.subscriptionStatus != "trialing" && (
+                  <SlBadge
+                    variant="danger"
+                    className="inline-block sm:ml-2 ml-0 sm:mr-1 mr-0 sm:my-0"
+                    pulse
+                  >
+                    low
+                  </SlBadge>
+                )}
+              {' '}(<Link href="/billing">increase</Link>)
+            </dd>
           </div>
         </dl>
       </div>{" "}

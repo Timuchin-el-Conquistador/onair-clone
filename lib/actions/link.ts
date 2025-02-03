@@ -32,7 +32,7 @@ export async function createUrlAction(
 
     return response.message;
   } catch (error) {
-     throw error;
+    return error instanceof Error ? error : new Error(String(error));
 
   }
 }
@@ -62,8 +62,8 @@ export async function updateUrlAction(
 
     return response.message;
   } catch (error) {
-    console.log(error)
-     throw error;
+
+    return error instanceof Error ? error : new Error(String(error));
 
   }
 }

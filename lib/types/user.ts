@@ -32,13 +32,29 @@ export interface  Integration  {
 };
 
 
-export interface Account{
+export interface Session{
+  id:string,
   name: string,
   email: string,
-  plan: string,
+  planName: string,
+  monthlyMinutesCapacity: number,
+  monthlyLinksCapacity: number,
+  subscriptionStatus:string,
+  monthlyIntegrationsCapacity:number,
+  [key: string]: unknown;
+}
+
+export interface Account{
+  id:string,
+  name: string,
+  email: string,
+  planName: string,
   monthlyMinutesCapacity: number,
   monthlyLinksCapacity: number,
   numberOfCreatedLinks: number,
   monthlyMinutesConsumed: number,
-  subscriptionStatus:string
+  subscriptionStatus:string,
+  monthlyIntegrationsCapacity:number,
+  browserNotifications:boolean
+  [key: string]: unknown;
 }

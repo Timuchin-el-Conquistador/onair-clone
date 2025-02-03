@@ -8,6 +8,7 @@ import Visitor from "../../components/visitor";
 import { retrieveUrlAction as publicRetrieveUrlAction } from "@/lib/actions/public";
 import { retrieveUrlAction as privateRetrieveUrlAction } from "@/lib/actions/link";
 import { verifySession } from "@/lib/dal";
+import { redirect } from "next/navigation";
 
 async function Page(props: { params: { slug: string } }) {
   const session = await verifySession();
@@ -24,7 +25,9 @@ async function Page(props: { params: { slug: string } }) {
   const url = response instanceof Error || response == null ? null : response;
 
 
-
+if(url == null) {
+  redirect('/404')
+}
   return (
     <>
       {session && url != null ? (

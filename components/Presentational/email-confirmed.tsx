@@ -27,7 +27,7 @@ function EmailConfirmed() {
         Email now is active
         </div>
   
-        <Link href="/users/login">Back to Login</Link>
+        <Link href="/users/sign_in">Back to Login</Link>
       </div>
       </>
     );

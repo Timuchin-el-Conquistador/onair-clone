@@ -1,10 +1,12 @@
 
-import Layout from '@/components/layouts/notifications';
+
+
+import Layout from '@/components/layouts/private';
 import '@/styles/integrations/mobile.scss'
 
-function MobileIntegration() {
+async function MobileIntegration() {
   return (
-    <Layout page="integrations">
+    <Layout page="integrations" sidebar={true} notifications={true}>
     <div className="p-6">
       <div className="bg-white p-6">
         <div className="">

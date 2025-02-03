@@ -2,17 +2,30 @@ import Layout from "@/components/layouts/private";
 
 import Billing from ".";
 
-import { retrieveSubscription } from "@/lib/actions/billing";
+import { retrieveSubscription,removeSubscriptionAction } from "@/lib/actions/billing";
+
+import InternalServerError from "@/components/Presentational/500";
+
+
 
 async function BillingPage() {
-  const subscription = await retrieveSubscription();
+  const response = await retrieveSubscription();
+  const subscription =
+  response instanceof Error || response == null ? null : response;
 
+  if(subscription == null) {
+    return <InternalServerError/>
+  }
+
+  console.log(subscription)
   return (
     <Layout page="billing" sidebar={true} notifications={true}>
       <Billing
         daysLeftToExpiration={subscription.daysLeftToExpiration}
-        planName={subscription.name}
-        planStatus = {subscription.status}
+        planName={subscription.planName}
+        subscriptionStatus = {subscription.subscriptionStatus}
+        removeSubscriptionAction={removeSubscriptionAction}
+
       />
     </Layout>
   );

@@ -2,7 +2,7 @@
 
 import "@/styles/layouts.scss";
 
-import { IncompletePayment, SubscriptionExpired } from "../Alerts/billing";
+import { IncompletePayment, SubscriptionExpired,NoActiveSubscription } from "../Alerts/billing";
 import { Plan } from "@/lib/types/billing";
 import { NoDevice } from "../Alerts/warning";
 
@@ -15,9 +15,10 @@ import WebCallNotification from "../Notifications/call";
 import { type Call } from "@/lib/types/call";
 
 import { useSessionStore } from "@/providers/session";
-import { useUserStore } from "@/providers/user";
 
 import { useRouter } from "next/navigation";
+
+
 
 function Notifications({
   hasActiveDevices,
@@ -86,9 +87,7 @@ function Notifications({
     removeSession(callId);
   };
 
-  useEffect(() => {
-  //  setCurrentSubscription(subscription);
-  }, []);
+  
 
   if (isNotificationsOn) {
     return (
@@ -97,6 +96,7 @@ function Notifications({
         {subscription?.status == "incomplete_expired" ||
           (subscription.status == "past_due" && <SubscriptionExpired />)}
         {subscription?.status == "incomplete" && <IncompletePayment />}
+        {subscription?.status == "canceled" && <NoActiveSubscription />}
         <div className="fixed top-2 right-2 z-[9999] space-y-2">
           {incommingCalls.map((call) => (
             <Fragment key={call.id}>

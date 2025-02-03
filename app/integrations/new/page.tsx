@@ -1,13 +1,12 @@
-'use client'
 
 import '@/styles/integrations/new-integration.scss'
 
-import Primary from "@/components/Badges/primary";
-import Layout from "@/components/layouts/notifications";
 
-function NewIntegration() {
+import Layout from "@/components/layouts/private";
+
+async function NewIntegration() {
   return (
-    <Layout page="integrations">
+    <Layout page="integrations" sidebar={true} notifications={true}>
       <div id="main" className="p-6">
         <div className="integ-card">
           <img src="/external-logos/mobile.svg" /> <h5>Mobile</h5>{" "}

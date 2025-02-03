@@ -4,9 +4,9 @@ import { fakeBackend } from "@/lib/axios";
 
 import { verifySession } from "@/lib/dal";
 
-import { type NewUser, type User } from "@/lib/types/user";
+import { Account, type NewUser, type User } from "@/lib/types/user";
 
-import { createSession } from "@/lib/session";
+import { createSession, updateSession } from "@/lib/session";
 import { Plan } from "@/lib/types/billing";
 
 const path = "/api/v1/user";
@@ -14,30 +14,31 @@ const path = "/api/v1/user";
 export type UserState = {
   loading: boolean;
   error: Error | null;
-  user: User | null;
-  message: string | null;
-  resetPasswordToken: string | null;
-  token: string | null;
-  peerId: string | null;
-  subscription: Plan | null;
+  user: Account | null;
+  success: string | null;
+  //subscription: Plan | null;
 };
 
 export type UserActions = {
   //auth
   signup: (user: NewUser, router: any) => void;
-  resendEmailConfirmationToken:(email: string, router: any) => void;
+  resendEmailConfirmationToken: (email: string, router: any) => void;
   login: (user: { email: string; password: string }, router: any) => void;
   forgotPassword: (email: string, router: any) => void;
-  submitOTP: (otp: string, router: any) => void;
-  resendToEmailOTP: () => void;
+  //submitOTP: (otp: string, router: any) => void;
+  //  resendToEmailOTP: () => void;
   resetPassword: (
     newPassword: string | null,
     confirmPassword: string | null,
+    token: string,
     router: any
   ) => void;
+
+  changeEmail:(email:string, router:any) =>void
+  changeName:(fullName:string,router:any) =>void
   //private
   //getAccountInformation: () => void;
- // setCurrentSubscription: (plan: Plan) => void;
+  // setCurrentSubscription: (plan: Plan) => void;
   /* editProfilePicture: (file: File, router: any) => void;
   editProfile: (user: {
     fullName: string;
@@ -53,12 +54,9 @@ export type UserStore = UserState & UserActions;
 export const defaultInitState: UserState = {
   loading: false,
   error: null,
-  message: null,
+  success: null,
   user: null,
-  subscription: null,
-  resetPasswordToken: null,
-  token: null,
-  peerId: null,
+  //subscription: null,
 };
 
 export const createUserStore = (initState: UserState = defaultInitState) => {
@@ -88,24 +86,26 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         ...prevState,
         loading: true,
         error: null,
-        message: null,
+        success: null,
       }));
       try {
-        await fakeBackend.post(path + "/signup", {
-          email: user.email,
-          fullName: user.fullName,
-          password: user.password,
-        });
+        const response: { message: string } = await fakeBackend.post(
+          path + "/signup",
+          {
+            email: user.email,
+            fullName: user.fullName,
+            password: user.password,
+          }
+        );
         // await createSession(response.response._id, response.response.email);
-
 
         set((prevState) => ({
           ...prevState,
           loading: false,
-          message: "Success",
+          success: response.message,
         }));
 
-        router.push('/users')
+        router.push("/users");
       } catch (error) {
         set((prevState) => ({
           ...prevState,
@@ -115,13 +115,13 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
       }
     },
 
-    resendEmailConfirmationToken: async (email:string,router:any) => {
+    resendEmailConfirmationToken: async (email: string, router: any) => {
       try {
         set((prevState) => ({
           ...prevState,
           loading: true,
           error: null,
-          message: null,
+          success: null,
         }));
         const path = `api/v1/user/resend-confirmation`;
         const response: { message: string } = await fakeBackend.post(path, {
@@ -131,10 +131,10 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         set((prevState) => ({
           ...prevState,
           loading: false,
-          message: response.message,
+          success: response.message,
           //  token:response.token
         }));
-        router.push('/users')
+        router.push("/users");
       } catch (error) {
         set((prevState) => ({
           ...prevState,
@@ -148,27 +148,33 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         ...prevState,
         loading: true,
         error: null,
-        message: null,
+        success: null,
       }));
       try {
-        const response: { message: string; user: User } =
+        const response: { message: string; account: Account } =
           await fakeBackend.post(path + "/signin", { ...user, role: "web" });
 
         await createSession({
-          id: response.user.id,
-          email: response.user.email,
-          fullName: response.user.fullName,
-          accountStatus:response.user.accountStatus
+          id: response.account.id,
+          email: response.account.email,
+          name: response.account.name,
+          planName:response.account.planName,
+          monthlyMinutesCapacity:response.account.monthlyMinutesCapacity,
+          monthlyLinksCapacity:response.account.monthlyLinksCapacity,
+        //  numberOfCreatedLinks:response.account.numberOfCreatedLinks,
+          monthlyIntegrationsCapacity:response.account.monthlyIntegrationsCapacity,
+        //  monthlyMinutesConsumed:response.account.monthlyMinutesConsumed,
+         // isBrowserNotificationsOn:response.account.isBrowserNotificationsOn,
+          subscriptionStatus: response.account.subscriptionStatus,
         });
 
         set((prevState) => ({
           ...prevState,
           loading: false,
-          user: response.user,
+          user: response.account,
         }));
         router.replace("/dashboard");
       } catch (error) {
-   
         set((prevState) => ({
           ...prevState,
           loading: false,
@@ -183,9 +189,9 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           ...prevState,
           loading: true,
           error: null,
-          message: null,
+          success: null,
         }));
-        const path = `api/v1/test-app/user/forgot-password`;
+        const path = `api/v1/user/forgot-password`;
         const response: { message: string } = await fakeBackend.post(path, {
           email,
         });
@@ -193,13 +199,11 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         set((prevState) => ({
           ...prevState,
           loading: false,
-          message: response.message,
+          success: response.message,
           //  token:response.token
         }));
-        sessionStorage.setItem("email", email);
-        setTimeout(() => {
-          router.replace("/otp");
-        }, 700);
+
+        router.replace("/users/sign_in");
       } catch (error) {
         set((prevState) => ({
           ...prevState,
@@ -208,7 +212,87 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         }));
       }
     },
-    submitOTP: async (otp, router) => {
+    
+    changeEmail: async (email, router) => {
+      try {
+
+        const session = await verifySession()
+
+        if(session == null){
+          router.replace("/users/sign_in");
+          return
+        }
+
+        set((prevState) => ({
+          ...prevState,
+          loading: true,
+          error: null,
+          success: null,
+        }));
+
+
+        const path = `api/v1/user/${session?.email}/change-email`;
+        const response: { message: string } = await fakeBackend.put(path, {
+          email,
+        });
+        await updateSession('email', email)
+        
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          success: response.message,
+          //  token:response.token
+        }));
+
+      
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+    
+    changeName: async (name,router) => {
+      try {
+
+        const session = await verifySession()
+
+        if(session == null){
+          router.replace("/users/sign_in");
+          return
+        }
+        set((prevState) => ({
+          ...prevState,
+          loading: true,
+          error: null,
+          success: null,
+        }));
+        const path = `api/v1/user/${session?.email}/change-name`;
+        const response: { message: string } = await fakeBackend.put(path, {
+          fullName:name
+        });
+
+        await updateSession('name', name)
+
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          success: response.message,
+          //  token:response.token
+        }));
+
+      
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          loading: false,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+    /*submitOTP: async (otp, router) => {
       sessionStorage.removeItem("email");
       try {
         set((prevState) => ({
@@ -239,9 +323,9 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           error: error instanceof Error ? error : new Error(String(error)),
         }));
       }
-    },
+    },*/
 
-    resendToEmailOTP: async () => {
+    /* resendToEmailOTP: async () => {
       const email = sessionStorage.getItem("email") || "";
 
       try {
@@ -269,54 +353,59 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           error: error instanceof Error ? error : new Error(String(error)),
         }));
       }
-    },
+    },*/
 
-    resetPassword: async (password, confirmPassword, router) => {
+    resetPassword: async (password, confirmPassword, token, router) => {
       try {
         if (password != confirmPassword) {
           return set((prevState) => ({
             ...prevState,
-            error: new Error("Şifrə və şifrə təsdiqi eyni olmalıdır."),
+            error: new Error("Passwords do not match"),
           }));
         }
 
         if (password == null) {
           return set((prevState) => ({
             ...prevState,
-            error: new Error("Yeni şifrə yaradılmayıb."),
+            error: new Error("New password not provided."),
           }));
         }
-        if (confirmPassword == null) {
-          return set((prevState) => ({
-            ...prevState,
-            error: new Error("Şifrə və təsdiq şifrəsi uyğun deyil."),
-          }));
-        }
+
         set((prevState) => ({
           ...prevState,
           loading: true,
           error: null,
-          message: null,
+          success: null,
         }));
-        const token = sessionStorage.getItem("reset-passord-token");
-        sessionStorage.removeItem("reset-passord-token");
-
-        const path = `api/v1/test-app/user/reset-password`;
-        const response: { message: string } = await fakeBackend.post(
-          path + "/" + token,
+    
+        const path = `api/v1/user/${token}/reset-password`;
+        const response: { account: Account } = await fakeBackend.post(
+          path,
           {
             password,
           }
         );
 
+        await createSession({
+          id: response.account.id,
+          email: response.account.email,
+          name: response.account.name,
+          planName:response.account.planName,
+          monthlyMinutesCapacity:response.account.monthlyMinutesCapacity,
+          monthlyLinksCapacity:response.account.monthlyLinksCapacity,
+      //    numberOfCreatedLinks:response.account.numberOfCreatedLinks,
+          monthlyIntegrationsCapacity:response.account.monthlyIntegrationsCapacity,
+        //  monthlyMinutesConsumed:response.account.monthlyMinutesConsumed,
+       //   isBrowserNotificationsOn:response.account.isBrowserNotificationsOn,
+         subscriptionStatus: response.account.subscriptionStatus,
+        });
         set((prevState) => ({
           ...prevState,
           loading: false,
-          message: response.message,
+          user: response.account,
         }));
-        setTimeout(() => {
-          router.replace("/reset-password-success");
-        }, 700);
+        router.replace("/dashboard");
+
       } catch (error) {
         set((prevState) => ({
           ...prevState,
@@ -325,7 +414,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         }));
       }
     },
-   /* getAccountInformation: async () => {
+    /* getAccountInformation: async () => {
       try {
         const session = await verifySession();
         if (!session) return null;
@@ -361,7 +450,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
       set((prevState) => ({
         ...prevState,
         error: null,
-        message: null,
+        success: null,
       }));
     },
   }));

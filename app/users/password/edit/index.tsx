@@ -1,26 +1,17 @@
 "use client";
-
-import "@/styles/login.scss";
-
 import dynamic from "next/dynamic";
 
-import Image from "next/image";
+import "@/styles/user-confirmation.scss";
+
+import { useUserStore } from "@/providers/user";
+
+import { useRouter } from "next/navigation";
+
+import { useVisibility } from "@/hooks/useVisibility";
 
 import { useRef } from "react";
 
 
-import { useUserStore } from "@/providers/user";
-
-import Link from "next/link";
-
-import "@/styles/login.scss";
-
-import Logo from "@/public/logo.svg";
-
-
-import { useVisibility } from "@/hooks/useVisibility";
-
-import { useRouter } from "next/navigation";
 
 const SlSpinner = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/spinner/index.js"),
@@ -29,7 +20,6 @@ const SlSpinner = dynamic(
     ssr: false,
   }
 );
-
 const SlAlert = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/alert/index.js"),
   {
@@ -45,10 +35,11 @@ const SlIcon = dynamic(
     ssr: false,
   }
 );
-function Login() {
+
+function ResetPassword(props: { token: string }) {
   const router = useRouter();
 
-  const { reset, error, loading, success, login } = useUserStore(
+  const { error, loading, success, reset, resetPassword } = useUserStore(
     (state) => state
   );
   const {
@@ -56,12 +47,10 @@ function Login() {
     setDangerAlertVisibility,
     isPasswordVisible,
     setPasswordVisibility,
-    isSuccessAlertVisible,
   } = useVisibility(reset, error, loading, success);
 
-  const emailRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
-
+  const confirmPasswordRef = useRef<HTMLInputElement | null>(null);
   return (
     <>
       <div
@@ -69,30 +58,11 @@ function Login() {
         className="w-full border-t-4 border-brand-400 absolute top-0 left-0 right-0 z-50"
       ></div>
       <div className="mx-auto w-full text-center">
-        <Image className="inline-block w-16 mt-8" src={Logo} alt="OnAir" />
-        <h2 className="text-xl mt-4">Sign-in to your account</h2>
-        <h3 className=" text-sm font-medium text-gray-600">
-          or <Link href="/users/sign_up">start your 7-day free trial</Link>
-        </h3>
+        <img className="inline-block w-16 mt-8" src="/logo.svg" alt="OnAir" />
+        <h2 className="text-xl mt-4">Change Your Password </h2>
       </div>
       <div className="authenticate-page p-4 sm:p-0">
-        
-          <div
-            style={{
-              position: "fixed",
-              right: "15px",
-              top: "15px",
-              display: isSuccessAlertVisible ? "block" : "hidden",
-            }}
-          >
-            <SlAlert variant="primary" open={isSuccessAlertVisible}>
-              <SlIcon slot="icon" name="info-circle"></SlIcon>
-              <strong>{success}</strong>
 
-            </SlAlert>
-          </div>
-      
-  
           <div
             style={{
               position: "fixed",
@@ -106,17 +76,14 @@ function Login() {
               <strong>{error?.message}</strong>
             </SlAlert>
           </div>
-        
-        {/*Main panel*/}
+      
         <div className="flex flex-col md:flex-row main-panel">
-          {/*Left panel*/}
           <div className="hidden left-panel p-16">
             <div className="">
               <h2 className="mb-3 text-gray-700 text-2xl leading-8 font-bold">
                 Walk-ins Welcome!
               </h2>
 
-              {/*} Features list*/}
               <div className="mt-8">
                 <ul role="list" className="mt-8 space-y-5 grid grid-rows">
                   <li className="flex items-end lg:col-span-1">
@@ -134,7 +101,7 @@ function Login() {
                         id=""
                       >
                         {" "}
-                        <use xlinkHref="/feather-sprite.svg#check-circle"></use>{" "}
+                        <use xlinkHref="/images/feather-sprite.svg#check-circle"></use>{" "}
                       </svg>
                     </div>
                     <p className="ml-3 text-sm text-gray-700">Value prop one</p>
@@ -150,7 +117,9 @@ function Login() {
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        style={{ display: "inline-block" }}
+                        style={{ display: "inline-block;" }}
+                        className=""
+                        id=""
                       >
                         {" "}
                         <use xlinkHref="/feather-sprite.svg#check-circle"></use>{" "}
@@ -169,7 +138,9 @@ function Login() {
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        style={{ display: "inline-block" }}
+                        style={{ display: "inline-block;" }}
+                        className=""
+                        id=""
                       >
                         {" "}
                         <use xlinkHref="/feather-sprite.svg#check-circle"></use>{" "}
@@ -184,88 +155,82 @@ function Login() {
             </div>
           </div>
 
-          {/*Right panel*/}
           <div className="w-full sp-form auth-form py-4 px-4 md:py-16 md:px-16">
-            {/*Social signin partial*/}
-
             {loading && <SlSpinner></SlSpinner>}
-            <div className="mb-6">
-              {/*<div className="m-auto mb-6 grid grid-rows-2 gap-4">
-      <a href="/oauth/google" className="social-sign-in-button bg-blue-500">
-        <Image className="bg-white p-1 mr-4 w-8 h-8" src="/external-logos/google-icon.svg" alt="Google"/>
-        <span>Sign in with Google</span>
-      </a>
-      <a href="/oauth/apple" className="social-sign-in-button bg-black">
-        <Image className="bg-white p-1 mr-4 w-8 h-8" src="/external-logos/apple.svg" alt="Apple"/>
-        <span>Sign in with Apple</span>
-      </a>
-    </div>*/}
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Login</span>
-                </div>
-              </div>
-            </div>
 
             <form
               className="new_user"
               id="new_user"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const email = emailRef?.current?.value || "";
-                const password = passwordRef?.current?.value || "";
-                login({ email, password }, router);
+              onSubmit={(event) => {
+                event.preventDefault();
+
+                const password = passwordRef.current?.value || null;
+                const confirmPassword =
+                  confirmPasswordRef.current?.value || null;
+
+                if (password == null) {
+                  passwordRef.current?.focus();
+                  setDangerAlertVisibility(true); //danger alert pops up on error => error message mutation and loading mutatition in other components
+                } else if (confirmPassword == null) {
+                  //i put it here cause if user gets same error message alert wont pop up after user closed it (no message mutation)
+                  confirmPasswordRef.current?.focus(); //cause in store i dont do netwroks request loading is always false when i send request to store when one of 3 errors is true(no loading mutation)
+                  setDangerAlertVisibility(true); //that is why need to change state to true to show alerts here not in useEffect (to avoid redundancy or mo when no effect happend)
+                } else if (confirmPassword != password) {
+                  setDangerAlertVisibility(true);
+                }
+                resetPassword(password, confirmPassword, props.token, router);
               }}
             >
-              {/* Email*/}
-              <input
-                autoFocus
-                autoComplete="email"
-                className="w-full sm:text-sm"
-                placeholder="Enter Email"
-                type="email"
-                name="user[email]"
-                id="user_email"
-                ref={emailRef}
-              />
-              {/*} Password*/}
-              <input
-                autoComplete="current-password"
-                className="mt-4 w-full sm:text-sm"
-                placeholder="Enter password"
-                type="password"
-                name="user[password]"
-                id="user_password"
-                ref={passwordRef}
-              />
-              <div className="mt-4 flex items-center">
-                <div className="text-sm leading-5">
-                  <Link
-                    href="/users/password/new"
-                    className="authentication-link"
-                  >
-                    Forgot your password?
-                  </Link>
-                </div>
+              <div>
+                <label htmlFor="user_password">New password</label>
+                <input
+                  autoFocus
+                  autoComplete="new-password"
+                  className="w-full sm:text-sm"
+                  type="password"
+                  name="user[password]"
+                  id="user_password"
+                  ref={passwordRef}
+                />
+                <span className="text-sm text-blue-500">
+                  <em>(6 characters minimum)</em>
+                </span>
               </div>
               <div className="mt-6">
+                <label htmlFor="user_password_confirmation">
+                  Confirm new password
+                </label>
+                <br />
+                <input
+                  autoComplete="new-password"
+                  className="w-full sm:text-sm"
+                  type="password"
+                  name="user[password_confirmation]"
+                  id="user_password_confirmation"
+                  ref={confirmPasswordRef}
+                />
+              </div>
+              <div className="mt-6 mb-2">
                 <input
                   type="submit"
                   name="commit"
-                  value="Log in"
+                  value="Change my password"
                   className="w-full btn btn-blue"
-                  data-disable-with="Log in"
+                  data-disable-with="Change my password"
                 />
               </div>
-              {/*<div class="mt-2 text-sm leading-5">
-          <a href="/users/confirmation/new" class="authentication-link">
-            Didn't receive confirmation instructions?
-          </a>
-        </div>*/}
+
+              <a className="authentication-link" href="/users/sign_in">
+                Log in
+              </a>
+              <span className="text-gray-500"> with your account.</span>
+              <br />
+
+              <a className="authentication-link" href="/users/sign_up">
+                Sign up
+              </a>
+              <span className="text-gray-500"> for a new account.</span>
+              <br />
             </form>
           </div>
         </div>
@@ -274,4 +239,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default ResetPassword;

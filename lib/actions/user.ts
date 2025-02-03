@@ -39,6 +39,8 @@ export async function confirmEmail(token:string) {
 
 
 
+
+
 export async function retrieveDevices() {
   try {
     const session = await verifySession();
@@ -108,7 +110,7 @@ export async function retrieveAccountInformationAction() {
 
     return response.account
   } catch (error) {
-    return error instanceof Error ? error : new Error(String(error));
+    throw error;
   }
 }
 

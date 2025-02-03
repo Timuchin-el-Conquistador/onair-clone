@@ -75,7 +75,23 @@ class FakeBackend {
       throw this.handleAxiosError(error);
     }
   }
-
+ // Generic PUT request method
+ async patch<T>(
+  url: string,
+  data: any,
+  config: AxiosRequestConfig = {}
+): Promise<T> {
+  try {
+    const response: AxiosResponse<T> = await this.axiosInstance.put(
+      url,
+      data,
+      config
+    );
+    return response.data;
+  } catch (error) {
+    throw this.handleAxiosError(error);
+  }
+}
   // Generic DELETE request method
   async delete<T>(url: string, config: AxiosRequestConfig = {}): Promise<T> {
     try {

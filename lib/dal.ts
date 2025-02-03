@@ -17,7 +17,7 @@ export const verifySession = cache(async () => {
     id: session.id,
     email: session.email,
     fullName: session.fullName,
-    accountStatus:session.accountStatus
+    subscriptionStatus:session.subscriptionStatus
   };
 });
 

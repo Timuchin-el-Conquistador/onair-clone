@@ -50,7 +50,7 @@ type PageProps = {
   plans: Plan[];
   createSubscriptionSessionAction: (
     planId: string
-  ) => Promise<{ url: string } | Error>;
+  ) => Promise<string | Error>;
 };
 function ChoosePlan(props: PageProps) {
   const [plans, setPlans] = useState(props.plans);
@@ -65,6 +65,15 @@ function ChoosePlan(props: PageProps) {
     );
   }, [props.plans, plans]);
 
+
+  const plan = useMemo(() => {
+    const index = props.plans.findIndex((el) => el.active)
+    return props.plans[index]
+  }, [props.plans, plans]);
+
+
+
+  console.log(plan)
   return (
     <div className="p-6">
       <div className="bg-white p-6">
@@ -128,14 +137,21 @@ function ChoosePlan(props: PageProps) {
             <form
               onSubmit={async (event) => {
                 event?.preventDefault();
+            
                 const plan = plans.filter((el) => el.active)[0];
+
+                if(plan){
+
+                }
                 const response = await props.createSubscriptionSessionAction(
                   plan.priceTestId
                 );
                 const sessionUrl =
                   response instanceof Error || response == null
                     ? null
-                    : response.url;
+                    : response;
+
+                    console.log(sessionUrl)
                 if (sessionUrl) {
                   window.open(sessionUrl);
                 }

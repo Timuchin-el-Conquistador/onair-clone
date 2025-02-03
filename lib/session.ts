@@ -2,14 +2,17 @@
 
 import { SignJWT, jwtVerify, JWTPayload } from "jose";
 import { cookies } from "next/headers";
-import { User } from "./types/user";
+
+import { Session } from "./types/user";
 
 import { redirect } from "next/navigation";
 
 const secretKey = process.env.SESSION_SECRET;
 const encodedKey = new TextEncoder().encode(secretKey);
 
-export async function encrypt(payload: User) {
+export async function encrypt(
+  payload:Session
+) {
   return new SignJWT(payload as JWTPayload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -30,7 +33,9 @@ export async function decrypt(session: string | undefined = "") {
   }
 }
 
-export async function createSession(user: User) {
+export async function createSession(
+  user: Session
+) {
   //const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const session = await encrypt(user);
 
@@ -41,17 +46,18 @@ export async function createSession(user: User) {
   });
 }
 
-export async function updateSession(accountStatus: string) {
-  'use server'
+export async function updateSession(
+  field: keyof Session,
+  value: string
+) {
+  "use server";
 
   const cookie = await cookies().get("session")?.value;
-  const payload = (await decrypt(cookie)) as User;
+  const payload = (await decrypt(cookie)) as Session
 
-  if (!cookie || !payload) {
-    return null;
-  }
 
-  payload.accountStatus = accountStatus;
+  payload[field] = value;
+
   const session = await encrypt(payload);
 
   await cookies().set("session", session, {
@@ -61,6 +67,46 @@ export async function updateSession(accountStatus: string) {
   });
 }
 
+export async function updateSubscription(
+  planName: string,
+  monthlyLinksCapacity: number,
+  monthlyIntegrationsCapacity: number,
+  subscriptionStatus: string
+) {
+  "use server";
+
+  const cookie = await cookies().get("session")?.value;
+
+  let payload = (await decrypt(cookie)) as Session
+
+
+  payload ={
+    ...payload,
+    planName,
+    monthlyLinksCapacity,
+    monthlyIntegrationsCapacity,
+    subscriptionStatus,
+  }
+
+  const session = await encrypt(payload);
+
+  await cookies().set("session", session, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
+}
+export async function retrieveSession() {
+  "use server";
+
+  const cookie = (await cookies()).get("session");
+  const session = await decrypt(cookie?.value);
+
+  if (!session?.id) {
+    return null;
+  }
+  return session;
+}
 export async function deleteSessionAction() {
   "use server";
   // Access cookies and delete the session cookie

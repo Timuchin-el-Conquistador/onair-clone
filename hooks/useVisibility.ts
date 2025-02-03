@@ -5,52 +5,33 @@ export const useVisibility = (
   reset: () => void,
   error: null | Error,
   loading: boolean,
-  message: null | string
+  success: null | string
 ) => {
   const [isDangerAlertVisible, setDangerAlertVisibility] = useState(false);
   const [isSuccessAlertVisible, setSuccessAlertVisibility] = useState(false);
   const [isPasswordVisible, setPasswordVisibility] = useState(false);
 
-  const isFirstRender = useRef(true); // Declare useRef outside the useEffect
+  //const isFirstRender = useRef(true); // Declare useRef outside the useEffect
 
   useEffect(() => {
-    // Skip the effect on the first render
-    if (isFirstRender.current && reset != null) {
-      isFirstRender.current = false;
-      reset(); // Call reset function on mount
-      return;
-    }
-    const targetElement = document.getElementById("spinner");
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-    // Avoid redundant state updates
-    if (
-      (isDangerAlertVisible && error != null) ||
-      (!isDangerAlertVisible && error == null)
-    ) {
-      return;
-    }
-
-    // Update state based on error
     setDangerAlertVisibility(error != null);
+    
+    if (error != null) {
+      setTimeout(() => {
+        reset();
+      }, 3000);
+    }
   }, [error, loading]); // Include all dependencies
 
   useEffect(() => {
-    // Skip the effect on the first render
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      reset(); // Call reset function on mount
-      return;
-    }
+    setSuccessAlertVisibility(success != null);
 
-    const targetElement = document.getElementById("spinner");
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (success != null) {
+      setTimeout(() => {
+        reset();
+      }, 3000);
     }
-    // Update state based on error
-    setSuccessAlertVisibility(message != null);
-  }, [message, loading]); // Include all dependencies
+  }, [success, loading]); // Include all dependencies
 
   return {
     isDangerAlertVisible,
