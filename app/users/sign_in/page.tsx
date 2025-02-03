@@ -15,7 +15,7 @@ import Link from "next/link";
 
 import "@/styles/login.scss";
 
-import Logo from "@/public/logo.svg";
+import Logo from "@/public/logo-white.svg";
 
 
 import { useVisibility } from "@/hooks/useVisibility";

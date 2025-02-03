@@ -119,7 +119,7 @@ function EditLink(props: PageProps) {
             </div>{" "}
             <div className="md:w-1/2 relative">
               <div className="flex relative">
-                <span className="flex items-center px-3 text-sm text-gray-950 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md">
+              <span className="flex items-center px-3 text-sm text-gray-950 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md max-w-48">
                  {process.env.NEXT_PUBLIC_FRONTEND_URL}/
                 </span>{" "}
                 <input

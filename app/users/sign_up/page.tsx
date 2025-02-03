@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 
 import "@/styles/signup.scss";
 
-import Logo from "@/public/logo.svg";
+import Logo from "@/public/logo-white.svg";
 
 
 import Link from "next/link";

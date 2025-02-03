@@ -45,7 +45,7 @@ function NoDevice(props:PageProps) {
           className="sm:mr-2 flex justify-center items-center bg-black hover:bg-gray-800 text-white w-36 h-12 rounded-md transition-colors duration-300"
         >
           <img
-            src="/external-logos/apple-white-logo.svg"
+            src="/external-logos/apple-white-logo-white.svg"
             alt="Apple"
             className="w-8 h-8 mr-2"
           />{" "}

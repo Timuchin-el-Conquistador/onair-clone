@@ -8,7 +8,7 @@ function CallDeclined() {
       <div className="text-center">
         <Image
           className="w-16 inline-block"
-          src="/logo.svg"
+          src="/logo-white.svg"
           alt="logo"
           width={0}
           height={0}

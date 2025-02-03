@@ -293,7 +293,7 @@ function Session(props: PageProps) {
           <div className="audio-call-header">
             <div className="text-lg font-thin">{formatHHMMSSTime(time)}</div>{" "}
             <Image
-              src="/logo.svg"
+              src="/logo-white.svg"
               alt="Profile Picture"
               width="80"
               height="80"

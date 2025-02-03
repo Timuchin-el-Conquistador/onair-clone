@@ -58,7 +58,7 @@ function ResetPassword(props: { token: string }) {
         className="w-full border-t-4 border-brand-400 absolute top-0 left-0 right-0 z-50"
       ></div>
       <div className="mx-auto w-full text-center">
-        <img className="inline-block w-16 mt-8" src="/logo.svg" alt="OnAir" />
+        <img className="inline-block w-16 mt-8" src="/logo-white.svg" alt="OnAir" />
         <h2 className="text-xl mt-4">Change Your Password </h2>
       </div>
       <div className="authenticate-page p-4 sm:p-0">

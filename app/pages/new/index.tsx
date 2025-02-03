@@ -137,13 +137,14 @@ function NewLink(props: PageProps) {
                 </p>
               </div>{" "}
               <div className="md:w-1/2 relative">
+              
                 <div className="flex relative">
-                  <span className="flex items-center px-3 text-sm text-gray-950 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md">
+                <span className="flex items-center px-3 text-sm text-gray-950 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md max-w-48">
                     {process.env.NEXT_PUBLIC_FRONTEND_URL}
                   </span>{" "}
                   <input
                     name="Slug"
-                    placeholder="yourname"
+                    placeholder="link name"
                     className="rounded-none rounded-e-md border border-gray-300 text-gray-700 focus:border-blue-300 focus:outline-none block w-full text-sm py-2 pl-3 pr-10 !truncate"
                     // value={form.link.slug}
                     onChange={(event) => {

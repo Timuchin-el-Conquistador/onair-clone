@@ -33,7 +33,7 @@ if(url == null) {
       {session && url != null ? (
         <Layout page="dashboard" sidebar={true} notifications={true}>
           <Sessions
-            domain={process.env.LOCAL_URL || ""}
+            domain={process.env.FRONTEND_URL || ""}
             slug={slug}
             url={url}
           />
