@@ -63,7 +63,7 @@ export async function createSubscriptionSessionAction(planId:string) {
     return response.url;
   } catch (error) {
 
-    return error instanceof Error ? error.message : null
+    return error instanceof Error ? error.message : new Error(String(error));
   }
 }
 
@@ -99,7 +99,7 @@ export async function removeSubscriptionAction() {
       path,
     );
     await updateSession('subscriptionStatus', 'canceled')
-    
+
     return response.message;
   } catch (error) {
     return error instanceof Error ? error.message : null

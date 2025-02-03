@@ -95,7 +95,7 @@ function ActiveCallSession(props: PageProps) {
             <CallEnded
               isAuth={true}
               slug={props.slug}
-              domain={process.env.NEXT_PUBLIC_FRONTEND_LOCAL_URL!}
+              domain={process.env.NEXT_PUBLIC_FRONTEND_URL!}
             />
           </div>
         </>
@@ -135,7 +135,7 @@ function ActiveCallSession(props: PageProps) {
             <CallEnded
               isAuth={false}
               slug={props.slug}
-              domain={process.env.NEXT_PUBLIC_FRONTEND_LOCAL_URL!}
+              domain={process.env.NEXT_PUBLIC_FRONTEND_URL!}
             />
           </div>
         </>

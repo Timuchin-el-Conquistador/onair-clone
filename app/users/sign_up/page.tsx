@@ -6,8 +6,6 @@ import "@/styles/signup.scss";
 
 import Logo from "@/public/logo.svg";
 
-import Danger from "@/components/Alerts/danger";
-
 
 import Link from "next/link";
 
@@ -28,17 +26,33 @@ const SlSpinner = dynamic(
   }
 );
 
+const SlAlert = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/alert/index.js"),
+  {
+    //  loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
+
+const SlIcon = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
+  {
+    //  loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
+
 function Signup() {
   const router = useRouter();
 
-  const { reset, signup, error, loading, message } = useUserStore(
+  const { reset, signup, error, loading, success } = useUserStore(
     (state) => state
   );
   const {
     isDangerAlertVisible,
     setDangerAlertVisibility,
     isSuccessAlertVisible,
-  } = useVisibility(reset, error, loading, message);
+  } = useVisibility(reset, error, loading, success);
 
   const emailRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
@@ -138,16 +152,35 @@ function Signup() {
           <div className="w-full sp-form auth-form py-4 px-4 md:py-16 md:px-16">
             {/*Social signin partial*/}
      
-            {isDangerAlertVisible ? (
-          
-                <Danger
-                  message={error?.message || "ERROR"}
-                  click={() => {
-                    setDangerAlertVisibility(false);
-                  }}
-                />
-   
-            ) : null}
+            <div
+            style={{
+              position: "fixed",
+              right: "15px",
+              top: "15px",
+              display: isSuccessAlertVisible ? "block" : "hidden",
+            }}
+          >
+            <SlAlert variant="primary" open={isSuccessAlertVisible}>
+              <SlIcon slot="icon" name="info-circle"></SlIcon>
+              <strong>{success}</strong>
+
+            </SlAlert>
+          </div>
+      
+  
+          <div
+            style={{
+              position: "fixed",
+              right: "15px",
+              top: "15px",
+              display: isDangerAlertVisible ? "block" : "hidden",
+            }}
+          >
+            <SlAlert variant="danger" open={isDangerAlertVisible}>
+              <SlIcon slot="icon" name="exclamation-octagon"></SlIcon>
+              <strong>{error?.message}</strong>
+            </SlAlert>
+          </div>
             {loading && <SlSpinner></SlSpinner>}
             <div className="mb-6">
               <div className="relative">
