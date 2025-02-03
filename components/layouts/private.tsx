@@ -27,10 +27,10 @@ async function PrivateLayout({
     devicesResponse instanceof Error || devicesResponse == null
       ? []
       : devicesResponse;
-
+console.log(user)
   return (
     <div className="flex overflow-hidden bg-gray-100 h-screen">
-      {sidebar && <Sidebar page={page} />}
+      {sidebar && <Sidebar page={page}  fullName={user.fullName as string} email={user.email as string}/>}
       <div className="flex flex-col w-0 flex-1 overflow-hidden">
         <main className="flex-1 relative overflow-y-auto focus:outline-none">
     

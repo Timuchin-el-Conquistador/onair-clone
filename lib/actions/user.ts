@@ -13,7 +13,7 @@ import { fakeBackend } from "../axios";
 export async function retrieveUser() {
   try {
     const user = await verifySession();
-
+console.log(user)
     if (!user) return redirect("/users/sign_in");
 
     return user;

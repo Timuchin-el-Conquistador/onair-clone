@@ -6,6 +6,7 @@ import "@/styles/pages.new.scss";
 
 import DailyAvailability from "@/components/availability";
 import ConnectedDevice from "@/components/Integrations/connected-device";
+import AvailableDevices from "@/components/modals/available-devices";
 
 import useLinkForm from "@/hooks/useLinkForm";
 
@@ -30,14 +31,14 @@ const SlButton = dynamic(
 const SlCheckbox = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/checkbox/index.js"),
   {
-  //  loading: () => <>Loading...</>,
+    //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
 const SlTooltip = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/tooltip/index.js"),
   {
-  //  loading: () => <>Loading...</>,
+    //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
@@ -45,7 +46,7 @@ const SlTooltip = dynamic(
 const SlDialog = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),
   {
-  //  loading: () => <>Loading...</>,
+    //  loading: () => <>Loading...</>,
     ssr: false,
   }
 );
@@ -72,13 +73,13 @@ type PageProps = {
     connectedDevices: string[],
     availability: string,
     settings: Settings
-  ) => Promise<string | Error>;
+  ) => Promise<{ status: number; message: string }>;
 };
 function EditLink(props: PageProps) {
   const router = useRouter();
   const {
     form,
-    removeDevice,
+    unlinkDeviceFromUrl,
     handleSlugChange,
     handleLinkNameChange,
     changeAvailability,
@@ -87,11 +88,16 @@ function EditLink(props: PageProps) {
     changeOfflineMessage,
     connectDevices,
   } = useLinkForm(props.link);
-  const [isDevicesModalOpen, setDevicesModalState] = useState(false);
-
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [
+    isNoConnectedMobileDeviceModalVisible,
+    setNoConnectedMobileDeviceModalVisibility,
+  ] = useState(false);
+
+  const [isAvailableDevicesModalOpen, setAvailableDevicesModalState] =
+    useState(false);
 
   const [settingsVisibility, setSettingsVisibility] = useState({
     visitorForm: false,
@@ -100,9 +106,9 @@ function EditLink(props: PageProps) {
 
   const checkedDevices: Device[] = [];
 
-  const saveDevices = () => {
+  const linkDevices = () => {
     connectDevices(checkedDevices);
-    setDevicesModalState(false);
+    setAvailableDevicesModalState(false);
   };
 
   return (
@@ -119,8 +125,8 @@ function EditLink(props: PageProps) {
             </div>{" "}
             <div className="md:w-1/2 relative">
               <div className="flex relative">
-              <span className="flex items-center px-3 text-sm text-gray-950 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md max-w-48">
-                 {process.env.NEXT_PUBLIC_FRONTEND_URL}/
+                <span className="flex items-center px-3 text-sm text-gray-950 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md max-w-48">
+                  domain/
                 </span>{" "}
                 <input
                   name="Slug"
@@ -236,7 +242,7 @@ function EditLink(props: PageProps) {
                 <Fragment key={el._id}>
                   <ConnectedDevice
                     device={el}
-                    removeDeviceFromLink={removeDevice}
+                    removeDeviceFromLink={unlinkDeviceFromUrl}
                   />
                 </Fragment>
               ))}
@@ -265,7 +271,7 @@ function EditLink(props: PageProps) {
                 <SlButton
                   className="text-blue-700 text-sm cursor-pointer mt-2 block"
                   onClick={() => {
-                    setDevicesModalState(true);
+                    setAvailableDevicesModalState(true);
                   }}
                 >
                   + Add Device
@@ -527,88 +533,15 @@ function EditLink(props: PageProps) {
           </div>
         </div>
       </div>
-
-      <SlDialog
-        label="Devices"
-        className="with-header"
-        style={{ width: "660px" }}
-        open={isDevicesModalOpen}
-        onSlAfterHide={() => {
-          setDevicesModalState(false);
-        }}
-      >
-        <p className="text-gray-400 text-sm">Select a maximum of 8 devices</p>{" "}
-        <div className="bg-white rounded-md border border-gray-200">
-          <div className="divide-y divide-gray-200 max-h-[40vh] overflow-scroll">
-            <div className="flex flex-col pl-3 py-3 hover:bg-stone-100 text-sm h-16 cursor-pointer">
-              {props.devices.map((device: Device) => (
-                <div key={device._id}  className="flex flex-row pl-3 py-3 hover:bg-stone-100 text-sm h-16 cursor-pointer">
-                  <SlCheckbox
-                    size="small"
-                    form=""
-                    data-optional=""
-                    data-valid=""
-                    className="mx-2 small-checkbox"
-                    onSlChange={(event) => {
-                      const checked = (event.target as HTMLInputElement)
-                        .checked;
-
-                      if (checked) {
-                        checkedDevices.push(device);
-                      } else {
-                        removeDevice(device._id);
-                      }
-                    }}
-                    checked={
-                      form.link.connectedDevices.findIndex(
-                        (el: Device) => el._id == device._id
-                      ) > -1
-                    }
-                  ></SlCheckbox>{" "}
-                  <div className="flex flex-col w-full truncate ml-1">
-                    <p className="text-gray-900 truncate font-medium">
-                      {device.ownerFullName}
-                    </p>{" "}
-                    <p className="text-gray-500 text-xs truncate items-center">
-                      Mobile
-                      <span className="ml-0.5">{device.description}</span>
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>{" "}
-        <div className="mt-2 text-sm">
-          <Link href="/integrations" target="_blank" className="text-blue-500">
-            + Add Device
-          </Link>
-        </div>{" "}
-        <div className="flex justify-between mt-16">
-          <SlButton
-            slot="footer"
-            variant="default"
-            size="medium"
-            data-optional=""
-            data-valid=""
-            onClick={() => {
-              setDevicesModalState(false);
-            }}
-          >
-            Cancel
-          </SlButton>{" "}
-          <SlButton
-            slot="footer"
-            variant="primary"
-            size="medium"
-            data-optional=""
-            data-valid=""
-            onClick={saveDevices}
-          >
-            Save
-          </SlButton>
-        </div>
-      </SlDialog>
+      <AvailableDevices
+        isAvailableDevicesModalOpen={isAvailableDevicesModalOpen}
+        setAvailableDevicesModalState={setAvailableDevicesModalState}
+        unlinkDeviceFromUrl={unlinkDeviceFromUrl}
+        linkDevices={linkDevices}
+        checkedDevices={checkedDevices}
+        availableDevices={props.devices}
+        connectedDevices={form.link.connectedDevices}
+      />
     </div>
   );
 }

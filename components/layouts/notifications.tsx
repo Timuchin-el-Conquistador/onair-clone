@@ -2,7 +2,11 @@
 
 import "@/styles/layouts.scss";
 
-import { IncompletePayment, SubscriptionExpired,NoActiveSubscription } from "../Alerts/billing";
+import {
+  IncompletePayment,
+  SubscriptionExpired,
+  NoActiveSubscription,
+} from "../Alerts/billing";
 import { Plan } from "@/lib/types/billing";
 import { NoDevice } from "../Alerts/warning";
 
@@ -17,8 +21,6 @@ import { type Call } from "@/lib/types/call";
 import { useSessionStore } from "@/providers/session";
 
 import { useRouter } from "next/navigation";
-
-
 
 function Notifications({
   hasActiveDevices,
@@ -35,9 +37,14 @@ function Notifications({
 
   const [incommingCalls, setIncommingCalls] = useState<any[]>([]);
 
+  const [
+    isNoIntegratedDeviceAlertVisible,
+    setNoIntegratedDeviceAlertVisibility,
+  ] = useState(!hasActiveDevices);
+
   const { pushSession, removeSession } = useSessionStore((state) => state);
 
- // const { setCurrentSubscription } = useUserStore((state) => state);
+  // const { setCurrentSubscription } = useUserStore((state) => state);
 
   useEffect(() => {
     socket.connect();
@@ -87,12 +94,18 @@ function Notifications({
     removeSession(callId);
   };
 
-  
+  const closeNoIntegratedDevicesAlert = () => {
+    setNoIntegratedDeviceAlertVisibility(false);
+  };
 
   if (isNotificationsOn) {
     return (
       <>
-        {!hasActiveDevices && <NoDevice />}
+        {isNoIntegratedDeviceAlertVisible && (
+          <NoDevice
+            closeNoIntegratedDevicesAlert={closeNoIntegratedDevicesAlert}
+          />
+        )}
         {subscription?.status == "incomplete_expired" ||
           (subscription.status == "past_due" && <SubscriptionExpired />)}
         {subscription?.status == "incomplete" && <IncompletePayment />}

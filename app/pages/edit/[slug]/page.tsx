@@ -2,11 +2,11 @@ import Edit from ".";
 
 import Layout from "@/components/layouts/private";
 
-import { retrieveUrlAction, updateUrlAction } from "@/lib/actions/link";
+import { retrieveUrl, updateUrlAction } from "@/lib/actions/link";
 import { retrieveDevices } from "@/lib/actions/user";
 
 async function EditPage(props: { params: { slug: string } }) {
-  const urlResponse = await retrieveUrlAction(props.params.slug);
+  const urlResponse = await retrieveUrl(props.params.slug);
   const url =
     urlResponse instanceof Error || urlResponse == null ? null : urlResponse;
 

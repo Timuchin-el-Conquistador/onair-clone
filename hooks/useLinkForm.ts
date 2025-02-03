@@ -156,7 +156,7 @@ const useLinkForm = (initialLink: Omit<Link, "timeLength">) => {
     setForm({ type: "NAME", payload: linkName });
   };
 
-  const removeDevice = (deviceId: string) => {
+  const unlinkDeviceFromUrl = (deviceId: string) => {
     setForm({ type: "REMOVE_DEVICE", payload: deviceId });
   };
   const connectDevices = (devices: Device[]) => {
@@ -197,7 +197,7 @@ const useLinkForm = (initialLink: Omit<Link, "timeLength">) => {
     form,
     handleSlugChange,
     handleLinkNameChange,
-    removeDevice,
+    unlinkDeviceFromUrl,
     connectDevices,
     changeAvailability,
     visitorFormFieldsChange,

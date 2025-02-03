@@ -19,7 +19,7 @@ async function SettingsPage() {
     <Layout page="settings" sidebar={true} notifications={true}>
       <Settings
         user={{
-          fullName: account.name,
+          fullName: account.fullName,
           email: account.email,
         }}
         monthlyMinutesCapacity={account.monthlyMinutesCapacity}

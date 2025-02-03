@@ -64,11 +64,10 @@ const SlRelativeTime = dynamic(
 
 type PageProps = {
   calls: Call[];
-  openSession:(sessionId:string) => void
+  openSession: (sessionId: string) => void;
 };
 
 function Table(props: PageProps) {
-
   return (
     <>
       <div id="sessions" className="mb-6 mx-0 sm:mx-0 hidden sm:block">
@@ -76,18 +75,18 @@ function Table(props: PageProps) {
           <table>
             <thead>
               <tr>
-                <td>Visitor</td> 
+                <td>Visitor</td>
                 <td>Duration</td>
                 <td className="hidden lg:table-cell">Link</td>
                 <td className="hidden lg:table-cell">Since</td>
-                <td>Status</td> 
+                <td>Status</td>
                 <td></td>
               </tr>
             </thead>
             <tbody>
               {props.calls.map((call: Call) => {
                 // Step 1: Remove the ordinal suffix (e.g., "nd")
-          
+
                 const cleanedDateString = call.callStartedTime.replace(
                   /(\d+)(st|nd|rd|th)/,
                   "$1"
@@ -142,8 +141,8 @@ function Table(props: PageProps) {
                         variant="default"
                         data-optional=""
                         data-valid=""
-                        onClick={()=>{
-                          props.openSession(call._id)
+                        onClick={() => {
+                          props.openSession(call._id);
                         }}
                       >
                         Details
@@ -155,6 +154,63 @@ function Table(props: PageProps) {
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div className="mt-4 mb-12 mx-0 sm:mx-0 sm:hidden">
+        <ul className="rounded-lg mt-2 divide-y divide-gray-200 overflow-hidden shadow">
+          {props.calls.map((call: Call) => (
+            <li
+              key={call._id}
+              onClick={() => {
+                props.openSession(call._id);
+              }}
+            >
+              <div className="block px-4 py-4 bg-white hover:bg-gray-50">
+                <span className="flex items-center space-x-4">
+                  <span className="flex-1 flex space-x-2 truncate">
+                    <span className="flex flex-col text-gray-900 text-sm truncate">
+                      <span className="truncate block w-full font-semibold">
+                        {call.callerInfo.fullName}
+                      </span>{" "}
+                      {call.callerInfo.email && (
+                        <span className="truncate block w-full text-gray-500">
+                          {call.callerInfo.email}
+                        </span>
+                      )}
+                      <span className="truncate block w-full text-gray-500">
+                        Meeting with China, a few seconds ago
+                      </span>
+                    </span>
+                  </span>{" "}
+                  <span>
+                    <SlBadge
+                      variant={
+                        call.callStatus == "live" ? "success" : "primary"
+                      }
+                      className="inline-block"
+                    >
+                      {call.callStatus}
+                    </SlBadge>
+                  </span>{" "}
+                  <svg
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    id=""
+                    className="flex-shrink-0 h-7 w-7 text-gray-400"
+                    style={{ display: "inline-block" }}
+                  >
+                    <use xlinkHref="/feather-sprite.svg#chevron-right"></use>
+                  </svg>
+                </span>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
       {/*<div id="sessions" className="mb-12 mx-0 sm:mx-0 sm:hidden">
         <ul className="rounded-lg mt-2 divide-y divide-gray-200 overflow-hidden shadow">
@@ -192,7 +248,7 @@ function Table(props: PageProps) {
           </li>
         </ul>
       </div>{" "}*/}
-     {/*} <SlDialog
+      {/*} <SlDialog
         label="Download Records"
         className="dialog-deny-close with-header"
         style={{ width: "520px" }}

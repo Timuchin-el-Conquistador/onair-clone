@@ -14,8 +14,8 @@ import { type ExtendedLink } from "@/lib/types/links";
 
 
 type PageProps = {
-  retrieveUrlsAction: () => Promise<ExtendedLink[] | Error>;
-  removeLinkAction: (slug: string) => Promise<string | Error>;
+  retrieveUrlsAction: () => Promise<{status:number,urls:ExtendedLink[],message:string}>;
+  removeLinkAction: (slug: string) => Promise<{status:number,message:string}>;
   monthlyLinksCapacity:number
 };
 
@@ -26,9 +26,11 @@ function Dashboard(props: PageProps) {
   useEffect(() => {
     const fetchLinks = async () => {
       const response = await props.retrieveUrlsAction();
-      const links =
-        response instanceof Error || response == null ? [] : response;
-      setLinks(links);
+if(response.status == 400){
+  setLinks([]);
+  return
+}
+      setLinks(response.urls);
       setLoadedState(true);
     };
     fetchLinks();

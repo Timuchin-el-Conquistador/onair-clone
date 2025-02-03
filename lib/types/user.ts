@@ -34,7 +34,7 @@ export interface  Integration  {
 
 export interface Session{
   id:string,
-  name: string,
+  fullName: string,
   email: string,
   planName: string,
   monthlyMinutesCapacity: number,
@@ -46,7 +46,7 @@ export interface Session{
 
 export interface Account{
   id:string,
-  name: string,
+  fullName: string,
   email: string,
   planName: string,
   monthlyMinutesCapacity: number,

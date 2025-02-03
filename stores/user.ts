@@ -157,7 +157,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         await createSession({
           id: response.account.id,
           email: response.account.email,
-          name: response.account.name,
+          fullName: response.account.fullName,
           planName:response.account.planName,
           monthlyMinutesCapacity:response.account.monthlyMinutesCapacity,
           monthlyLinksCapacity:response.account.monthlyLinksCapacity,
@@ -389,7 +389,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         await createSession({
           id: response.account.id,
           email: response.account.email,
-          name: response.account.name,
+          fullName: response.account.fullName,
           planName:response.account.planName,
           monthlyMinutesCapacity:response.account.monthlyMinutesCapacity,
           monthlyLinksCapacity:response.account.monthlyLinksCapacity,

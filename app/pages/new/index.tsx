@@ -2,15 +2,14 @@
 
 import dynamic from "next/dynamic";
 
-import Layout from "@/components/layouts/notifications";
 import DailyAvailability from "@/components/availability";
 import ConnectedDevice from "@/components/Integrations/connected-device";
-import Danger from "@/components/Alerts/danger";
-import Success from "@/components/Alerts/success";
+import NoConnectedDeviceWarning from "@/components/modals/no-connected-device-warning";
+import AvailableDevices from "@/components/modals/available-devices";
+
 import Spinner from "@/components/Loaders/spinner";
 
 import useLinkForm from "@/hooks/useLinkForm";
-import { useVisibility } from "@/hooks/useVisibility";
 
 import "@/styles/pages.new.scss";
 
@@ -63,7 +62,21 @@ const SlIcon = dynamic(
     ssr: false,
   }
 );
+const SlAlert = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/alert/index.js"),
+  {
+    //  loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
 
+const SlSpinner = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/spinner/index.js"),
+  {
+    //  loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
 type PageProps = {
   //integrations: IIntegration[];
   devices: Device[];
@@ -76,7 +89,7 @@ type PageProps = {
     //integrations: string[],
     availability: string,
     settings: Settings
-  ) => Promise<string | Error>;
+  ) => Promise<{ status: number; message: string }>;
 };
 function NewLink(props: PageProps) {
   const router = useRouter();
@@ -84,7 +97,7 @@ function NewLink(props: PageProps) {
     form,
     handleSlugChange,
     handleLinkNameChange,
-    removeDevice,
+    unlinkDeviceFromUrl,
     changeAvailability,
     visitorFormFieldsChange,
     connectDevices,
@@ -105,13 +118,16 @@ function NewLink(props: PageProps) {
     },
   });
 
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setErrorMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [success, setSuccessMesssage] = useState<string>("");
+  const [
+    isNoConnectedMobileDeviceModalVisible,
+    setNoConnectedMobileDeviceModalVisibility,
+  ] = useState(false);
 
-
-
-  const [isDevicesModalOpen, setDevicesModalState] = useState(false);
+  const [isAvailableDevicesModalOpen, setAvailableDevicesModalState] =
+    useState(false);
 
   const [settingsVisibility, setSettingsVisibility] = useState({
     visitorForm: false,
@@ -119,13 +135,88 @@ function NewLink(props: PageProps) {
   });
 
   const checkedDevices: Device[] = [];
-  const saveDevices = () => {
+
+  const linkDevices = () => {
     connectDevices(checkedDevices);
-    setDevicesModalState(false);
+    setAvailableDevicesModalState(false);
+  };
+
+  const createLink = async () => {
+    //setLoading(true);
+    const response = await props.createUrlAction(
+      form.link.slug,
+      form.link.linkName,
+      form.link.callStrategy,
+      form.link.connectedDevices.map((el) => el._id),
+      form.link.availability,
+      form.link.settings
+    );
+
+  //  setLoading(false);
+    if (response.status === 400) {
+      setErrorMessage(response.message);
+
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 2000);
+      return;
+    }
+    router.replace("/dashboard");
   };
   return (
     <>
       <div id="main" className="p-6 mb-20">
+        <div
+          style={{
+            position: "fixed",
+            right: "15px",
+            top: "15px",
+            display: loading ? "block" : "hidden",
+          }}
+        >
+          <SlAlert variant="primary" open={loading}>
+            <SlIcon slot="icon" name="info-circle"></SlIcon>
+            <div className="flex items-center">
+              <strong>Canceling subscription</strong>
+
+              <SlSpinner
+                style={{ fontSize: "1rem", marginLeft: "1rem" }}
+              ></SlSpinner>
+            </div>
+          </SlAlert>
+        </div>
+
+        <div
+          style={{
+            position: "fixed",
+            right: "15px",
+            top: "15px",
+            display: success ? "block" : "hidden",
+          }}
+        >
+          <SlAlert variant="success" open={!!success}>
+            <SlIcon slot="icon" name="info-circle"></SlIcon>
+            <div className="flex items-center">
+              <strong>{success}</strong>
+            </div>
+          </SlAlert>
+        </div>
+
+        <div
+          style={{
+            position: "fixed",
+            right: "15px",
+            top: "15px",
+            display: error ? "block" : "hidden",
+          }}
+        >
+          <SlAlert variant="danger" open={!!error}>
+            <SlIcon slot="icon" name="info-circle"></SlIcon>
+            <div className="flex items-center">
+              <strong>{error}</strong>
+            </div>
+          </SlAlert>
+        </div>
         <div className="p-6 bg-white">
           <div className="flex flex-col max-w-3xl w-full">
             <h2 className="font-semibold text-xl mb-12">Create Link</h2>{" "}
@@ -137,10 +228,9 @@ function NewLink(props: PageProps) {
                 </p>
               </div>{" "}
               <div className="md:w-1/2 relative">
-              
                 <div className="flex relative">
-                <span className="flex items-center px-3 text-sm text-gray-950 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md max-w-48">
-                    {process.env.NEXT_PUBLIC_FRONTEND_URL}
+                  <span className="flex items-center px-3 text-sm text-gray-950 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md max-w-48">
+                    domain/
                   </span>{" "}
                   <input
                     name="Slug"
@@ -254,7 +344,7 @@ function NewLink(props: PageProps) {
                   <Fragment key={el._id}>
                     <ConnectedDevice
                       device={el}
-                      removeDeviceFromLink={removeDevice}
+                      removeDeviceFromLink={unlinkDeviceFromUrl}
                     />
                   </Fragment>
                 ))}
@@ -282,7 +372,7 @@ function NewLink(props: PageProps) {
                   <SlButton
                     className="text-blue-700 text-sm cursor-pointer mt-2 block"
                     onClick={() => {
-                      setDevicesModalState(true);
+                      setAvailableDevicesModalState(true);
                     }}
                   >
                     + Add Device
@@ -498,7 +588,6 @@ function NewLink(props: PageProps) {
                 </div>
               </div>
             </div>
-
             <div className="w-full flex items-center justify-between mt-16 mb-1">
               <SlButton
                 variant="default"
@@ -519,24 +608,10 @@ function NewLink(props: PageProps) {
                 data-valid=""
                 className="inline-block"
                 onClick={async () => {
-                  try {
-                    setLoading(true);
-                    await props.createUrlAction(
-                      form.link.slug,
-                      form.link.linkName,
-                      form.link.callStrategy,
-                      form.link.connectedDevices.map((el) => el._id),
-                      form.link.availability,
-                      form.link.settings
-                    );
-                    setLoading(false);
-
-                    router.replace("/dashboard");
-                  } catch (err) {
-                    setLoading(false);
-                    setError(
-                      err instanceof Error ? err : new Error(String(err))
-                    );
+                  if (!form.link.connectedDevices.length) {
+                    setNoConnectedMobileDeviceModalVisibility(true);
+                  } else {
+                    createLink();
                   }
                 }}
               >
@@ -547,92 +622,30 @@ function NewLink(props: PageProps) {
         </div>
       </div>
 
-      <SlDialog
-        label="Devices"
-        className="dialog-overview with-header"
-        open={isDevicesModalOpen}
-        onSlAfterHide={() => {
-          setDevicesModalState(false);
-        }}
-      >
-        <div className="bg-white rounded-md border border-gray-200">
-          <div className="divide-y divide-gray-200 max-h-[40vh] overflow-scroll">
-            <div className="flex flex-row pl-3 py-3 hover:bg-stone-100 text-sm h-16 cursor-pointer">
-              {props.devices.map((device: Device) => (
-                <Fragment key={device._id}>
-                  <SlCheckbox
-                    size="small"
-                    form=""
-                    data-optional=""
-                    data-valid=""
-                    className="mx-2 small-checkbox"
-                    onSlChange={(event) => {
-                      const checked = (event.target as HTMLInputElement)
-                        .checked;
-
-                      if (checked) {
-                        checkedDevices.push(device);
-                      } else {
-                        removeDevice(device._id);
-                      }
-                    }}
-                    checked={
-                      form.link.connectedDevices.findIndex(
-                        (el: Device) => el._id == device._id
-                      ) > -1
-                    }
-                  ></SlCheckbox>{" "}
-                  <div className="flex flex-col w-full truncate ml-1">
-                    <p className="text-gray-900 truncate font-medium">
-                      {device.ownerFullName}
-                    </p>{" "}
-                    <p className="text-gray-500 text-xs truncate items-center">
-                      Mobile
-                      <span className="ml-0.5">{device.description}</span>
-                    </p>
-                  </div>
-                </Fragment>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-2 text-sm">
-          <a href="/integrations" target="_blank" className="text-blue-500">
-            + Add Device
-          </a>
-        </div>
-
-        <div className="flex justify-between mt-16">
-          <SlButton
-            slot="footer"
-            variant="default"
-            size="medium"
-            data-optional=""
-            data-valid=""
-            onClick={() => {
-              setDevicesModalState(false);
-            }}
-          >
-            Cancel
-          </SlButton>{" "}
-          <SlButton
-            slot="footer"
-            variant="primary"
-            size="medium"
-            data-optional=""
-            data-valid=""
-            onClick={saveDevices}
-          >
-            Save
-          </SlButton>
-        </div>
-      </SlDialog>
-
-
-    
-
       {loading ? <Spinner /> : null}
+
+      <NoConnectedDeviceWarning
+        isNoConnectedMobileDeviceModalVisible={
+          isNoConnectedMobileDeviceModalVisible
+        }
+        proceedWithoutConnectingDevice={() => {
+          setNoConnectedMobileDeviceModalVisibility(false);
+          createLink();
+        }}
+        continueEditingLink={() => {
+          setNoConnectedMobileDeviceModalVisibility(false);
+        }}
+      />
+
+      <AvailableDevices
+        isAvailableDevicesModalOpen={isAvailableDevicesModalOpen}
+        setAvailableDevicesModalState={setAvailableDevicesModalState}
+        unlinkDeviceFromUrl={unlinkDeviceFromUrl}
+        linkDevices={linkDevices}
+        checkedDevices={checkedDevices}
+        availableDevices={props.devices}
+        connectedDevices={form.link.connectedDevices}
+      />
     </>
   );
 }

@@ -6,7 +6,7 @@ import Visitor from "../../components/visitor";
 
 
 import { retrieveUrlAction as publicRetrieveUrlAction } from "@/lib/actions/public";
-import { retrieveUrlAction as privateRetrieveUrlAction } from "@/lib/actions/link";
+//import { retrieveUrl as privateRetrieveUrlAction } from "@/lib/actions/link";
 import { verifySession } from "@/lib/dal";
 import { redirect } from "next/navigation";
 
@@ -15,12 +15,12 @@ async function Page(props: { params: { slug: string } }) {
 
   const slug = props.params.slug;
 
-  let response;
-  if (session) {
-    response = await privateRetrieveUrlAction(slug);
-  } else {
-    response = await publicRetrieveUrlAction(slug);
-  }
+  let response = await publicRetrieveUrlAction(slug);
+ // if (session) {
+   // response = await privateRetrieveUrlAction(slug);
+  //} else {
+   // response = await publicRetrieveUrlAction(slug);
+  //}
 
   const url = response instanceof Error || response == null ? null : response;
 

@@ -30,9 +30,10 @@ export async function createUrlAction(
       { slug, linkName, callStrategy,connectedDevices, availability, settings }
     );
 
-    return response.message;
+    return { status:200, message:response.message };
   } catch (error) {
-    return error instanceof Error ? error : new Error(String(error));
+    return { status:400, message: error instanceof Error ? error.message : String(error) };
+
 
   }
 }
@@ -60,10 +61,10 @@ export async function updateUrlAction(
       { slug, linkName, callStrategy,connectedDevices, availability, settings, urlId }
     );
 
-    return response.message;
+    return { status:200, message:response.message };
   } catch (error) {
+    return { status:400, message: error instanceof Error ? error.message : String(error) };
 
-    return error instanceof Error ? error : new Error(String(error));
 
   }
 }
@@ -80,9 +81,11 @@ export async function removeLinkAction(slug:string) {
       path
     );
 
-    return response.message;
+    return { status:200, message:response.message };
   } catch (error) {
-    return error instanceof Error ? error : new Error(String(error));
+    return { status:400, message: error instanceof Error ? error.message : String(error) };
+
+
   }
 }
 
@@ -98,14 +101,16 @@ export async function retrieveUrlsAction() {
       path
     );
 
-    return response.urls;
+    return { status:200, message:response.message,urls:response.urls };
   } catch (error) {
-    return error instanceof Error ? error : new Error(String(error));
+    return { status:400, message: error instanceof Error ? error.message : String(error), urls:[] };
+
+
   }
 }
 
-export async function retrieveUrlAction(slug:string) {
-  'use server'
+export async function retrieveUrl(slug:string) {
+
   try {   const session = await verifySession();
 
     if (!session) return redirect("/users/sign_in");

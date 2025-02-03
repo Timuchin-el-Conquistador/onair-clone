@@ -27,68 +27,122 @@ type PageProps = {
 };
 function Table(props: PageProps) {
   return (
-    <div id="live-sessions" className="mb-4 mx-0 hidden sm:block">
-      <div id="table-container">
-        <table>
-          <thead>
-            <tr>
-              <td>Visitor</td> 
-              <td>Since</td>
-              <td className="hidden md:table-cell">Info</td>
-              <td className="hidden md:table-cell">Status</td>
-              <td>Actions</td>
-            </tr>
-          </thead>
-          <tbody>
-            {props.sessions.map((session: Call) => (
-              <tr key={session._id}>
-                <td className="truncate">
-                  <span className="truncate block w-full font-semibold">
-                    {session.callerInfo.fullName}
-                  </span>
-                  {session.callerInfo.email && (
-                    <span className="truncate block w-full text-gray-500">
-                      {session.callerInfo.email}
-                    </span>
-                  )}
-                </td>
-                <td className="truncate">
-                  <span className="truncate block w-full font-semibold">
-                    a few seconds
-                  </span>
-                  <span className="text-gray-500">ago</span>
-                </td>
-                <td className="text-gray-500 hidden md:table-cell">
-                  Azerbaijan 🇦🇿
-                 <small>Windows, Chrome/131</small>
-                </td>
-                <td className="hidden text-left md:table-cell">
-                  <SlBadge
-                    variant={
-                      session.callStatus === "live" ? "success" : "primary"
-                    }
-                    className="inline-block"
-                  >
-                    {session.callStatus}
-                  </SlBadge>
-                </td>
-                <td>
-                  <SlButton
-                    size="small"
-                    variant="default"
-                    data-optional=""
-                    data-valid=""
-                    onClick={() => props.openDrawer(session._id)}
-                  >
-                    Open
-                  </SlButton>
-                </td>
+    <>
+      <div id="live-sessions" className="mb-4 mx-0 hidden sm:block">
+        <div id="table-container">
+          <table>
+            <thead>
+              <tr>
+                <td>Visitor</td>
+                <td>Since</td>
+                <td className="hidden md:table-cell">Info</td>
+                <td className="hidden md:table-cell">Status</td>
+                <td>Actions</td>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {props.sessions.map((session: Call) => (
+                <tr key={session._id}>
+                  <td className="truncate">
+                    <span className="truncate block w-full font-semibold">
+                      {session.callerInfo.fullName}
+                    </span>
+                    {session.callerInfo.email && (
+                      <span className="truncate block w-full text-gray-500">
+                        {session.callerInfo.email}
+                      </span>
+                    )}
+                  </td>
+                  <td className="truncate">
+                    <span className="truncate block w-full font-semibold">
+                      a few seconds
+                    </span>
+                    <span className="text-gray-500">ago</span>
+                  </td>
+                  <td className="text-gray-500 hidden md:table-cell">
+                    Azerbaijan 🇦🇿
+                    <small>Windows, Chrome/131</small>
+                  </td>
+                  <td className="hidden text-left md:table-cell">
+                    <SlBadge
+                      variant={
+                        session.callStatus === "live" ? "success" : "primary"
+                      }
+                      className="inline-block"
+                    >
+                      {session.callStatus}
+                    </SlBadge>
+                  </td>
+                  <td>
+                    <SlButton
+                      size="small"
+                      variant="default"
+                      data-optional=""
+                      data-valid=""
+                      onClick={() => props.openDrawer(session._id)}
+                    >
+                      Open
+                    </SlButton>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+
+      <div className="mt-4 mb-12 mx-0 sm:mx-0 sm:hidden">
+        <ul className="rounded-lg mt-2 divide-y divide-gray-200 overflow-hidden shadow">
+        {props.sessions.map((session: Call) => (
+          <li>
+            <div className="block px-4 py-4 bg-white hover:bg-gray-50">
+              <span className="flex items-center space-x-4">
+                <span className="flex-1 flex space-x-2 truncate">
+                  <span className="flex flex-col text-gray-900 text-sm truncate">
+                    <span className="truncate block w-full font-semibold">
+                    {session.callerInfo.fullName}
+                    </span>{" "}
+                    {session.callerInfo.email && (
+                      <span className="truncate block w-full text-gray-500">
+                        {session.callerInfo.email}
+                      </span>
+                    )}
+                    <span className="truncate block w-full text-gray-500">
+                      Meeting with China, a few seconds ago
+                    </span>
+                  </span>
+                </span>{" "}
+                <span>
+                <SlBadge
+                      variant={
+                        session.callStatus == "live" ? "success" : "primary"
+                      }
+                      className="inline-block"
+                    >
+                      {session.callStatus}
+                    </SlBadge>
+                </span>{" "}
+                <svg
+                  width="24"
+                  height="24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  id=""
+                  className="flex-shrink-0 h-7 w-7 text-gray-400"
+                  style={{ display: "inline-block" }}
+                >
+                  <use xlinkHref="/images/feather-sprite.svg#chevron-right"></use>
+                </svg>
+              </span>
+            </div>
+          </li>
+        ))}
+        </ul>
+      </div>
+    </>
   );
 }
 
