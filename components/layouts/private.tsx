@@ -27,7 +27,7 @@ async function PrivateLayout({
     devicesResponse instanceof Error || devicesResponse == null
       ? []
       : devicesResponse;
-console.log(user)
+
   return (
     <div className="flex overflow-hidden bg-gray-100 h-screen">
       {sidebar && <Sidebar page={page}  fullName={user.fullName as string} email={user.email as string}/>}

@@ -2,12 +2,19 @@
 
 import dynamic from "next/dynamic";
 
-import Pulse from "@/components/Loaders/pulse";
-
 import { Caller } from "@/lib/types/call";
 
 import "@/styles/calls/session.scss";
+
 import Link from "next/link";
+
+import DeletingSessionAttemptWarning from "@/components/modals/session-remove-attempt-warning";
+
+import { useState } from "react";
+
+import { useRouter } from "next/navigation";
+
+import { useSessionStore } from "@/providers/session";
 
 const SlTooltip = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/tooltip/index.js")
@@ -33,7 +40,12 @@ type PageProps = {
 };
 
 function CallSession(props: PageProps) {
-  // Step 1: Remove the ordinal suffix (e.g., "nd")
+  const router = useRouter();
+
+  const [attemptingToDeleteSession, setAttemptingToDeleteSessionModalState] =
+    useState(false);
+    
+  const { removeInactiveCall } = useSessionStore((state) => state);
 
   // Step 2: Parse the date
   const date = new Date(
@@ -42,6 +54,11 @@ function CallSession(props: PageProps) {
 
   // Step 3: Convert to ISO 8601 format
   const isoDate = date.toISOString();
+
+  const deleteSession = async (callId: string) => {
+    removeInactiveCall(callId, router);
+
+  };
 
   return (
     <div id="session" className="p-6">
@@ -91,7 +108,11 @@ function CallSession(props: PageProps) {
               <tr>
                 <td>Device</td>
                 <td>
-                <small>{props.caller.info.browser}, {props.caller.info.operatingSystem}, {props.caller.info.device}</small>
+                  <small>
+                    {props.caller.info.browser},{" "}
+                    {props.caller.info.operatingSystem},{" "}
+                    {props.caller.info.device}
+                  </small>
                 </td>
               </tr>{" "}
               <tr>
@@ -209,13 +230,26 @@ function CallSession(props: PageProps) {
         </div>
       </div>{" "}
       <div className="text-right mt-4">
-        <a
-          href="#"
+        <button
           className="inline-block text-xs text-red-600 hover:text-red-800"
+          onClick={() => {
+            setAttemptingToDeleteSessionModalState(true);
+          }}
         >
           Delete Session
-        </a>
+        </button>
       </div>
+      <DeletingSessionAttemptWarning
+        attemptingToDeleteSession={attemptingToDeleteSession}
+        cancel={() => {
+          setAttemptingToDeleteSessionModalState(false);
+        }}
+        proceedDeletingSession={() => {
+          setAttemptingToDeleteSessionModalState(false);
+
+          deleteSession(props.callId);
+        }}
+      />
     </div>
   );
 }

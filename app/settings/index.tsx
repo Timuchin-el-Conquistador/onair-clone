@@ -10,7 +10,7 @@ import Link from "next/link";
 
 import { useUserStore } from "@/providers/user";
 
-import { useVisibility } from "@/hooks/useVisibility";
+import { useVisibility } from "@/hooks/useAlertsVisibility";
 
 import { useRouter } from "next/navigation";
 

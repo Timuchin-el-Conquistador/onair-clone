@@ -50,7 +50,7 @@ function Sessions(props: PageProps) {
   const router = useRouter();
   const { session, goOffline, goOnline } = useSession({ ...props.url });
 
-  const { sessions, error, loaded, message, retrieveActiveSessions, removeSession } =
+  const { sessions, error, loaded, success, retrieveActiveSessions, pullSession } =
     useSessionStore((state) => state);
 
   const [isDropdownVisible, setDropdownVisibility] = useState(false);
@@ -315,7 +315,7 @@ function Sessions(props: PageProps) {
                   isOpen: false,
                 }));
                 socket.emit("decline", { callId: viewSession!._id });
-                removeSession(viewSession!._id )
+              pullSession(viewSession!._id )
               }}
             >
               <div>End Call</div>

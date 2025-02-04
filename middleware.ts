@@ -7,6 +7,8 @@ import { validateToken } from "./utils/session";
 //all routes
 const routes = [
   /^\/dashboard$/,
+  /^\/embed$/,
+  /^\/embed\/([a-zA-Z0-9]+)$/,
   /^\/([a-zA-Z0-9]+)$/,
   /^\/calls$/,
   /^\/calls\/([a-zA-Z0-9]+)$/,
@@ -35,6 +37,8 @@ const routes = [
 // protected
 const protectedRoutes = [
   /^\/dashboard$/,
+  /^\/embed$/,
+  /^\/embed\/([a-zA-Z0-9]+)$/,
   /^\/calls$/,
   /^\/calls\/([a-zA-Z0-9]+)$/,
   /^\/settings$/,
@@ -65,6 +69,8 @@ const publicRoutes = [
 //to show these routesuser must have activesubscription
 const requireActiveSubscriptionRoutes = [
   /^\/dashboard$/,
+  /^\/embed$/,
+  /^\/embed\/([a-zA-Z0-9]+)$/,
   /^\/calls$/,
   /^\/calls\/([a-zA-Z0-9]+)$/,
   /^\/integrations$/,

@@ -1,4 +1,4 @@
-// useVisibility.ts
+
 import { useState, useEffect, useRef } from "react";
 
 export const useVisibility = (

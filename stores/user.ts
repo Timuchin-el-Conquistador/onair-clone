@@ -7,9 +7,8 @@ import { verifySession } from "@/lib/dal";
 import { Account, type NewUser, type User } from "@/lib/types/user";
 
 import { createSession, updateSession } from "@/lib/session";
-import { Plan } from "@/lib/types/billing";
 
-const path = "/api/v1/user";
+let path = "/api/v1/user";
 
 export type UserState = {
   loading: boolean;
@@ -123,7 +122,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           error: null,
           success: null,
         }));
-        const path = `api/v1/user/resend-confirmation`;
+         path += "/resend-confirmation";
         const response: { message: string } = await fakeBackend.post(path, {
           email,
         });
@@ -166,6 +165,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         //  monthlyMinutesConsumed:response.account.monthlyMinutesConsumed,
          // isBrowserNotificationsOn:response.account.isBrowserNotificationsOn,
           subscriptionStatus: response.account.subscriptionStatus,
+          accountStatus:response.account.accountStatus
         });
 
         set((prevState) => ({
@@ -191,7 +191,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           error: null,
           success: null,
         }));
-        const path = `api/v1/user/forgot-password`;
+         path += "/forgot-password";
         const response: { message: string } = await fakeBackend.post(path, {
           email,
         });
@@ -231,7 +231,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         }));
 
 
-        const path = `api/v1/user/${session?.email}/change-email`;
+         path += `/${session?.email}/change-email`;
         const response: { message: string } = await fakeBackend.put(path, {
           email,
         });
@@ -269,7 +269,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           error: null,
           success: null,
         }));
-        const path = `api/v1/user/${session?.email}/change-name`;
+         path += `/${session?.email}/change-name`;
         const response: { message: string } = await fakeBackend.put(path, {
           fullName:name
         });
@@ -378,7 +378,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           success: null,
         }));
     
-        const path = `api/v1/user/${token}/reset-password`;
+         path += `/${token}/reset-password`;
         const response: { account: Account } = await fakeBackend.post(
           path,
           {
@@ -398,6 +398,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         //  monthlyMinutesConsumed:response.account.monthlyMinutesConsumed,
        //   isBrowserNotificationsOn:response.account.isBrowserNotificationsOn,
          subscriptionStatus: response.account.subscriptionStatus,
+         accountStatus:response.account.accountStatus
         });
         set((prevState) => ({
           ...prevState,

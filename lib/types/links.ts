@@ -1,5 +1,5 @@
 import { type Device } from "./device";
-import { type Integration } from "./user";
+import { type User, type Integration } from "./user";
 
 export interface Link {
   _id?: string;
@@ -10,7 +10,7 @@ export interface Link {
   linkName: string;
   integrations: Integration[];
   settings: Settings;
-
+  owner:string
 }
 
 export interface Settings {

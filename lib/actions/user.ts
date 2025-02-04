@@ -13,7 +13,7 @@ import { fakeBackend } from "../axios";
 export async function retrieveUser() {
   try {
     const user = await verifySession();
-console.log(user)
+
     if (!user) return redirect("/users/sign_in");
 
     return user;
@@ -21,22 +21,6 @@ console.log(user)
    return redirect("/users/sign_in");
   }
 }
-
-export async function confirmEmail(token:string) {
-  try {
-
-
-    const path = `api/v1/user/confirm-email/${token}`;
-    const response: { message: string } = await fakeBackend.get(
-      path
-    );
-
-    return response.message;
-  } catch (error) {
-    return error instanceof Error ? error : new Error(String(error));
-  }
-}
-
 
 
 
@@ -97,6 +81,7 @@ export async function retrieveIntegration(integrationId:string) {
 
 
 export async function retrieveAccountInformationAction() {
+  'use server'
   try {
     const session = await verifySession();
 
@@ -108,9 +93,31 @@ export async function retrieveAccountInformationAction() {
       path
     );
 
-    return response.account
+
+    return { status:200, message:response.message,account:response.account };
   } catch (error) {
-    throw error;
+    return { status:400, message: error instanceof Error ? error.message : String(error),account:null };
   }
 }
+
+
+export async function retrieveAccountInformation() {
+  try {
+    const session = await verifySession();
+
+    if (!session) return redirect("/users/sign_in");
+
+    const path = `api/v1/user/${session.email}`;
+
+    const response: { message: string; account: Account } = await fakeBackend.get(
+      path
+    );
+
+
+    return response.account;
+  } catch (error) {
+    return error instanceof Error ? error : new Error(String(error));
+  }
+}
+
 

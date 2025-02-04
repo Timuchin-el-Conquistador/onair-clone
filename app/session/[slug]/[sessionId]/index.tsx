@@ -5,6 +5,7 @@ import UserCall from "@/components/session/user";
 import CallEnded from "@/components/Presentational/call-ended";
 import ConnectingCall from "@/components/Presentational/connecting";
 import CallDeclined from "@/components/Presentational/call-declined";
+import PrivateLayout from "@/components/layouts/private";
 
 import { useState, useEffect } from "react";
 import useSession from "@/hooks/useSession";
@@ -74,13 +75,14 @@ function ActiveCallSession(props: PageProps) {
   if (props.isAuth) {
     if (status == "live") {
       return (
-
+        <PrivateLayout page="" sidebar={false} notifications={false}>
           <UserCall
             slug={session.link.slug}
             sessionId={props.sessionId}
             callerInfo={props.call.callerInfo}
             endCall={endCall}
           />
+          </PrivateLayout>
 
       );
     } else {
@@ -104,6 +106,7 @@ function ActiveCallSession(props: PageProps) {
   } else {
     if (status == "live") {
       return (
+        
         <GuestCall
           slug={session.link.slug}
           sessionId={props.sessionId}

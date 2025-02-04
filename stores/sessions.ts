@@ -8,13 +8,15 @@ export type SessionState = {
   joinSession: string | null;
   loaded: boolean;
   error: Error | null;
-  message: string | null;
+  success: string | null;
 };
 
 export type SessionActions = {
   retrieveActiveSessions: (slug: string, router: any) => void;
-  pushSession: (session: Call, router: any) => void;
-  removeSession: (callId: string) => void;
+  pushNotification: (session: Call, router: any) => void;
+  pullSession: (sessionId: string) => void;
+  removeInactiveCall: (callId: string, router: any) => void;
+  reset: () => void;
 };
 
 export type SessionStore = SessionState & SessionActions;
@@ -24,8 +26,10 @@ const defaultInitState: SessionState = {
   joinSession: null,
   loaded: false,
   error: null,
-  message: null,
+  success: null,
 };
+
+let path = "/api/v1/user";
 
 export const createSessionStore = (
   initState: SessionState = defaultInitState
@@ -38,7 +42,7 @@ export const createSessionStore = (
 
         if (!session) return router.replace("/users/sign_in");
 
-        const path = `api/v1/user/${session.email}/urls/${slug}/calls/active-sessions`;
+        path += `/${session.email}/urls/${slug}/calls/active-sessions`;
 
         const response: { sessions: Call[]; message: string } =
           await fakeBackend.get(path);
@@ -46,7 +50,7 @@ export const createSessionStore = (
           ...prevState,
           loaded: true,
           sessions: response.sessions,
-          message: response.message,
+          success: response.message,
         }));
       } catch (error) {
         set((prevState) => ({
@@ -56,7 +60,7 @@ export const createSessionStore = (
         }));
       }
     },
-    pushSession: async (activeSession: Call, router) => {
+    pushNotification: async (activeSession: Call, router) => {
       try {
         const session = await verifySession();
 
@@ -73,10 +77,33 @@ export const createSessionStore = (
         }));
       }
     },
-    removeSession: (callId: string) => {
+    pullSession: (sessionId: string) => {
       try {
         set((prevState) => ({
           ...prevState,
+          sessions: prevState.sessions.filter((el) => el._id != sessionId),
+        }));
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+
+    removeInactiveCall: async (callId: string, router) => {
+      try {
+        const session = await verifySession();
+
+        if (!session) return router.replace("/users/sign_in");
+        path += `/${session.email}/calls/${callId}`;
+
+        const response: { message: string } = await fakeBackend.delete(path);
+
+        router.back();
+        set((prevState) => ({
+          ...prevState,
+          success: response.message,
           sessions: prevState.sessions.filter((el) => el._id != callId),
         }));
       } catch (error) {
@@ -85,6 +112,13 @@ export const createSessionStore = (
           error: error instanceof Error ? error : new Error(String(error)),
         }));
       }
+    },
+    reset: () => {
+      set((prevState) => ({
+        ...prevState,
+        error: null,
+        success: null,
+      }));
     },
   }));
 };

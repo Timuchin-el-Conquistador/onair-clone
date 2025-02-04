@@ -7,9 +7,10 @@ import UrlIsOffline from "./Presentational/offline";
 
 import { socket } from "@/utils/socket";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { ExtendedLink } from "@/lib/types/links";
+import { type ExtendedLink } from "@/lib/types/links";
+import {  AccountStatus } from "@/lib/types/user";
 
 import useSession from "@/hooks/useSession";
 
@@ -22,6 +23,7 @@ type PageProps = {
 function Visitor(props: PageProps) {
   const router = useRouter();
 
+
   const { session, goOnline, goOffline } = useSession({
     ...props.url,
   });
@@ -32,13 +34,34 @@ function Visitor(props: PageProps) {
     device: "Unknown",
   });
 
+  const makeCall = (
+    fullName: string,
+    email: string | null,
+    phone: string | null,
+    slug: string
+  ) => {
+    socket.emit("call", {
+      callerInfo: { fullName, email, phone, info: infoRef.current },
+      slug,
+    });
+  };
+
+  function callSessionCreated({ callId }: { callId: string }) {
+    router.push(`/session/${props.slug}/${callId}`);
+  }
+  function online() {
+    goOnline();
+  }
+  function offline() {
+    goOffline();
+  }
+
+
   useEffect(() => {
-
-
     const userAgent = window.navigator.userAgent.toLowerCase();
 
     // Detect Browser
-    switch (true) {
+    switch (!!userAgent) {
       case userAgent.includes("chrome") &&
         !userAgent.includes("edge") &&
         !userAgent.includes("opr"):
@@ -71,7 +94,7 @@ function Visitor(props: PageProps) {
     }
 
     // Detect Operating System
-    switch (true) {
+    switch (!!userAgent) {
       case userAgent.includes("windows nt 10"):
         infoRef.current.operatingSystem = "Windows 10";
         break;
@@ -110,7 +133,7 @@ function Visitor(props: PageProps) {
     }
 
     // Detect Device Type
-    switch (true) {
+    switch (!!userAgent) {
       case userAgent.includes("mobile"):
         infoRef.current.device = "Mobile";
         break;
@@ -125,39 +148,24 @@ function Visitor(props: PageProps) {
     }
   }, []);
 
-  const call = (
-    fullName: string,
-    email: string | null,
-    phone: string | null,
-    slug: string
-  ) => {
-    socket.emit("call", {
-      callerInfo: { fullName, email, phone, info: infoRef.current },
-      slug,
-    });
-  };
+
 
   useEffect(() => {
-    function callSessionCreated({ callId }: { callId: string }) {
-      router.push(`/session/${props.slug}/${callId}`);
-    }
-    function online() {
-      goOnline();
-    }
-    function offline() {
-      goOffline();
-    }
-
-    socket.on("session", callSessionCreated);
+    socket.on("session-created", callSessionCreated);
     socket.on("online", online);
     socket.on("offline", offline);
 
     return () => {
-      socket.off("session", callSessionCreated);
+      socket.off("session-created", callSessionCreated);
       socket.off("online", online);
       socket.off("offline", offline);
     };
   }, [socket, props.slug]);
+
+
+
+
+
 
   return (
     <>
@@ -167,22 +175,22 @@ function Visitor(props: PageProps) {
         <div className="waiting-room-bg waiting-room-bg3"></div>
       </div>
       <div className="flex justify-center items-center w-full h-full">
-      {session.link.availability == "online" && (
-        <VisitorForm
-          call={call}
-          slug={props.slug}
-          linkName={session.link.linkName}
-          message={session.link.settings.onlineMessage}
-          isEmailRequired={props.url.settings.visitorForm.includes("email")}
-          isPhoneRequired={props.url.settings.visitorForm.includes("phone")}
-        />
-      )}
-      {session.link.availability == "offline" && (
-        <UrlIsOffline
-          linkName={session.link.linkName}
-          message={session.link.settings.offlineMessage}
-        />
-      )}
+        {session.link.availability == "online" && (
+          <VisitorForm
+            call={makeCall}
+            slug={props.slug}
+            linkName={session.link.linkName}
+            message={session.link.settings.onlineMessage}
+            isEmailRequired={props.url.settings.visitorForm.includes("email")}
+            isPhoneRequired={props.url.settings.visitorForm.includes("phone")}
+          />
+        )}
+        {session.link.availability == "offline" && (
+          <UrlIsOffline
+            linkName={session.link.linkName}
+            message={session.link.settings.offlineMessage}
+          />
+        )}
       </div>
     </>
   );

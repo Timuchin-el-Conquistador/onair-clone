@@ -152,15 +152,15 @@ function Card(props: PageProps) {
                 Edit
               </Link>
             </div>{" "}
-            {/*<div role="none" className="py-1">
+            <div role="none" className="py-1">
               <Link
-                href="/embed/timuchin"
+                href={`/embed/${props.slug}`}
                 role="menuitem"
                 className="expandable-section-menu-item"
               >
                 Embed
-              </a>
-            </div>{" "}*/}
+              </Link>
+            </div>{" "}
             <div role="none" className="py-1">
               <button
                 role="menuitem"

@@ -1,10 +1,33 @@
 import { Link } from "./links";
 
+
+
+export enum AccountStatus {
+  ACTIVE = "active",         // User is active and has an active subscription
+  INACTIVE = "inactive",     // User is inactive (e.g., did not renew subscription)
+  BLOCKED = "blocked",       // Admin has blocked the user
+  PENDING = "pending",       // Account is pending verification or approval
+ // EXPIRED = "expired",       // Subscription has expired
+  SUSPENDED = "suspended",   // Temporarily suspended due to some issue
+}
+
+
+// Subscription status enum
+export enum SubscriptionStatus {
+  ACTIVE = "active",
+  TRIALING = "trialing",
+  PAST_DUE = "past_due",
+  CANCELED = "canceled",
+  UNPAID = "unpaid",
+  PENDING = "pending",      
+}
+
+
 export interface User {
   id: string;
   fullName: string;
   email: string;
-  accountStatus:string
+  accountStatus:AccountStatus
   [key: string]: unknown;
 }
 export interface NewUser {
@@ -37,6 +60,7 @@ export interface Session{
   fullName: string,
   email: string,
   planName: string,
+  accountStatus:AccountStatus
   monthlyMinutesCapacity: number,
   monthlyLinksCapacity: number,
   subscriptionStatus:string,
@@ -53,8 +77,9 @@ export interface Account{
   monthlyLinksCapacity: number,
   numberOfCreatedLinks: number,
   monthlyMinutesConsumed: number,
-  subscriptionStatus:string,
+  subscriptionStatus:SubscriptionStatus,
   monthlyIntegrationsCapacity:number,
-  browserNotifications:boolean
+  browserNotifications:boolean,
+  accountStatus:AccountStatus
   [key: string]: unknown;
 }

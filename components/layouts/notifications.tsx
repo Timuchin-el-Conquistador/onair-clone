@@ -42,7 +42,7 @@ function Notifications({
     setNoIntegratedDeviceAlertVisibility,
   ] = useState(!hasActiveDevices);
 
-  const { pushSession, removeSession } = useSessionStore((state) => state);
+  const { pushNotification,pullSession } = useSessionStore((state) => state);
 
   // const { setCurrentSubscription } = useUserStore((state) => state);
 
@@ -68,7 +68,7 @@ function Notifications({
           slug: data.call.slug,
         },
       ]);
-      pushSession(data.call, router);
+      pushNotification(data.call, router);
     }
     socket.on("new-session", call);
 
@@ -91,7 +91,7 @@ function Notifications({
   const declineCall = (callId: string) => {
     socket.emit("decline", { callId });
     setIncommingCalls((prevState) => prevState.filter((el) => el.id != callId));
-    removeSession(callId);
+    pullSession(callId);
   };
 
   const closeNoIntegratedDevicesAlert = () => {

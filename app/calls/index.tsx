@@ -1,12 +1,36 @@
 "use client";
+import dynamic from "next/dynamic";
 
 import Pulse from "@/components/Loaders/pulse";
 import Table from "@/components/Tables/calls";
+
+import { useVisibility } from "@/hooks/useAlertsVisibility";
+
+import { useSessionStore } from "@/providers/session";
+
 import { Call } from "@/lib/types/call";
 
 import "@/styles/calls/index.scss";
 
 import { useRouter } from "next/navigation";
+
+
+
+const SlAlert = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/alert/index.js"),
+  {
+    //  loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
+
+const SlIcon = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
+  {
+    //  loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
 
 type PageProps = {
   calls: Call[];
@@ -14,8 +38,45 @@ type PageProps = {
 
 function Calls(props: PageProps) {
   const router = useRouter();
+  const { reset, error, loaded, success, } = useSessionStore(
+    (state) => state
+  );
+  const {
+    isDangerAlertVisible,
+    isSuccessAlertVisible,
+  } = useVisibility(reset, error, !loaded, success);
+
   return (
     <div id="main" className="mt-0 sm:mt-0 relative p-6">
+            <div
+            style={{
+              position: "fixed",
+              right: "15px",
+              top: "15px",
+              display: isSuccessAlertVisible ? "block" : "hidden",
+            }}
+          >
+            <SlAlert variant="primary" open={isSuccessAlertVisible}>
+              <SlIcon slot="icon" name="info-circle"></SlIcon>
+              <strong>{success}</strong>
+
+            </SlAlert>
+          </div>
+      
+  
+          <div
+            style={{
+              position: "fixed",
+              right: "15px",
+              top: "15px",
+              display: isDangerAlertVisible ? "block" : "hidden",
+            }}
+          >
+            <SlAlert variant="danger" open={isDangerAlertVisible}>
+              <SlIcon slot="icon" name="exclamation-octagon"></SlIcon>
+              <strong>{error?.message}</strong>
+            </SlAlert>
+          </div>
       {/*} <div className="mb-4">
         <div className="block lg:flex lg:justify-between lg:items-center w-full">
           <div className="mb-4 sm:mb-0">

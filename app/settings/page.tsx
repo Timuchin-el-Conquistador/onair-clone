@@ -3,10 +3,10 @@ import Settings from ".";
 import Layout from "@/components/layouts/private";
 import InternalServerError from "@/components/Presentational/500";
 
-import { retrieveAccountInformationAction } from "@/lib/actions/user";
+import { retrieveAccountInformation } from "@/lib/actions/user";
 
 async function SettingsPage() {
-  const response = await retrieveAccountInformationAction();
+  const response = await retrieveAccountInformation();
   const account =
   response instanceof Error || response == null ? null : response;
 

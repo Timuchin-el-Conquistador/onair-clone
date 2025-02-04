@@ -1,5 +1,3 @@
-
-
 import type { Metadata } from "next";
 
 import "@/styles/globals.scss";
@@ -14,12 +12,7 @@ export const metadata: Metadata = {
 import { UserStoreProvider } from "@/providers/user";
 import { SessionStoreProvider } from "@/providers/session";
 
-import PublicLayout from "@/components/layouts/public";
-
-
 import { retrieveSession } from "@/lib/session";
-
-
 
 export default async function RootLayout(props: { children: React.ReactNode }) {
   const session = await retrieveSession();
@@ -44,14 +37,12 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
         {session != null ? (
           <UserStoreProvider>
             <SessionStoreProvider>
-                <ShoelaceSetup>{props.children}</ShoelaceSetup>
+              <ShoelaceSetup>{props.children}</ShoelaceSetup>
             </SessionStoreProvider>
           </UserStoreProvider>
         ) : (
           <UserStoreProvider>
-            <PublicLayout>
-              <ShoelaceSetup>{props.children}</ShoelaceSetup>
-            </PublicLayout>
+            <ShoelaceSetup>{props.children}</ShoelaceSetup>
           </UserStoreProvider>
         )}
       </body>

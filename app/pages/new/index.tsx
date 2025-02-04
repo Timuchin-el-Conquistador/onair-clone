@@ -107,7 +107,7 @@ function NewLink(props: PageProps) {
     slug: "",
     availability: "online",
     linkName: "",
-    integrations: [],
+   // integrations: [],
     callStrategy: null,
     connectedDevices: [],
     settings: {
@@ -161,7 +161,7 @@ function NewLink(props: PageProps) {
       }, 2000);
       return;
     }
-    router.replace("/dashboard");
+    router.back()
   };
   return (
     <>

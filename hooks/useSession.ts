@@ -2,15 +2,12 @@ import { useReducer } from "react";
 
 import { type Link } from "@/lib/types/links";
 
-import { socket } from "@/utils/socket";
-
-import { useEffect } from "react";
 
 type State = {
   link: Link;
   message: null | string;
-  status: "pending" | "fulfilled" | "error" | null;
-  slugStatus: "pending" | "fulfilled" | "taken" | null;
+  status: "waiting" | "live" | "declined" | null;
+  slugStatus: "waiting" | "live" | "declined" | null;
 };
 
 type Action = { type: "ONLINE" } | { type: "OFFLINE" };
@@ -64,3 +61,6 @@ const useSession = (initialLink: Omit<Link, "timeLength">) => {
 };
 
 export default useSession;
+
+
+

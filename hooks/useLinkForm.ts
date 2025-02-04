@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { Device } from "@/lib/types/device";
 
 type State = {
-  link: Link;
+  link: Omit<Link, "integrations" | "owner" | "timeLength">;
   message: null | string;
   status: "pending" | "fulfilled" | "error" | null;
   slugStatus: "pending" | "fulfilled" | "taken" | null;
@@ -73,7 +73,7 @@ const formReducer = (state: State, action: Action): State => {
         link: {
           ...state.link,
           connectedDevices: [...state.link.connectedDevices, ...action.payload],
-          callStrategy:"call all devices at once"
+          callStrategy: "call all devices at once",
         },
       };
     case "AVAILABILITY":
@@ -135,7 +135,9 @@ const formReducer = (state: State, action: Action): State => {
   }
 };
 
-const useLinkForm = (initialLink: Omit<Link, "timeLength">) => {
+const useLinkForm = (
+  initialLink: Omit<Link, "timeLength" | "owner" | "integrations">
+) => {
   const [form, setForm] = useReducer(formReducer, {
     link: initialLink,
     message: null,
@@ -202,7 +204,7 @@ const useLinkForm = (initialLink: Omit<Link, "timeLength">) => {
     changeAvailability,
     visitorFormFieldsChange,
     changeOnlineMessage,
-    changeOfflineMessage
+    changeOfflineMessage,
   };
 };
 

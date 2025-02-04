@@ -2,24 +2,27 @@
 
 import Success from "@/public/payment-success.png";
 import "@/styles/subscription/index.scss";
+
 import Link from "next/link";
+
 import Image from "next/image";
+
 import { updateSubscription } from "@/lib/session";
 import { retrieveAccountInformationAction } from "@/lib/actions/user";
+
 import { useEffect } from "react";
 
 function PaymentSuccess() {
   useEffect(() => {
     const modifyCookie = async () => {
       const response = await retrieveAccountInformationAction();
-      const account =
-        response instanceof Error || response == null ? null : response;
-      if (account == null) return;
+     
+      if (response.status == 400) return;
       await updateSubscription(
-        account.planName,
-        account.monthlyLinksCapacity,
-        account.monthlyIntegrationsCapacity,
-        account.subscriptionStatus
+        response.account!.planName,
+        response.account!.monthlyLinksCapacity,
+        response.account!.monthlyIntegrationsCapacity,
+        response.account!.subscriptionStatus
       );
     };
 

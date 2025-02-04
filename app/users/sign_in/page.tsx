@@ -18,7 +18,7 @@ import "@/styles/login.scss";
 import Logo from "@/public/logo-white.svg";
 
 
-import { useVisibility } from "@/hooks/useVisibility";
+import { useVisibility } from "@/hooks/useAlertsVisibility";
 
 import { useRouter } from "next/navigation";
 

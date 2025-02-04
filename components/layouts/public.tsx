@@ -1,28 +1,35 @@
-"use client";
+import { retrieveAccountStatus } from "@/lib/actions/public";
+import PublicSocketsLayout from "./public-socket";
+import AccountInactive from "../Presentational/account-inactive";
 
-import { socket } from "@/utils/socket";
+async function PublicLayout({
+  children,
+  ownerId,
+}: {
+  children: React.ReactNode;
+  ownerId: string | null;
+}) {
+  if (ownerId != null) {
 
-import { useEffect } from "react";
+    console.log(ownerId)
+    let response = await retrieveAccountStatus(ownerId);
 
-function Public({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    socket.connect();
-    function onConnect() {
-      console.log("connected");
-    }
+    const accountStatus =
+      response instanceof Error || response == null ? null : response;
 
-    function onDisconnect() {}
-    socket.on("connect", onConnect);
+   
+      console.log(accountStatus)
+      if(accountStatus != 'active'){
+       return  <AccountInactive/>
+      }
+  }
 
-    socket.on("disconnect", onDisconnect);
-
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-    };
-  }, [socket]);
-
-  return <>{children}</>;
+  return (
+    <>
+      <PublicSocketsLayout />
+      {children}
+    </>
+  );
 }
 
-export default Public;
+export default PublicLayout;

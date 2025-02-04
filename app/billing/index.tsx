@@ -9,7 +9,7 @@ import Link from "next/link";
 
 import { useState } from "react";
 
-import { type Session } from "@/lib/types/user";
+
 
 type PageProps = {
   daysLeftToExpiration: number;

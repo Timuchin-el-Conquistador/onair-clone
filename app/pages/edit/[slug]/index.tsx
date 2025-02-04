@@ -61,7 +61,7 @@ const SlIcon = dynamic(
 );
 
 type PageProps = {
-  link: ILink;
+  link: Omit<ILink, 'owner'>;
   devices: Device[];
   hasConnectedDevices: boolean;
   hasDevices: boolean;
