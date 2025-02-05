@@ -7,16 +7,21 @@ import Link from "next/link";
 import "@/styles/dashboard.scss";
 
 import Card from "@/components/cards/link";
-import Pulse from "@/components/Loaders/pulse";
+import CardPulse from "@/components/Loaders/pulse";
 
 import { type ExtendedLink } from "@/lib/types/links";
 
-
-
 type PageProps = {
-  retrieveUrlsAction: () => Promise<{status:number,urls:ExtendedLink[],message:string}>;
-  removeLinkAction: (slug: string) => Promise<{status:number,message:string}>;
-  monthlyLinksCapacity:number
+  retrieveUrlsAction: () => Promise<{
+    status: number;
+    urls: ExtendedLink[];
+    message: string;
+  }>;
+  removeLinkAction: (
+    slug: string
+  ) => Promise<{ status: number; message: string }>;
+  monthlyLinksCapacity: number;
+
 };
 
 function Dashboard(props: PageProps) {
@@ -26,10 +31,10 @@ function Dashboard(props: PageProps) {
   useEffect(() => {
     const fetchLinks = async () => {
       const response = await props.retrieveUrlsAction();
-if(response.status == 400){
-  setLinks([]);
-  return
-}
+      if (response.status == 400) {
+        setLinks([]);
+        return;
+      }
       setLinks(response.urls);
       setLoadedState(true);
     };
@@ -57,7 +62,7 @@ if(response.status == 400){
           />
         </Fragment>
       ))}
-      {!loaded && <Pulse />}
+       {!loaded && <CardPulse />}
       <div className="index-card bordered">
         <div className="p-6">
           <h4 className="text-lg font-bold">New Link</h4>{" "}

@@ -48,7 +48,7 @@ export async function createSession(
 
 export async function updateSession(
   field: keyof Session,
-  value: string
+  value: any
 ) {
   "use server";
 

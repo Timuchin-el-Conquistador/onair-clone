@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
   try {
     // Example: Make a GET request to your external Express server or any backend
     const backendResponse = await axios.get(
-      `http://localhost:4000/api/v1/url/${slug}`
+      `${process.env.PRODUCTION_BACKEND_URL}/api/v1/url/${slug}`
     );
 
     const { url } = backendResponse.data;

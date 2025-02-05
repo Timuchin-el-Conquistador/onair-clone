@@ -26,7 +26,7 @@ type PageProps = {
 
 function NoDevice(props: PageProps) {
   return (
-    <>
+
       <div className="w-full px-6 pt-4">
         <div id="download-mobile-app-template" className="alert-duration">
           <div className="sm:flex bg-white items-center rounded-lg border border-gray-200 w-full p-6 relative">
@@ -113,7 +113,7 @@ function NoDevice(props: PageProps) {
         </div>
       </div>
    
-    </>
+   
   );
 }
 

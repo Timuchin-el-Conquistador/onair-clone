@@ -38,7 +38,7 @@ function Sidebar({
         <div className="hidden md:flex md:flex-shrink-0 h-full">
           <div className="flex flex-col w-64 border-r border-gray-200 pt-5 pb-4 bg-white overflow-y-auto">
             <div className="flex items-center justify-center pt-2 pb-2">
-              <Link href="/">
+              <a href="/">
                 <Image
                   className="inline-block"
                   src="/logo.svg"
@@ -46,12 +46,12 @@ function Sidebar({
                   width={100}
                   height={0}
                 />
-              </Link>
+              </a>
             </div>{" "}
             <div className="mt-5 flex-grow flex flex-col">
               <nav className="flex-1 px-2 bg-white">
                 <div className="space-y-1">
-                  <Link
+                  <a
                     href="/dashboard"
                     className={`dashboard-button ${
                       (page == "dashboard" || page.includes("pages")) &&
@@ -72,8 +72,8 @@ function Sidebar({
                       <use xlinkHref="/feather-sprite.svg#home"></use>
                     </svg>
                     Dashboard
-                  </Link>{" "}
-                  <Link
+                  </a>{" "}
+                  <a
                     href="/calls"
                     className={`dashboard-button ${
                       page == "calls" && "selected"
@@ -93,7 +93,7 @@ function Sidebar({
                       <use xlinkHref="/feather-sprite.svg#phone"></use>
                     </svg>
                     Calls
-                  </Link>{" "}
+                  </a>{" "}
                   {/*} <Link
                   href="/stats"
                   className={`dashboard-button ${
@@ -125,7 +125,7 @@ function Sidebar({
                     <span className="text-gray-300">&gt; &nbsp;</span>{" "}
                     Organizations
                   </a>{" "}*/}
-                    <Link
+                    <a
                       href="/integrations"
                       className={`advanced-buttons ${
                         page == "integrations" && "selected"
@@ -133,8 +133,8 @@ function Sidebar({
                     >
                       <span className="text-gray-300">&gt; &nbsp;</span>{" "}
                       Integrations
-                    </Link>{" "}
-                    <Link
+                    </a>{" "}
+                    <a
                       href="/settings"
                       className={`advanced-buttons ${
                         page == "settings" && "selected"
@@ -142,15 +142,15 @@ function Sidebar({
                     >
                       <span className="text-gray-300">&gt; &nbsp;</span>{" "}
                       Settings
-                    </Link>{" "}
-                    <Link
+                    </a>{" "}
+                    <a
                       href="/billing"
                       className={`advanced-buttons ${
                         page == "billing" && "selected"
                       }`}
                     >
                       <span className="text-gray-300">&gt; &nbsp;</span> Billing
-                    </Link>
+                    </a>
                   </div>
                 </div>
               </nav>

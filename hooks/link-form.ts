@@ -10,8 +10,8 @@ import { Device } from "@/lib/types/device";
 type State = {
   link: Omit<Link, "integrations" | "owner" | "timeLength">;
   message: null | string;
-  status: "pending" | "fulfilled" | "error" | null;
-  slugStatus: "pending" | "fulfilled" | "taken" | null;
+  status: "loading" | "active" | "failed"|null ;
+  slugStatus: "checking" | "active" | "taken";
 };
 
 type Action =
@@ -19,7 +19,7 @@ type Action =
   | { type: "NAME"; payload: string }
   | { type: "REMOVE_DEVICE"; payload: string }
   | { type: "AVAILABILITY"; payload: string }
-  | { type: "SLUGSTATUSCHANGE"; payload: "pending" | "fulfilled" | "taken" }
+  | { type: "SLUGSTATUSCHANGE"; payload: "checking" | "active" | "taken" }
   | {
       type: "VISITORSFORMFIELDSCHANGE";
       payload: { checked: boolean; field: "email" | "phone" };
@@ -142,14 +142,14 @@ const useLinkForm = (
     link: initialLink,
     message: null,
     status: null,
-    slugStatus: null,
+    slugStatus: 'active',
   });
 
-  const handleSlugChange = (slug: string, isTheSameSlug: boolean) => {
-    if (isTheSameSlug) {
-      setForm({ type: "SLUGSTATUSCHANGE", payload: "fulfilled" });
+  const handleSlugChange = (slug: string,) => {
+    if ( form.link.slug == slug) {
+      setForm({ type: "SLUGSTATUSCHANGE", payload: "active" });
     } else {
-      setForm({ type: "SLUGSTATUSCHANGE", payload: "pending" });
+      setForm({ type: "SLUGSTATUSCHANGE", payload: "checking" });
     }
     setForm({ type: "SLUG", payload: slug });
   };
@@ -190,7 +190,7 @@ const useLinkForm = (
 
       setForm({
         type: "SLUGSTATUSCHANGE",
-        payload: response.slugIsTaken ? "taken" : "fulfilled",
+        payload: response.slugIsTaken ? "taken" : "active",
       });
     });
   }, [socket]);

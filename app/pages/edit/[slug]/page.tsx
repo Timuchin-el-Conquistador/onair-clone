@@ -12,24 +12,22 @@ async function EditPage(props: { params: { slug: string } }) {
 
   const devicesResponse = await retrieveDevices();
   const devices =
-  devicesResponse instanceof Error ||
-  devicesResponse == null
+    devicesResponse instanceof Error || devicesResponse == null
       ? []
       : devicesResponse;
 
-console.log(devices)
-
-  if(url == null) return
+  if (url == null) return;
   return (
     <Layout page="pages" sidebar={true} notifications={true}>
       <Edit
+        domain={process.env.NEXT_PUBLIC_FRONTEND_URL!}
         link={{
           _id: url._id,
           slug: url.slug,
           availability: url.availability,
           callStrategy: url.callStrategy,
           connectedDevices: url.connectedDevices,
-          integrations:url.integrations,
+          integrations: url.integrations,
           linkName: url.linkName,
           settings: {
             visitorForm: url.settings.visitorForm,
@@ -39,8 +37,8 @@ console.log(devices)
           },
         }}
         updateUrlAction={updateUrlAction}
-        hasConnectedDevices={url.connectedDevices.length>0}
-        hasDevices={devices.length>0}
+        hasConnectedDevices={url.connectedDevices.length > 0}
+        hasDevices={devices.length > 0}
         devices={devices}
       />
     </Layout>

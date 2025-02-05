@@ -29,7 +29,7 @@ async function Page(props: { params: { slug: string } }) {
     return (
       <PrivateLayout page="dashboard" sidebar={true} notifications={true}>
         <Sessions
-          domain={process.env.LOCAL_FRONTEND_URL || ""}
+          domain={process.env.FRONTEND_URL || ""}
           slug={slug}
           url={url}
         />

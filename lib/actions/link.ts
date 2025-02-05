@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { fakeBackend } from "../axios";
 
 import { type ExtendedLink, type Settings } from "../types/links";
+import { updateSession } from "../session";
 
 
 export async function createUrlAction(
@@ -27,9 +28,9 @@ export async function createUrlAction(
     const path = `api/v1/user/${session.email}/urls/`;
     const response: { message: string } = await fakeBackend.post(
       path,
-      { slug, linkName, callStrategy,connectedDevices, availability, settings }
+      { slug, linkName, callStrategy,connectedDevices, availability, settings, userId:session.id }
     );
-
+    await updateSession('watchedTutorial', true)
     return { status:200, message:response.message };
   } catch (error) {
     return { status:400, message: error instanceof Error ? error.message : String(error) };

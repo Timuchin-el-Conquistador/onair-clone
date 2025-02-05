@@ -10,6 +10,11 @@ import { type Device } from "../types/device";
 import { fakeBackend } from "../axios";
 
 
+
+
+
+
+
 export async function retrieveUser() {
   try {
     const user = await verifySession();

@@ -28,14 +28,12 @@ export interface User {
   fullName: string;
   email: string;
   accountStatus:AccountStatus
-  [key: string]: unknown;
 }
 export interface NewUser {
   fullName: string;
   email: string;
   password: string | null;
   confirmPassword: string | null;
-  // subscription:null|any
 }
 
 
@@ -49,9 +47,9 @@ export interface  Integration  {
   lastLogin: string;
   name: string;
   uuid: string;
-  [key: string]: unknown;
   links:Link[]
   toObject: () => Integration;
+  [key: string]: unknown;
 };
 
 
@@ -65,6 +63,7 @@ export interface Session{
   monthlyLinksCapacity: number,
   subscriptionStatus:string,
   monthlyIntegrationsCapacity:number,
+  watchedTutorial:boolean
   [key: string]: unknown;
 }
 
@@ -81,5 +80,5 @@ export interface Account{
   monthlyIntegrationsCapacity:number,
   browserNotifications:boolean,
   accountStatus:AccountStatus
-  [key: string]: unknown;
+  watchedTutorial:boolean
 }

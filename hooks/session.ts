@@ -7,7 +7,7 @@ type State = {
   link: Link;
   message: null | string;
   status: "waiting" | "live" | "declined" | null;
-  slugStatus: "waiting" | "live" | "declined" | null;
+
 };
 
 type Action = { type: "ONLINE" } | { type: "OFFLINE" };
@@ -42,7 +42,7 @@ const useSession = (initialLink: Omit<Link, "timeLength">) => {
     link: initialLink,
     message: null,
     status: null,
-    slugStatus: null,
+
   });
 
   const goOnline = () => {

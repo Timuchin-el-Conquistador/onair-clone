@@ -34,17 +34,13 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
         <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
       </head>
       <body>
-        {session != null ? (
+ 
           <UserStoreProvider>
             <SessionStoreProvider>
               <ShoelaceSetup>{props.children}</ShoelaceSetup>
             </SessionStoreProvider>
           </UserStoreProvider>
-        ) : (
-          <UserStoreProvider>
-            <ShoelaceSetup>{props.children}</ShoelaceSetup>
-          </UserStoreProvider>
-        )}
+
       </body>
     </html>
   );

@@ -8,7 +8,7 @@ import CallDeclined from "@/components/Presentational/call-declined";
 import PrivateLayout from "@/components/layouts/private";
 
 import { useState, useEffect } from "react";
-import useSession from "@/hooks/useSession";
+import useSession from "@/hooks/session";
 
 import { socket } from "@/utils/socket";
 

@@ -2,6 +2,7 @@
 
 import '@/styles/embed/index.scss'
 
+
 type PageProps = {
   slug: string;
   domain: string;
@@ -12,18 +13,18 @@ function Embed(props: PageProps) {
       <div className="bg-white p-6">
         <div id="embed">
           <h3>Embed</h3>{" "}
-          <div className="w-full sm:w-2/4 text-sm">
+          {/*<div className="w-full sm:w-2/4 text-sm">
             Select an embedding type from below and follow the instructions to
             embed your link on your website or email. <u>Important</u>: if you
             change your link's address, you will need to update the embed code
             on your website or email.
           </div>{" "}
-          <div id="controls">
+         <div id="controls">
             <select className="mt-2 h-8 !py-1 !leading-tight rounded-md items-center">
               <option value="widget">Website Widget</option>{" "}
               <option value="signature">Email Signature</option>
             </select>
-          </div>{" "}
+          </div>{*/}
         {/*}  <div
             id="content-widget"
             className="content-container w-full sm:w-2/4 hidden"
@@ -78,6 +79,9 @@ function Embed(props: PageProps) {
             <textarea id="code" readOnly className="w-full">
               {props.domain + "/embed/email.png?slug=" + props.slug}
             </textarea>
+       
+          
+    
           </div>
         </div>
       </div>

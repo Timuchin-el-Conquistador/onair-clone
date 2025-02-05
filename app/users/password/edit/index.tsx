@@ -7,7 +7,7 @@ import { useUserStore } from "@/providers/user";
 
 import { useRouter } from "next/navigation";
 
-import { useVisibility } from "@/hooks/useAlertsVisibility";
+import { useVisibility } from "@/hooks/alerts-visibility";
 
 import { useRef } from "react";
 

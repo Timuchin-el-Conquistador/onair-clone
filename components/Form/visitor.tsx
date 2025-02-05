@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import "@/styles/Forms/visitor.scss";
 import "@/styles/modal.scss";
 import { useRef, useState } from "react";
+import AvailableAudioInputDevices from "../modals/available-audio-input-devices";
 
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
@@ -49,9 +50,14 @@ type PageProps = {
   slug: string;
   linkName: string;
   message: string;
-  isEmailRequired:boolean,
-  isPhoneRequired:boolean,
-  call: (fullName: string, email: string|null, phone: string|null, slug: string) => void;
+  isEmailRequired: boolean;
+  isPhoneRequired: boolean;
+  call: (
+    fullName: string,
+    email: string | null,
+    phone: string | null,
+    slug: string
+  ) => void;
 };
 
 function Visitor(props: PageProps) {
@@ -70,9 +76,9 @@ function Visitor(props: PageProps) {
 
   const enableAuidioPermission = async (permissionState: boolean) => {
     if (!permissionState) {
-      setAudioInputDevices([])
-      localStorage.removeItem('audio-input-device-id')
-      return
+      setAudioInputDevices([]);
+      localStorage.removeItem("audio-input-device-id");
+      return;
     }
 
     try {
@@ -99,7 +105,12 @@ function Visitor(props: PageProps) {
       <div
         id="visitor-dialog"
         className="modal-dialog no-transition visible"
-        style={{ position: "relative", top: "0", left: "0", height:'fit-content' }}
+        style={{
+          position: "relative",
+          top: "0",
+          left: "0",
+          height: "fit-content",
+        }}
       >
         <div className="status-card m-3">
           <div className="status online"></div>{" "}
@@ -132,52 +143,56 @@ function Visitor(props: PageProps) {
                 style={{ display: "none" }}
               ></SlIcon>
             </SlInput>{" "}
-          {props.isEmailRequired &&  <SlInput
-              name="visitor-email"
-              label="Email*"
-              type="email"
-              size="medium"
-              form=""
-              data-optional=""
-              data-valid=""
-              className="!border-transparent"
-              onSlChange={(event) => {
-                const value = (event.target as HTMLInputElement).value;
-                emailRef.current = value;
-              }}
-            >
-              <SlIcon
-                slot="suffix"
-                name="x-circle"
-                aria-hidden="true"
-                library="default"
-                className="text-red-600"
-                style={{ display: "none" }}
-              ></SlIcon>
-            </SlInput>}
-            {props.isPhoneRequired &&<SlInput
-              name="visitor-phone"
-              label="Phone*"
-              type="tel"
-              size="medium"
-              form=""
-              data-optional=""
-              data-valid=""
-              className="!border-transparent"
-              onSlChange={(event) => {
-                const value = (event.target as HTMLInputElement).value;
-                phoneRef.current = value;
-              }}
-            >
-              <SlIcon
-                slot="suffix"
-                name="x-circle"
-                aria-hidden="true"
-                library="default"
-                className="text-red-600"
-                style={{ display: "none" }}
-              ></SlIcon>
-            </SlInput>}
+            {props.isEmailRequired && (
+              <SlInput
+                name="visitor-email"
+                label="Email*"
+                type="email"
+                size="medium"
+                form=""
+                data-optional=""
+                data-valid=""
+                className="!border-transparent"
+                onSlChange={(event) => {
+                  const value = (event.target as HTMLInputElement).value;
+                  emailRef.current = value;
+                }}
+              >
+                <SlIcon
+                  slot="suffix"
+                  name="x-circle"
+                  aria-hidden="true"
+                  library="default"
+                  className="text-red-600"
+                  style={{ display: "none" }}
+                ></SlIcon>
+              </SlInput>
+            )}
+            {props.isPhoneRequired && (
+              <SlInput
+                name="visitor-phone"
+                label="Phone*"
+                type="tel"
+                size="medium"
+                form=""
+                data-optional=""
+                data-valid=""
+                className="!border-transparent"
+                onSlChange={(event) => {
+                  const value = (event.target as HTMLInputElement).value;
+                  phoneRef.current = value;
+                }}
+              >
+                <SlIcon
+                  slot="suffix"
+                  name="x-circle"
+                  aria-hidden="true"
+                  library="default"
+                  className="text-red-600"
+                  style={{ display: "none" }}
+                ></SlIcon>
+              </SlInput>
+            )}
             <div className="flex flex-col p-3">
               <div className="xs:flex items-center justify-between">
                 <SlSwitch
@@ -433,6 +448,9 @@ function Visitor(props: PageProps) {
               >
                 <use xlinkHref="/feather-sprite.svg#alert-circle"></use>
               </svg>{" "}
+
+
+              
               <span className="text-xl font-medium ml-2 text-gray-900">
                 Close other apps
               </span>
@@ -446,46 +464,14 @@ function Visitor(props: PageProps) {
           </div>
         </SlDialog>
       </div>{" "}
-      <SlDialog
-        label="Settings"
-        className="dialog-overview with-header"
-        open={audioInputDevicesModalVisibility}
-        onSlAfterHide={() => setAudioInputDevicesModalVisibility(false)}
-      >
-        <div>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-sm">Microphone</span>{" "}
-            <select
-              style={{ width: "200px", fontSize: "13px" }}
-              onChange={(e) => {
-                const deviceId = e.target.value;
-                localStorage.setItem("audio-input-device-id", deviceId);
-              }}
-            >
-              <option value="" disabled>
-                Select Audio Device
-              </option>{" "}
-              {audioInputDevices.map((device) => (
-                <option value={device.deviceId} key={device.deviceId}>
-                  {device.label}
-                </option>
-              ))}
-            </select>
-          </div>{" "}
-        </div>{" "}
-        <div className="p-5 pb-0 flex justify-center">
-          <SlButton
-            slot="footer"
-            variant="primary"
-            size="medium"
-            data-optional=""
-            data-valid=""
-            onClick={() => setAudioInputDevicesModalVisibility(false)}
-          >
-            Close
-          </SlButton>
-        </div>
-      </SlDialog>
+      <AvailableAudioInputDevices
+        audioInputDevicesModalVisibility={audioInputDevicesModalVisibility}
+        audioInputDevices={audioInputDevices}
+        setAudioInputDevicesModalVisibility={
+          setAudioInputDevicesModalVisibility
+        }
+      />
+    
     </div>
   );
 }

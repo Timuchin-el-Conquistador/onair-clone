@@ -41,7 +41,7 @@ export async function retrieveActiveCallSession(callId: string) {
 export async function retrieveAccountStatus(ownerId: string) {
 
   try {
-    const path = `api/v1/user/account-status/${ownerId}`;
+    const path = `api/v1/user/${ownerId}/account-status`;
     const response: { message: string; accountStatus: AccountStatus } =
       await fakeBackend.get(path);
 

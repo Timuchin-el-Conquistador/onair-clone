@@ -9,7 +9,7 @@ import AvailableDevices from "@/components/modals/available-devices";
 
 import Spinner from "@/components/Loaders/spinner";
 
-import useLinkForm from "@/hooks/useLinkForm";
+import useLinkForm from "@/hooks/link-form";
 
 import "@/styles/pages.new.scss";
 
@@ -22,6 +22,14 @@ import { Fragment, useState } from "react";
 import { socket } from "@/utils/socket";
 
 import Link from "next/link";
+
+const SlQrCode = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/qr-code/index.js"),
+  {
+    //  loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
 
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
@@ -42,14 +50,6 @@ const SlTooltip = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/tooltip/index.js"),
   {
     //  loading: () => <>Loading...</>,
-    ssr: false,
-  }
-);
-const SlDialog = dynamic(
-  // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
-  () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),
-  {
-    // loading: () => <p>Loading...</p>,
     ssr: false,
   }
 );
@@ -81,6 +81,7 @@ type PageProps = {
   //integrations: IIntegration[];
   devices: Device[];
   hasDevices: boolean;
+  domain: string;
   createUrlAction: (
     slug: string,
     linkName: string,
@@ -107,7 +108,7 @@ function NewLink(props: PageProps) {
     slug: "",
     availability: "online",
     linkName: "",
-   // integrations: [],
+    // integrations: [],
     callStrategy: null,
     connectedDevices: [],
     settings: {
@@ -152,7 +153,7 @@ function NewLink(props: PageProps) {
       form.link.settings
     );
 
-  //  setLoading(false);
+    //  setLoading(false);
     if (response.status === 400) {
       setErrorMessage(response.message);
 
@@ -161,7 +162,7 @@ function NewLink(props: PageProps) {
       }, 2000);
       return;
     }
-    router.back()
+    router.back();
   };
   return (
     <>
@@ -218,6 +219,7 @@ function NewLink(props: PageProps) {
           </SlAlert>
         </div>
         <div className="p-6 bg-white">
+       
           <div className="flex flex-col max-w-3xl w-full">
             <h2 className="font-semibold text-xl mb-12">Create Link</h2>{" "}
             <div className="md:flex w-full">
@@ -234,19 +236,19 @@ function NewLink(props: PageProps) {
                   </span>{" "}
                   <input
                     name="Slug"
-                    placeholder="link name"
+                    placeholder="yourname"
                     className="rounded-none rounded-e-md border border-gray-300 text-gray-700 focus:border-blue-300 focus:outline-none block w-full text-sm py-2 pl-3 pr-10 !truncate"
                     // value={form.link.slug}
                     onChange={(event) => {
                       const value = event.target.value.trim();
-                      handleSlugChange(value, false);
+                      handleSlugChange(value);
                       setTimeout(() => {
                         socket.emit("slug-validation", { slug: value });
                       }, 1000);
                     }}
                   />{" "}
                   <span className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    {form.slugStatus == "pending" ? (
+                    {form.slugStatus == "checking" ? (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -261,7 +263,7 @@ function NewLink(props: PageProps) {
                           d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                         ></path>
                       </svg>
-                    ) : form.slugStatus == "fulfilled" ||
+                    ) : form.slugStatus == "active" ||
                       form.slugStatus == null ? (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -300,7 +302,15 @@ function NewLink(props: PageProps) {
                     Slug is not available. Please choose another one.
                   </span>
                 )}
+                <div className="mt-5">
+                   <SlQrCode
+            value={props.domain + "/" + form.link.slug}
+            label="Scan this code to visit Shoelace on the web!"
+
+          />
+          </div>
               </div>
+              
             </div>{" "}
             <hr />{" "}
             <div className="md:flex w-full">

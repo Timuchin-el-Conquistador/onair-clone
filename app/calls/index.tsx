@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import Pulse from "@/components/Loaders/pulse";
 import Table from "@/components/Tables/calls";
 
-import { useVisibility } from "@/hooks/useAlertsVisibility";
+import { useVisibility } from "@/hooks/alerts-visibility";
 
 import { useSessionStore } from "@/providers/session";
 

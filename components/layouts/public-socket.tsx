@@ -6,7 +6,6 @@
 
 import {socket} from '@/utils/socket'
 
-
 import { useEffect } from 'react';
 
 function PublicSocketsLayout(){

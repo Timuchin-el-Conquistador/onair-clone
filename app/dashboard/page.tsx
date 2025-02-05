@@ -1,11 +1,18 @@
+
+import dynamic from "next/dynamic";
+
 import Layout from "@/components/layouts/private";
 
-import Dashboard from ".";
+
 
 import { retrieveUrlsAction, removeLinkAction } from "@/lib/actions/link";
+
 import { retrieveSession } from "@/lib/session";
 
 import { redirect } from "next/navigation";
+
+
+const Dashboard = dynamic(() => import('.'));
 
 async function DashboardPage() {
   const session = await retrieveSession();
@@ -18,6 +25,7 @@ async function DashboardPage() {
         removeLinkAction={removeLinkAction}
         retrieveUrlsAction={retrieveUrlsAction}
         monthlyLinksCapacity={session.monthlyLinksCapacity as number}
+ 
       />
     </Layout>
   );

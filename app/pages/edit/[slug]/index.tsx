@@ -8,7 +8,7 @@ import DailyAvailability from "@/components/availability";
 import ConnectedDevice from "@/components/Integrations/connected-device";
 import AvailableDevices from "@/components/modals/available-devices";
 
-import useLinkForm from "@/hooks/useLinkForm";
+import useLinkForm from "@/hooks/link-form";
 
 import { type Link as ILink } from "@/lib/types/links";
 import { type Device } from "@/lib/types/device";
@@ -43,8 +43,8 @@ const SlTooltip = dynamic(
   }
 );
 
-const SlDialog = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),
+const SlQrCode = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/qr-code/index.js"),
   {
     //  loading: () => <>Loading...</>,
     ssr: false,
@@ -61,10 +61,11 @@ const SlIcon = dynamic(
 );
 
 type PageProps = {
-  link: Omit<ILink, 'owner'>;
+  link: Omit<ILink, "owner">;
   devices: Device[];
   hasConnectedDevices: boolean;
   hasDevices: boolean;
+  domain: string;
   updateUrlAction: (
     urlId: string,
     slug: string,
@@ -135,7 +136,7 @@ function EditLink(props: PageProps) {
                   defaultValue={form.link.slug}
                   onChange={(event) => {
                     const value = event.target.value.trim();
-                    handleSlugChange(value, props.link.slug == value);
+                    handleSlugChange(value);
                     if (props.link.slug == value) return;
                     setTimeout(() => {
                       socket.emit("slug-validation", { slug: value });
@@ -143,7 +144,7 @@ function EditLink(props: PageProps) {
                   }}
                 />{" "}
                 <span className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                  {form.slugStatus == "pending" ? (
+                  {form.slugStatus == "checking" ? (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -158,8 +159,7 @@ function EditLink(props: PageProps) {
                         d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                       ></path>
                     </svg>
-                  ) : form.slugStatus == "fulfilled" ||
-                    form.slugStatus == null ? (
+                  ) : form.slugStatus == "active" || form.slugStatus == null ? (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -197,6 +197,13 @@ function EditLink(props: PageProps) {
                   Slug is not available. Please choose another one.
                 </span>
               )}
+
+              <div className="mt-5">
+                <SlQrCode
+                  value={props.domain + "/" + form.link.slug}
+                  label="Scan this code to visit Shoelace on the web!"
+                />
+              </div>
             </div>
           </div>{" "}
           <hr />{" "}

@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import { type ExtendedLink } from "@/lib/types/links";
 import {  AccountStatus } from "@/lib/types/user";
 
-import useSession from "@/hooks/useSession";
+import useSession from "@/hooks/session";
 
 import { useRouter } from "next/navigation";
 

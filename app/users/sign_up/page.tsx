@@ -11,7 +11,7 @@ import Link from "next/link";
 
 import Image from "next/image";
 
-import { useVisibility } from "@/hooks/useAlertsVisibility";
+import { useVisibility } from "@/hooks/alerts-visibility";
 import { useUserStore } from "@/providers/user";
 
 import { useRef } from "react";

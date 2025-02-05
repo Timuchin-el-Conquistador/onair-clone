@@ -15,11 +15,12 @@ const SlTooltip = dynamic(
   }
 );
 
-interface CardPageLink  extends Omit<ExtendedLink, "callStrategy" | "settings" | "_id"> {
-  removeLink:(slug:string)=>void
+interface CardPageLink
+  extends Omit<ExtendedLink, "callStrategy" | "settings" | "_id" | "owner"> {
+  removeLink: (slug: string) => void;
 }
 
-type PageProps = CardPageLink
+type PageProps = CardPageLink;
 
 function Card(props: PageProps) {
   const [isDropdownVisible, setDropDownVisibility] = useState(false);
@@ -142,6 +143,7 @@ function Card(props: PageProps) {
             aria-orientation="vertical"
             aria-labelledby="options-menu"
             className="expandable-section-menu bg-white divide-y divide-gray-100 focus:outline-none"
+            style={{bottom: '-44%'}}
           >
             <div role="none" className="py-1">
               <Link
@@ -166,7 +168,7 @@ function Card(props: PageProps) {
                 role="menuitem"
                 className="expandable-section-menu-item delete-button w-full text-left"
                 onClick={() => {
-                  props.removeLink(props.slug)
+                  props.removeLink(props.slug);
                   setDropDownVisibility(false); // Close or perform an action
                 }}
               >

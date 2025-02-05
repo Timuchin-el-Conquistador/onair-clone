@@ -45,10 +45,9 @@ export async function validateToken(token: string) {
     monthlyMinutesCapacity:session.monthlyMinutesCapacity,
     monthlyLinksCapacity:session.monthlyLinksCapacity,
     monthlyIntegrationsCapacity:session.monthlyIntegrationsCapacity,
-    monthlyMinutesConsumed:session.monthlyMinutesConsumed,
-    accountStatus:session.accountStatus
+    accountStatus:session.accountStatus,
+    watchedTutorial:session.watchedTutorial
   };
-
 
 
 }
