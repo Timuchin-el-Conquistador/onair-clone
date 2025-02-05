@@ -219,7 +219,6 @@ function NewLink(props: PageProps) {
           </SlAlert>
         </div>
         <div className="p-6 bg-white">
-       
           <div className="flex flex-col max-w-3xl w-full">
             <h2 className="font-semibold text-xl mb-12">Create Link</h2>{" "}
             <div className="md:flex w-full">
@@ -303,14 +302,12 @@ function NewLink(props: PageProps) {
                   </span>
                 )}
                 <div className="mt-5">
-                   <SlQrCode
-            value={props.domain + "/" + form.link.slug}
-            label="Scan this code to visit Shoelace on the web!"
-
-          />
-          </div>
+                  <SlQrCode
+                    value={props.domain + "/" + form.link.slug}
+                    label="Scan this code to visit Shoelace on the web!"
+                  />
+                </div>
               </div>
-              
             </div>{" "}
             <hr />{" "}
             <div className="md:flex w-full">

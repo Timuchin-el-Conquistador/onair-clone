@@ -8,7 +8,7 @@ import Visitor from "../../components/visitor";
 import { retrieveUrl } from "@/lib/actions/public";
 import { retrieveSession } from "@/lib/session";
 
-import { redirect } from "next/navigation";
+import InternalServerError from "@/components/Presentational/500";
 
 
 
@@ -22,7 +22,7 @@ async function Page(props: { params: { slug: string } }) {
   const url = response instanceof Error || response == null ? null : response;
 
   if (url == null) {
-    redirect("/404");
+    return <InternalServerError/>
   }
 
   if (session) {

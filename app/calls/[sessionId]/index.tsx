@@ -37,6 +37,8 @@ type PageProps = {
   duration: number;
   callStatus: string;
   ownerFullName: string;
+  callerCountry: string;
+  callerCountryCode:string
 };
 
 function CallSession(props: PageProps) {
@@ -44,7 +46,7 @@ function CallSession(props: PageProps) {
 
   const [attemptingToDeleteSession, setAttemptingToDeleteSessionModalState] =
     useState(false);
-    
+
   const { removeInactiveCall } = useSessionStore((state) => state);
 
   // Step 2: Parse the date
@@ -57,7 +59,6 @@ function CallSession(props: PageProps) {
 
   const deleteSession = async (callId: string) => {
     removeInactiveCall(callId, router);
-
   };
 
   return (
@@ -108,11 +109,13 @@ function CallSession(props: PageProps) {
               <tr>
                 <td>Device</td>
                 <td>
+                  {props.callerCountry}, {props.callerCountryCode} {' '} (
                   <small>
                     {props.caller.info.browser},{" "}
                     {props.caller.info.operatingSystem},{" "}
                     {props.caller.info.device}
                   </small>
+                  )
                 </td>
               </tr>{" "}
               <tr>

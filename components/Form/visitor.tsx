@@ -30,6 +30,15 @@ const SlDialog = dynamic(
   }
 );
 
+const SlAlert = dynamic(
+  // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
+  () => import("@shoelace-style/shoelace/dist/react/alert/index.js"),
+  {
+    //  loading: () => <p>Loading...</p>,
+    ssr: false,
+  }
+);
+
 const SlIcon = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
   {
@@ -61,6 +70,9 @@ type PageProps = {
 };
 
 function Visitor(props: PageProps) {
+  const [error, setError] = useState<{ field: null | string; message: string }>(
+    { field: null, message: "" }
+  );
   const [
     audioInputDevicesModalVisibility,
     setAudioInputDevicesModalVisibility,
@@ -100,8 +112,25 @@ function Visitor(props: PageProps) {
     }
   };
 
+  const emailValidation = (email: string) => {};
+
   return (
     <div id="main" className="mt-4 sm:mt-20">
+      <div
+        style={{
+          position: "fixed",
+          right: "15px",
+          top: "15px",
+          display: error.message ? "block" : "hidden",
+        }}
+      >
+        <SlAlert variant="danger" open={!!error.message}>
+          <SlIcon slot="icon" name="info-circle"></SlIcon>
+          <div className="flex items-center">
+            <strong>{error.message}</strong>
+          </div>
+        </SlAlert>
+      </div>
       <div
         id="visitor-dialog"
         className="modal-dialog no-transition visible"
@@ -121,14 +150,22 @@ function Visitor(props: PageProps) {
           <div>
             <div className="m-3 max-w-sm">{props.message}</div>{" "}
             <SlInput
+              id="name"
               name="visitor-name"
               label="Name*"
               type="text"
               size="medium"
               form=""
               data-optional=""
-              data-valid=""
-              className="!border-transparent"
+              data-valid={false}
+              className={`!border-transparent ${
+                error.field == "name" && "error"
+              }`}
+              style={
+                {
+                  "--tw-ring-offset-shadow": "none",
+                } as React.CSSProperties
+              }
               onSlChange={(event) => {
                 const value = (event.target as HTMLInputElement).value;
                 fullNameRef.current = value;
@@ -140,11 +177,14 @@ function Visitor(props: PageProps) {
                 aria-hidden="true"
                 library="default"
                 className="text-red-600"
-                style={{ display: "none" }}
+                style={{
+                  display: `${error.field == "name" ? "block" : "none"}`,
+                }}
               ></SlIcon>
             </SlInput>{" "}
             {props.isEmailRequired && (
               <SlInput
+                id="email"
                 name="visitor-email"
                 label="Email*"
                 type="email"
@@ -152,7 +192,14 @@ function Visitor(props: PageProps) {
                 form=""
                 data-optional=""
                 data-valid=""
-                className="!border-transparent"
+                className={`!border-transparent ${
+                  error.field == "email" && "error"
+                }`}
+                style={
+                  {
+                    "--tw-ring-offset-shadow": "none",
+                  } as React.CSSProperties
+                }
                 onSlChange={(event) => {
                   const value = (event.target as HTMLInputElement).value;
                   emailRef.current = value;
@@ -164,12 +211,15 @@ function Visitor(props: PageProps) {
                   aria-hidden="true"
                   library="default"
                   className="text-red-600"
-                  style={{ display: "none" }}
+                  style={{
+                    display: `${error.field == "email" ? "block" : "none"}`,
+                  }}
                 ></SlIcon>
               </SlInput>
             )}
             {props.isPhoneRequired && (
               <SlInput
+                id="phone"
                 name="visitor-phone"
                 label="Phone*"
                 type="tel"
@@ -177,7 +227,14 @@ function Visitor(props: PageProps) {
                 form=""
                 data-optional=""
                 data-valid=""
-                className="!border-transparent"
+                className={`!border-transparent ${
+                  error.field == "phone" && "error"
+                }`}
+                style={
+                  {
+                    "--tw-ring-offset-shadow": "none",
+                  } as React.CSSProperties
+                }
                 onSlChange={(event) => {
                   const value = (event.target as HTMLInputElement).value;
                   phoneRef.current = value;
@@ -189,7 +246,9 @@ function Visitor(props: PageProps) {
                   aria-hidden="true"
                   library="default"
                   className="text-red-600"
-                  style={{ display: "none" }}
+                  style={{
+                    display: `${error.field == "phone" ? "block" : "none"}`,
+                  }}
                 ></SlIcon>
               </SlInput>
             )}
@@ -237,10 +296,63 @@ function Visitor(props: PageProps) {
                 data-valid=""
                 disabled={audioInputDevices.length === 0}
                 onClick={() => {
-                  const email = emailRef?.current || null;
                   const fullName = fullNameRef?.current || "";
-                  const phone = phoneRef?.current || null;
 
+                  if (!fullName) {
+                    const input = document.getElementById("name");
+                    setError({
+                      field: "name",
+                      message: "Please enter your name",
+                    });
+                    input?.focus();
+
+                    setTimeout(() => {
+                      setError({
+                        field: null,
+                        message: "",
+                      });
+                    }, 2000);
+                    return;
+                  }
+                  const email = emailRef?.current || null;
+                  if (
+                    (!email || !email?.includes("@")) &&
+                    props.isEmailRequired
+                  ) {
+                    const input = document.getElementById("email");
+                    input?.focus();
+                    setError({
+                      field: "email",
+                      message: "Please enter your correct email",
+                    });
+                    input?.focus();
+
+                    setTimeout(() => {
+                      setError({
+                        field: null,
+                        message: "",
+                      });
+                    }, 2000);
+                    return;
+                  }
+                  const phone = phoneRef?.current || null;
+                  if (!phone && props.isPhoneRequired) {
+                    const input = document.getElementById("phone");
+                    input?.focus();
+                    setError({
+                      field: "email",
+                      message: "Please enter your phone",
+                    });
+                    input?.focus();
+
+                    setTimeout(() => {
+                      setError({
+                        field: null,
+                        message: "",
+                      });
+                    }, 2000);
+                    return;
+                  }
                   props.call(fullName, email, phone, props.slug);
                 }}
               >
@@ -448,9 +560,6 @@ function Visitor(props: PageProps) {
               >
                 <use xlinkHref="/feather-sprite.svg#alert-circle"></use>
               </svg>{" "}
-
-
-              
               <span className="text-xl font-medium ml-2 text-gray-900">
                 Close other apps
               </span>
@@ -471,7 +580,6 @@ function Visitor(props: PageProps) {
           setAudioInputDevicesModalVisibility
         }
       />
-    
     </div>
   );
 }

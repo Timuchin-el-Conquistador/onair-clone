@@ -10,7 +10,9 @@ async function CallsPage(props: { params: { sessionId: string } }) {
 
   console.log(call, "call");
 
-  if(call == null) return
+  if (call == null) return;
+
+  console.log(call, "CALLL");
   return (
     <Layout page="calls" sidebar={true} notifications={true}>
       <CallSession
@@ -20,10 +22,11 @@ async function CallsPage(props: { params: { sessionId: string } }) {
         callStartedTime={call.callStartedTime}
         callAnsweredTime={call.callAnsweredTime}
         callEndedTime={call.callEndedTime}
-        duration={Math.round(call.duration/60)}
+        duration={Math.round(call.duration / 60)}
         callStatus={call.callStatus}
         ownerFullName={call.owner.fullName}
-      
+        callerCountry={call.callerInfo.country}
+        callerCountryCode={call.callerInfo.countryCode}
       />
     </Layout>
   );

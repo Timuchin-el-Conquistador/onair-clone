@@ -10,6 +10,11 @@ export interface Caller {
   fullName: string;
   email: string | null;
   phone: string | null;
+  country: string,
+  countryCode: string,
+  capital: string,
+  latitude: number,
+  longitude: number
 }
 
 export interface Call {

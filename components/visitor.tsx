@@ -1,5 +1,7 @@
 "use client";
 
+import dynamic from "next/dynamic";
+
 import "@/styles/calls/waiting-room.scss";
 
 import VisitorForm from "./Form/visitor";
@@ -15,6 +17,8 @@ import {  AccountStatus } from "@/lib/types/user";
 import useSession from "@/hooks/session";
 
 import { useRouter } from "next/navigation";
+
+
 
 type PageProps = {
   slug: string;
@@ -175,6 +179,7 @@ function Visitor(props: PageProps) {
         <div className="waiting-room-bg waiting-room-bg3"></div>
       </div>
       <div className="flex justify-center items-center w-full h-full">
+
         {session.link.availability == "online" && (
           <VisitorForm
             call={makeCall}
