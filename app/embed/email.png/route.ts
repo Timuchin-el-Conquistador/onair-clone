@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
           input: Buffer.from(
             `<svg width="${width}" height="${height}">
               <circle cx="10" cy="20" r="6" fill="${statusColor}" />
-              <text x="30" y="25" font-size="20" font-family="Arial" fill="black" font-weight="bold">onair.io/${slug}</text>
+              <text x="30" y="25" font-size="20" font-family="Arial" fill="black" font-weight="bold">${process.env.FRONTEND_URL}/${slug}</text>
               <text x="30" y="45" font-size="16" font-family="Arial" fill="black">${statusText}</text>
             </svg>`
           ),
