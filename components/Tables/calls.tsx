@@ -65,6 +65,7 @@ const SlRelativeTime = dynamic(
 type PageProps = {
   calls: Call[];
   openSession: (sessionId: string) => void;
+  openDrawer:(sessionId:string) =>void
 };
 
 function Table(props: PageProps) {
@@ -142,6 +143,11 @@ function Table(props: PageProps) {
                         data-optional=""
                         data-valid=""
                         onClick={() => {
+
+                          if(call.callStatus == 'live' || call.callStatus== 'waiting'){
+                            props.openDrawer(call._id)
+                            return
+                          }
                           props.openSession(call._id);
                         }}
                       >

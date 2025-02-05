@@ -146,15 +146,16 @@ function Notifications({
   useEffect(() => {
     socket.connect();
     function onConnect() {
-      socket.emit("web-connect", { userId });
+      socket.emit("web-connect", { id:userId });
     }
     function onDisconnect() {}
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
 
-    if (!isNotificationsOn) return;
+    //if (!isNotificationsOn) return;
     function call(data: { call: Call }) {
+      alert('call')
       setIncommingCalls((calls) => [
         ...calls,
         {
@@ -172,9 +173,9 @@ function Notifications({
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
-      if (isNotificationsOn) {
+   //   if (isNotificationsOn) {
         socket.off("new-session", call);
-      }
+    //  }
     };
   }, [socket]);
 

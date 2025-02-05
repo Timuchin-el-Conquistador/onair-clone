@@ -253,6 +253,8 @@ function CallSession(props: PageProps) {
           deleteSession(props.callId);
         }}
       />
+
+
     </div>
   );
 }

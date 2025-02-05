@@ -44,6 +44,7 @@ function Visitor(props: PageProps) {
     phone: string | null,
     slug: string
   ) => {
+    alert('emiting')
     socket.emit("call", {
       callerInfo: { fullName, email, phone, info: infoRef.current },
       slug,

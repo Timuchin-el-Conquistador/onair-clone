@@ -14,7 +14,9 @@ import "@/styles/calls/index.scss";
 
 import { useRouter } from "next/navigation";
 
+import { useState } from "react";
 
+import { socket } from "@/utils/socket";
 
 const SlAlert = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/alert/index.js"),
@@ -32,51 +34,79 @@ const SlIcon = dynamic(
   }
 );
 
+const SlButton = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
+  {
+    //  loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
+const SlDrawer = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/drawer/index.js"),
+  {
+    //  loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
+
 type PageProps = {
   calls: Call[];
 };
 
 function Calls(props: PageProps) {
   const router = useRouter();
-  const { reset, error, loaded, success, } = useSessionStore(
+  const { reset, error, loaded, success, pullSession } = useSessionStore(
     (state) => state
   );
-  const {
-    isDangerAlertVisible,
-    isSuccessAlertVisible,
-  } = useVisibility(reset, error, !loaded, success);
 
+  const [sessions, setSessions] = useState(props.calls);
+  const [drawer, setDrawerState] = useState<{
+    isOpen: boolean;
+    id: string | null;
+  }>({
+    isOpen: false,
+    id: null, //call id
+  });
+
+  const { isDangerAlertVisible, isSuccessAlertVisible } = useVisibility(
+    reset,
+    error,
+    !loaded,
+    success
+  );
+
+  const viewSession = drawer.isOpen
+    ? sessions.filter((el) => el._id == drawer.id)[0]
+    : null;
   return (
     <div id="main" className="mt-0 sm:mt-0 relative p-6">
-            <div
-            style={{
-              position: "fixed",
-              right: "15px",
-              top: "15px",
-              display: isSuccessAlertVisible ? "block" : "hidden",
-            }}
-          >
-            <SlAlert variant="primary" open={isSuccessAlertVisible}>
-              <SlIcon slot="icon" name="info-circle"></SlIcon>
-              <strong>{success}</strong>
+      <div
+        style={{
+          position: "fixed",
+          right: "15px",
+          top: "15px",
+          display: isSuccessAlertVisible ? "block" : "hidden",
+        }}
+      >
+        <SlAlert variant="primary" open={isSuccessAlertVisible}>
+          <SlIcon slot="icon" name="info-circle"></SlIcon>
+          <strong>{success}</strong>
+        </SlAlert>
+      </div>
 
-            </SlAlert>
-          </div>
-      
-  
-          <div
-            style={{
-              position: "fixed",
-              right: "15px",
-              top: "15px",
-              display: isDangerAlertVisible ? "block" : "hidden",
-            }}
-          >
-            <SlAlert variant="danger" open={isDangerAlertVisible}>
-              <SlIcon slot="icon" name="exclamation-octagon"></SlIcon>
-              <strong>{error?.message}</strong>
-            </SlAlert>
-          </div>
+      <div
+        style={{
+          position: "fixed",
+          right: "15px",
+          top: "15px",
+          display: isDangerAlertVisible ? "block" : "hidden",
+        }}
+      >
+        <SlAlert variant="danger" open={isDangerAlertVisible}>
+          <SlIcon slot="icon" name="exclamation-octagon"></SlIcon>
+          <strong>{error?.message}</strong>
+        </SlAlert>
+      </div>
       {/*} <div className="mb-4">
         <div className="block lg:flex lg:justify-between lg:items-center w-full">
           <div className="mb-4 sm:mb-0">
@@ -162,10 +192,17 @@ function Calls(props: PageProps) {
 
       {props.calls.length > 0 ? (
         <Table
-          calls={props.calls}
+          calls={sessions}
           openSession={(sessionId) => {
             console.log(sessionId);
             router.push(`/calls/${sessionId}`);
+          }}
+          openDrawer={(id: string) => {
+            setDrawerState((prevState) => ({
+              ...prevState,
+              isOpen: true,
+              id,
+            }));
           }}
         />
       ) : (
@@ -191,6 +228,113 @@ function Calls(props: PageProps) {
           </div>
         </div>
       )}
+
+      <SlDrawer
+        no-header=""
+        label=""
+        placement="end"
+        className="drawer-overview"
+        open={drawer.isOpen}
+        onSlAfterHide={() =>
+          setDrawerState((prevState) => ({
+            ...prevState,
+            isOpen: false,
+          }))
+        }
+      >
+        <div>
+          <div className="mt-4 text-gray-500 text-sm">Name</div>{" "}
+          <div>{viewSession?.callerInfo.fullName}</div>{" "}
+          <div className="mt-4">
+            <div className="text-gray-500 text-sm">Email</div>{" "}
+            <div>{viewSession?.callerInfo.email}</div>
+          </div>{" "}
+          <div className="mt-4">
+            <div className="mt-4 text-gray-500 text-sm">Waiting</div>{" "}
+            <div>a few seconds ago</div>
+          </div>{" "}
+          <div className="mt-4 text-gray-500 text-sm">Info</div>{" "}
+          <div>
+            Azerbaijan 🇦🇿
+            <br />
+            <small>Windows, Chrome/131</small>
+          </div>{" "}
+          <hr className="my-4" />{" "}
+          <div>
+            <SlButton
+              size="medium"
+              variant="success"
+              data-optional=""
+              data-valid=""
+              className="mt-4 block animation-pulse"
+              onClick={() => {
+                setDrawerState((prevState) => ({
+                  ...prevState,
+                  isOpen: false,
+                }));
+                socket.emit("answer", { callId: viewSession!._id });
+                //router.replace(`/session/${props.slug}/${viewSession!._id}`);
+                window.open(
+                  `/session/${viewSession!.slug}/${viewSession!._id}`,
+                  "_blank"
+                );
+
+                setSessions((prevState) =>
+                  prevState.filter((el) => el._id != viewSession?._id)
+                );
+              }}
+            >
+              Join Call
+            </SlButton>{" "}
+            <SlButton
+              size="medium"
+              variant="warning"
+              outline
+              data-optional=""
+              className="mt-4 block"
+              data-valid=""
+              data-user-valid=""
+              onClick={() => {
+                setDrawerState((prevState) => ({
+                  ...prevState,
+                  isOpen: false,
+                }));
+                socket.emit("decline", { callId: viewSession!._id });
+                pullSession(viewSession!._id);
+
+                setSessions((prevState) =>
+                  prevState.filter((el) => el._id != viewSession?._id)
+                );
+              }}
+            >
+              <div>End Call</div>
+            </SlButton>
+          </div>
+        </div>{" "}
+        <div slot="footer" className="flex justify-between">
+          <span>
+            <SlButton
+              variant="text"
+              size="medium"
+              data-optional=""
+              data-valid=""
+              onClick={() => {
+                setDrawerState((prevState) => ({
+                  ...prevState,
+                  isOpen: false,
+                }));
+              }}
+            >
+              <SlIcon
+                name="arrow-left"
+                aria-hidden="true"
+                library="default"
+              ></SlIcon>{" "}
+              Back
+            </SlButton>
+          </span>{" "}
+        </div>
+      </SlDrawer>
     </div>
   );
 }
