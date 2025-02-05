@@ -155,7 +155,7 @@ function Notifications({
 
     //if (!isNotificationsOn) return;
     function call(data: { call: Call }) {
-      alert('call')
+  
       setIncommingCalls((calls) => [
         ...calls,
         {

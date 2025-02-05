@@ -278,10 +278,6 @@ function Calls(props: PageProps) {
                   `/session/${viewSession!.slug}/${viewSession!._id}`,
                   "_blank"
                 );
-
-                setSessions((prevState) =>
-                  prevState.filter((el) => el._id != viewSession?._id)
-                );
               }}
             >
               Join Call
@@ -301,7 +297,6 @@ function Calls(props: PageProps) {
                 }));
                 socket.emit("decline", { callId: viewSession!._id });
                 pullSession(viewSession!._id);
-
                 setSessions((prevState) =>
                   prevState.filter((el) => el._id != viewSession?._id)
                 );
