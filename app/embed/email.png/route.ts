@@ -23,11 +23,18 @@ export async function GET(req: NextRequest) {
   } //text
   try {
     // Example: Make a GET request to your external Express server or any backend
+
+    console.log(process.env.PRODUCTION_BACKEND_URL, 'URL')
     const backendResponse = await axios.get(
-      `${process.env.PRODUCTION_BACKEND_URL}/api/v1/url/${slug}`
+      `https://${process.env.PRODUCTION_BACKEND_URL}/api/v1/url/${slug}`
     );
 
     const { url } = backendResponse.data;
+
+
+    if(url == null){
+      return NextResponse.json({ error: "No page found " }, { status: 500 });
+    }
     const width = 400;
     const height = 50;
     const canvas = createCanvas(width, height);
