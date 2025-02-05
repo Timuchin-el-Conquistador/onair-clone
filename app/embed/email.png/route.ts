@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const slug = searchParams.get("slug");
 
-  const domain = process.env.FRONTEND_URL!.split('https://')
+  const domain = process.env.FRONTEND_URL!.split('https://')[1]
 
   if (!slug) {
     return new Response("Missing slug parameter", {
@@ -16,6 +16,8 @@ export async function GET(req: NextRequest) {
     });
   }
 
+
+  ///fetching link 
   try {
     const backendResponse = await axios.get(
       `https://${process.env.PRODUCTION_BACKEND_URL}/api/v1/url/${slug}`
@@ -23,14 +25,17 @@ export async function GET(req: NextRequest) {
 
     const { url } = backendResponse.data;
 
+    //if url does not exist sending no page found
     if (url == null) {
       return NextResponse.json({ error: "No page found " }, { status: 400 });
     }
 
 
-    const width = 550;
+    const width = 620;
     const height = 50;
 
+
+    //status
     const statusColor = url.availability === "offline" ? "#4B4B4B" : "#00C853";
     const statusText =
       url.availability === "offline" ? "Offline at the moment" : "Online, visit to call";
@@ -47,7 +52,7 @@ export async function GET(req: NextRequest) {
         {
           input: Buffer.from(
             `<svg width="${width}" height="${height}">
-              <circle cx="10" cy="20" r="6" fill="${statusColor}" />
+              <circle cx="10" cy="20" r="8" fill="${statusColor}" />
               <text x="30" y="25" font-size="20" font-family="Arial" fill="black" font-weight="bold">${domain}/${slug}</text>
               <text x="30" y="45" font-size="16" font-family="Arial" fill="black">${statusText}</text>
             </svg>`
