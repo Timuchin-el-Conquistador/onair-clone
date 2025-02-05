@@ -1,74 +1,61 @@
 import { NextRequest } from "next/server";
-import { createCanvas } from "canvas";
+import sharp from "sharp";
 import axios from "axios";
-
 import { NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const slug = searchParams.get("slug");
 
-  /*if (!slug) {
-    return new Response(JSON.stringify("Missing slug parameter"), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
-  }*/ //as json
-
   if (!slug) {
     return new Response("Missing slug parameter", {
       status: 400,
       headers: { "Content-Type": "text/plain" },
     });
-  } //text
-  try {
-    // Example: Make a GET request to your external Express server or any backend
+  }
 
-    console.log(process.env.PRODUCTION_BACKEND_URL, 'URL')
+  try {
     const backendResponse = await axios.get(
       `https://${process.env.PRODUCTION_BACKEND_URL}/api/v1/url/${slug}`
     );
 
     const { url } = backendResponse.data;
 
-
-    if(url == null){
-      return NextResponse.json({ error: "No page found " }, { status: 500 });
+    if (url == null) {
+      return NextResponse.json({ error: "No page found " }, { status: 400 });
     }
+
     const width = 400;
     const height = 50;
-    const canvas = createCanvas(width, height);
-    const ctx = canvas.getContext("2d");
-
-    // Background (White)
-    ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(0, 0, width, height);
-
-    // Status color
     const statusColor = url.availability === "offline" ? "#4B4B4B" : "#00C853";
     const statusText =
-      url.availability === "offline"
-        ? "Offline at the moment"
-        : "Online, visit to call";
+      url.availability === "offline" ? "Offline at the moment" : "Online, visit to call";
 
-    // Status dot
-    ctx.fillStyle = statusColor;
-    ctx.beginPath();
-    ctx.arc(10, 20, 6, 0, Math.PI * 2);
-    ctx.fill();
+    const image = await sharp({
+      create: {
+        width: width,
+        height: height,
+        channels: 3,
+        background: { r: 255, g: 255, b: 255 },
+      },
+    })
+      .composite([
+        {
+          input: Buffer.from(
+            `<svg width="${width}" height="${height}">
+              <circle cx="10" cy="20" r="6" fill="${statusColor}" />
+              <text x="30" y="25" font-size="20" font-family="Arial" fill="black" font-weight="bold">onair.io/${slug}</text>
+              <text x="30" y="45" font-size="16" font-family="Arial" fill="black">${statusText}</text>
+            </svg>`
+          ),
+          top: 0,
+          left: 0,
+        },
+      ])
+      .png()
+      .toBuffer();
 
-    // Text
-    ctx.fillStyle = "#000000";
-    ctx.font = "bold 20px Arial";
-    ctx.fillText(`onair.io/${slug}`, 30, 25);
-
-    ctx.font = "16px Arial";
-    ctx.fillText(statusText, 30, 45);
-
-    // Convert to PNG buffer
-    const imageBuffer = canvas.toBuffer("image/png");
-
-    return new Response(imageBuffer, {
+    return new Response(image, {
       status: 200,
       headers: {
         "Content-Type": "image/png",
@@ -77,6 +64,6 @@ export async function GET(req: NextRequest) {
     });
   } catch (error) {
     console.error("Error fetching from Express server:", error);
-    return NextResponse.json({ error: "No page found " }, { status: 500 });
+    return NextResponse.json({ error: "No page found " }, { status: 400 });
   }
 }

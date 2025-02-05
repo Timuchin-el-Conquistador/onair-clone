@@ -25,8 +25,8 @@ async function CallsPage(props: { params: { sessionId: string } }) {
         duration={Math.round(call.duration / 60)}
         callStatus={call.callStatus}
         ownerFullName={call.owner.fullName}
-        callerCountry={call.callerInfo.country}
-        callerCountryCode={call.callerInfo.countryCode}
+        callerCountry={call.callerInfo?.country || ''}
+        callerCountryCode={call.callerInfo?.countryCode || ''}
       />
     </Layout>
   );
