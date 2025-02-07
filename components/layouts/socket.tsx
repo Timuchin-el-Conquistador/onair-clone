@@ -18,6 +18,7 @@ function SocketConnectionLayout({
     function onConnect() {
 
       if (isAuth) {
+     
         socket.emit("web-connect", { userId });
       }
     }

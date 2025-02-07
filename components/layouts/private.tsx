@@ -19,14 +19,17 @@ async function PrivateLayout({
 }) {
   const user = await retrieveUser();
 
-  const subscription = await retrieveSubscription();
-
+  const responseResponse  = await retrieveSubscription();
+  const subscription =
+  responseResponse instanceof Error || responseResponse == null
+      ? null
+      : responseResponse;
   const devicesResponse = await retrieveDevices();
   const devices =
     devicesResponse instanceof Error || devicesResponse == null
       ? []
       : devicesResponse;
-
+console.log(user, devices,subscription)
   return (
     <div className="flex overflow-hidden bg-gray-100 h-screen">
       {sidebar && (

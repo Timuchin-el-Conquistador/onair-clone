@@ -218,7 +218,7 @@ function Notifications({
           />
         )}
         {subscription?.status == "incomplete_expired" ||
-          (subscription.status == "past_due" && <SubscriptionExpired />)}
+          (subscription?.status == "past_due" && <SubscriptionExpired />)}
         {subscription?.status == "incomplete" && <IncompletePayment />}
         {subscription?.status == "canceled" && <NoActiveSubscription />}
         <div className="fixed top-2 right-2 z-[9999] space-y-2">

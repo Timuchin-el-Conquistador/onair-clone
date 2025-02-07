@@ -39,8 +39,11 @@ export async function retrieveSubscription() {
       path
     );
 
+    console.log(response)
+
     return response.subscription;
   } catch (error) {
+    console.log(error)
     return error instanceof Error ? error : new Error(String(error));
   }
 }

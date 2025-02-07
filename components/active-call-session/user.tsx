@@ -242,7 +242,7 @@ function Session(props: ComponentProps) {
     const chunks: Blob[] = [];
 
     mediaRecorder.ondataavailable = (event) => {
-
+  
       if (event.data.size > 0) {
         chunks.push(event.data);
       }
