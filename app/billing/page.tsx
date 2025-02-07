@@ -17,7 +17,7 @@ async function BillingPage() {
     return <InternalServerError/>
   }
 
-  console.log(subscription)
+
   return (
     <Layout page="billing" sidebar={true} notifications={true}>
       <Billing

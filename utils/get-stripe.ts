@@ -13,7 +13,6 @@ const getStripe = async (): Promise<Stripe | null> => {
       return null;
     }
 
-    console.log('Attempting to load Stripe with key:', publishableKey);
 
     try {
       stripePromise = loadStripe(publishableKey)

@@ -2,8 +2,6 @@
 
 import dynamic from "next/dynamic";
 
-
-
 import {
   IncompletePayment,
   SubscriptionExpired,
@@ -84,13 +82,9 @@ function Notifications({
   const [error, setErrorMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [success, setSuccessMesssage] = useState<string>("");
-  console.log(watchedTutorial)
-  const {
-    tutorial,
-    toggleFirstModalState,
-    toggleSecondModalState,
-    finishTutorial,
-  } = useTutorial(!watchedTutorial);
+
+  const { tutorial, toggleFirstModalState, toggleSecondModalState } =
+    useTutorial(!watchedTutorial);
 
   const { form, handleSlugChange } = useLinkForm({
     slug: "",
@@ -128,7 +122,6 @@ function Notifications({
       return;
     }
 
-   
     setSuccessMesssage(response.message);
     setTimeout(() => {
       setSuccessMesssage("");
@@ -144,18 +137,9 @@ function Notifications({
   //tutorial
 
   useEffect(() => {
-    socket.connect();
-    function onConnect() {
-      socket.emit("web-connect", { id:userId });
-    }
-    function onDisconnect() {}
-
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-
-    //if (!isNotificationsOn) return;
+    if (!isNotificationsOn) return;
     function call(data: { call: Call }) {
-  
+
       setIncommingCalls((calls) => [
         ...calls,
         {
@@ -171,11 +155,7 @@ function Notifications({
     socket.on("new-session", call);
 
     return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-   //   if (isNotificationsOn) {
-        socket.off("new-session", call);
-    //  }
+      socket.off("new-session", call);
     };
   }, [socket]);
 
@@ -205,7 +185,7 @@ function Notifications({
             right: "15px",
             top: "15px",
             display: success ? "block" : "hidden",
-            zIndex: 100
+            zIndex: 100,
           }}
         >
           <SlAlert variant="success" open={!!success}>
@@ -222,7 +202,7 @@ function Notifications({
             right: "15px",
             top: "15px",
             display: error ? "block" : "hidden",
-            zIndex: 100
+            zIndex: 100,
           }}
         >
           <SlAlert variant="danger" open={!!error}>
@@ -268,7 +248,6 @@ function Notifications({
               socket.emit("slug-validation", { slug: value });
             }, 1000);
           }}
-    
           createFirstLink={() => {
             createLink();
           }}
@@ -281,7 +260,6 @@ function Notifications({
           closeModal={() => {
             toggleSecondModalState(false); //close
           }}
-
         />
       </>
     );

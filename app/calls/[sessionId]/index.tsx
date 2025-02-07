@@ -8,7 +8,7 @@ import "@/styles/calls/session.scss";
 
 import Link from "next/link";
 
-import DeletingSessionAttemptWarning from "@/components/modals/session-remove-attempt-warning";
+import DeletingExpiredSessionWarning from "@/components/modals/expired-session-remove-attempt-warning";
 
 import { useState } from "react";
 
@@ -37,11 +37,9 @@ type PageProps = {
   duration: number;
   callStatus: string;
   ownerFullName: string;
-  callerCountry: string;
-  callerCountryCode:string
 };
 
-function CallSession(props: PageProps) {
+function Details(props: PageProps) {
   const router = useRouter();
 
   const [attemptingToDeleteSession, setAttemptingToDeleteSessionModalState] =
@@ -77,16 +75,16 @@ function CallSession(props: PageProps) {
               >
                 Details
               </Link>{" "}
-              {/*}  <a
-                href="/calls/Xfz9eFtcl5N8hiry/transcription"
+              <Link
+                href={`/calls/${props.callId}/recording`}
                 className="
 							whitespace-nowrap py-4 px-2 sm:px-6 border-b-2 border-transparent font-medium text-sm focus:outline-none
 							hover:text-blue-500 hover:border-blue-300
 							text-gray-500 
 						"
               >
-                Transcription
-              </a>*/}
+                Recording
+              </Link>
             </nav>
           </div>
         </div>{" "}
@@ -109,7 +107,7 @@ function CallSession(props: PageProps) {
               <tr>
                 <td>Device</td>
                 <td>
-                  {props.callerCountry}, {props.callerCountryCode} {' '} (
+                  {props.caller.country}, {props.caller.countryCode} (
                   <small>
                     {props.caller.info.browser},{" "}
                     {props.caller.info.operatingSystem},{" "}
@@ -242,7 +240,7 @@ function CallSession(props: PageProps) {
           Delete Session
         </button>
       </div>
-      <DeletingSessionAttemptWarning
+      <DeletingExpiredSessionWarning
         attemptingToDeleteSession={attemptingToDeleteSession}
         cancel={() => {
           setAttemptingToDeleteSessionModalState(false);
@@ -253,10 +251,8 @@ function CallSession(props: PageProps) {
           deleteSession(props.callId);
         }}
       />
-
-
     </div>
   );
 }
 
-export default CallSession;
+export default Details;

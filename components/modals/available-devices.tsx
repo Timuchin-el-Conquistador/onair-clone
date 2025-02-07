@@ -31,7 +31,7 @@ const SlCheckbox = dynamic(
     ssr: false,
   }
 );
-type PageProps = {
+type ComponentProps = {
   setAvailableDevicesModalState: (state: boolean) => void;
   unlinkDeviceFromUrl: (deviceId: string) => void;
   linkDevices: () => void;
@@ -40,7 +40,7 @@ type PageProps = {
   availableDevices: Device[];
   connectedDevices: Device[];
 };
-function AvailableDevices(props: PageProps) {
+function AvailableDevices(props: ComponentProps) {
   return (
     <SlDialog
       label="Devices"

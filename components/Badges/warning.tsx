@@ -7,11 +7,11 @@ const SlBadge = dynamic(
     ssr: false,
   }
 );
-type PageProps = {
+type ComponentProps = {
     children?:React.ReactNode
   }
   
-  function WarningBadge(props:PageProps) {
+  function WarningBadge(props:ComponentProps) {
 
 
     return(

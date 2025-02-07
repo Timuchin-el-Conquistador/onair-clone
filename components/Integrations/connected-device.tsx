@@ -14,13 +14,13 @@ const SlTooltip = dynamic(
 );
 
 
-type PageProps = {
+type ComponentProps = {
   removeDeviceFromLink:(deviceId:string) => void,
     device:Device
 }
 
 
-function ConnectedDevice(props:PageProps){
+function ConnectedDevice(props:ComponentProps){
 
 
     return(

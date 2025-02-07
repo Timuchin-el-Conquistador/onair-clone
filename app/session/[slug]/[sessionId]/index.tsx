@@ -1,7 +1,7 @@
 "use client";
 
-import GuestCall from "@/components/session/guest";
-import UserCall from "@/components/session/user";
+import GuestCall from "@/components/active-call-session/guest";
+import UserCall from "@/components/active-call-session/user";
 import CallEnded from "@/components/Presentational/call-ended";
 import ConnectingCall from "@/components/Presentational/connecting";
 import CallDeclined from "@/components/Presentational/call-declined";
@@ -15,7 +15,7 @@ import { socket } from "@/utils/socket";
 import { ExtendedLink } from "@/lib/types/links";
 import { Call } from "@/lib/types/call";
 
-
+import LeftCallSession from "@/components/Presentational/left-call-session";
 
 type PageProps = {
   url: ExtendedLink;
@@ -23,6 +23,7 @@ type PageProps = {
   call: Call;
   slug: string;
   sessionId: string;
+  userEmail?: string;
 };
 
 function ActiveCallSession(props: PageProps) {
@@ -68,6 +69,12 @@ function ActiveCallSession(props: PageProps) {
     setStatus("ended");
   };
 
+
+  const leaveSession = (callId:string) =>{
+    socket.emit("leave-session", { callId });
+    setStatus("left");
+  }
+
   if (status == "declined") {
     return <CallDeclined />;
   }
@@ -75,14 +82,14 @@ function ActiveCallSession(props: PageProps) {
   if (props.isAuth) {
     if (status == "live") {
       return (
-        <PrivateLayout page="" sidebar={false} notifications={false}>
+
           <UserCall
+            userEmail={props.userEmail!}
             slug={session.link.slug}
             sessionId={props.sessionId}
             callerInfo={props.call.callerInfo}
             endCall={endCall}
           />
-          </PrivateLayout>
 
       );
     } else {
@@ -106,11 +113,10 @@ function ActiveCallSession(props: PageProps) {
   } else {
     if (status == "live") {
       return (
-        
         <GuestCall
           slug={session.link.slug}
           sessionId={props.sessionId}
-          endCall={endCall}
+          leaveSession={leaveSession}
         />
       );
     } else if (status == "waiting") {
@@ -143,6 +149,20 @@ function ActiveCallSession(props: PageProps) {
           </div>
         </>
       );
+    }
+    else if(status == 'left'){
+      return (
+        <>
+        <div id="animated-background" className="">
+          <div className="waiting-room-bg"></div>
+          <div className="waiting-room-bg waiting-room-bg2"></div>
+          <div className="waiting-room-bg waiting-room-bg3"></div>
+        </div>
+        <div className="flex justify-center items-center w-full h-full">
+        <LeftCallSession/>
+        </div>
+        </>
+      )
     }
   }
 }

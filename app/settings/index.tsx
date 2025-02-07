@@ -102,7 +102,7 @@ function Settings(props: PageProps) {
   );
   const [editableFields, setEditableFields] = useState<string[]>([]);
 
-  console.log(props.numberOfCreatedLinks, "props");
+
   return (
     <div id="settings" className="p-6 mb-24">
 

@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 
 import "@/styles/table.scss";
 
-import { Call } from "@/lib/types/call";
+import { type Call, type Caller } from "@/lib/types/call";
 
 const SlButton = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
@@ -21,11 +21,17 @@ const SlBadge = dynamic(
   }
 );
 
-type PageProps = {
+type ComponentProps = {
   sessions: Call[];
-  openDrawer: (id: string) => void;
+  openDrawer: (
+    sessionId: string,
+    slug: string,
+    callStartedTime: string,
+    caller: Caller
+  ) => void;
 };
-function Table(props: PageProps) {
+function Table(props: ComponentProps) {
+
   return (
     <>
       <div id="live-sessions" className="mb-4 mx-0 hidden sm:block">
@@ -79,7 +85,24 @@ function Table(props: PageProps) {
                       variant="default"
                       data-optional=""
                       data-valid=""
-                      onClick={() => props.openDrawer(session._id)}
+                      onClick={() => {
+                        // Step 2: Parse the date
+                        const date = new Date(
+                          session.callStartedTime.replace(
+                            /(\d+)(st|nd|rd|th)/,
+                            "$1"
+                          )
+                        );
+                        // Step 3: Convert to ISO 8601 format
+                        const isoDate = date.toISOString();
+
+                        props.openDrawer(
+                          session._id,
+                          session.slug,
+                          isoDate,
+                          session.callerInfo
+                        );
+                      }}
                     >
                       Open
                     </SlButton>
@@ -93,27 +116,43 @@ function Table(props: PageProps) {
 
       <div className="mt-4 mb-12 mx-0 sm:mx-0 sm:hidden">
         <ul className="rounded-lg mt-2 divide-y divide-gray-200 overflow-hidden shadow">
-        {props.sessions.map((session: Call) => (
-          <li>
-            <div className="block px-4 py-4 bg-white hover:bg-gray-50">
-              <span className="flex items-center space-x-4">
-                <span className="flex-1 flex space-x-2 truncate">
-                  <span className="flex flex-col text-gray-900 text-sm truncate">
-                    <span className="truncate block w-full font-semibold">
-                    {session.callerInfo.fullName}
-                    </span>{" "}
-                    {session.callerInfo.email && (
+          {props.sessions.map((session: Call) => (
+            <li
+              key={session._id}
+              onClick={() => {
+                // Step 2: Parse the date
+                const date = new Date(
+                  session.callStartedTime.replace(/(\d+)(st|nd|rd|th)/, "$1")
+                );
+                // Step 3: Convert to ISO 8601 format
+                const isoDate = date.toISOString();
+                props.openDrawer(
+                  session._id,
+                  session.slug,
+                  isoDate,
+                  session.callerInfo
+                );
+              }}
+            >
+              <div className="block px-4 py-4 bg-white hover:bg-gray-50">
+                <span className="flex items-center space-x-4">
+                  <span className="flex-1 flex space-x-2 truncate">
+                    <span className="flex flex-col text-gray-900 text-sm truncate">
+                      <span className="truncate block w-full font-semibold">
+                        {session.callerInfo.fullName}
+                      </span>{" "}
+                      {session.callerInfo.email && (
+                        <span className="truncate block w-full text-gray-500">
+                          {session.callerInfo.email}
+                        </span>
+                      )}
                       <span className="truncate block w-full text-gray-500">
-                        {session.callerInfo.email}
+                        Meeting with China, a few seconds ago
                       </span>
-                    )}
-                    <span className="truncate block w-full text-gray-500">
-                      Meeting with China, a few seconds ago
                     </span>
-                  </span>
-                </span>{" "}
-                <span>
-                <SlBadge
+                  </span>{" "}
+                  <span>
+                    <SlBadge
                       variant={
                         session.callStatus == "live" ? "success" : "primary"
                       }
@@ -121,25 +160,25 @@ function Table(props: PageProps) {
                     >
                       {session.callStatus}
                     </SlBadge>
-                </span>{" "}
-                <svg
-                  width="24"
-                  height="24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  id=""
-                  className="flex-shrink-0 h-7 w-7 text-gray-400"
-                  style={{ display: "inline-block" }}
-                >
-                  <use xlinkHref="/images/feather-sprite.svg#chevron-right"></use>
-                </svg>
-              </span>
-            </div>
-          </li>
-        ))}
+                  </span>{" "}
+                  <svg
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    id=""
+                    className="flex-shrink-0 h-7 w-7 text-gray-400"
+                    style={{ display: "inline-block" }}
+                  >
+                    <use xlinkHref="/feather-sprite.svg#chevron-right"></use>
+                  </svg>
+                </span>
+              </div>
+            </li>
+          ))}
         </ul>
       </div>
     </>

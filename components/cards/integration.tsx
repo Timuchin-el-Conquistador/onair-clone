@@ -24,13 +24,13 @@ const SlTooltip = dynamic(
   }
 );
 
-type PageProps = {
+type ComponentProps = {
 
   integration:IIntegration
 }
 
 
-function Integration(props:PageProps) {
+function Integration(props:ComponentProps) {
       const [isDropdownVisible, setDropDownVisibility] = useState(false);
     
       const elementRef = useRef<HTMLDivElement | null>(null);

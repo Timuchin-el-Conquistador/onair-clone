@@ -20,13 +20,13 @@ const SlDialog = dynamic(
 );
 
 
-type PageProps ={
+type ComponentProps ={
     audioInputDevicesModalVisibility:boolean,
     setAudioInputDevicesModalVisibility:(state:boolean) => void,
     audioInputDevices:MediaDeviceInfo[]
 }
 
-function AvailableAudioInputDevices(props:PageProps){
+function AvailableAudioInputDevices(props:ComponentProps){
 
 
     return(

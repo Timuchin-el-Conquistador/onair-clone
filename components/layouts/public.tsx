@@ -1,34 +1,30 @@
 import { retrieveAccountStatus } from "@/lib/actions/public";
-import PublicSocketsLayout from "./public-socket";
 import AccountInactive from "../Presentational/account-inactive";
 
 async function PublicLayout({
   children,
-  ownerId,
+  userId,
 }: {
   children: React.ReactNode;
-  ownerId: string | null;
+  userId: string | null;
 }) {
-  if (ownerId != null) {
+  if (userId != null) {
 
-    console.log(ownerId)
-    let response = await retrieveAccountStatus(ownerId);
+    let response = await retrieveAccountStatus(userId);
 
     const accountStatus =
       response instanceof Error || response == null ? null : response;
 
-   
-      console.log(accountStatus)
       if(accountStatus != 'active'){
        return  <AccountInactive/>
       }
   }
 
   return (
-    <>
-      <PublicSocketsLayout />
-      {children}
-    </>
+ 
+<>{children}</>
+      
+
   );
 }
 

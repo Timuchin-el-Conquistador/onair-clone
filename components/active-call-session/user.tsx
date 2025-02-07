@@ -12,28 +12,27 @@ import Image from "next/image";
 
 import { type Caller } from "@/lib/types/call";
 
-type PageProps = {
+import axios from "axios";
+import AttemptingToEndActiveSessionWarning from "../modals/end-call-warning";
+
+type ComponentProps = {
+  userEmail: string;
   slug: string;
   sessionId: string;
   callerInfo: Caller;
   endCall: (callId: string, duration: number) => void;
 };
 
-function Session(props: PageProps) {
+function Session(props: ComponentProps) {
   //  const [isP2PConEstablished, setP2PConnectionState] = useState(false);
   const [isCallConEstablished, setCallConnectionState] = useState(false); //online offline
 
   const [time, setTime] = useState(0); // time in seconds
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
 
   const [isMuted, setIsMuted] = useState(false);
-  const [isRemoteStreamMuted, setRemoteStreamIsMuted] = useState(false);
-
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
-    null
-  );
+  const [isRemoteStreamMuted, setRemoteStreamMuteState] = useState(false);
 
   const [boxShadow, setBoxShadow] = useState("none"); // Initial box-shadow
 
@@ -41,12 +40,15 @@ function Session(props: PageProps) {
   const connRef = useRef<DataConnection | null>(null);
   const localAudioRef = useRef<HTMLAudioElement | null>(null);
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
-  const combinedStreamRef = useRef<MediaStream | null>(null);
-  const callAudioRecordBlobRef = useRef<Blob | null>(null);
 
   const peerId = useRef<string | null>(null);
 
-  const isP2PConEstablishedRef = useRef(false); // Create a ref to store the latest state
+  const tryToConnectRef = useRef(true); // Create a ref to store the latest state
+
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder>();
+
+
+  const [endCallSessionWarning, setEndCallSessionWarning] = useState(false) 
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -66,29 +68,18 @@ function Session(props: PageProps) {
     }
   };
 
-  async function demonBeastTransform(stream: MediaStream) {
-    const ctx = new AudioContext();
-    const gainNode = ctx.createGain();
-    const audioDest = ctx.createMediaStreamDestination();
-    const source = ctx.createMediaStreamSource(stream);
+  useEffect(() => {
+    function peerChangedAudioTrackMuteState(data: { isMuted: boolean }) {
+      setRemoteStreamMuteState(data.isMuted);
+    }
+    socket.on("mute", peerChangedAudioTrackMuteState);
 
-    // gainNode is set to 0.5
-    gainNode.connect(audioDest);
-    gainNode.gain.value = 0.5;
-    source.connect(gainNode);
-
-    const audio = new Audio();
-    audio.controls = true;
-    audio.autoplay = true;
-    audio.srcObject = audioDest.stream;
-    // audio.play();
-    // document.getElementById('audioContainer').appendChild(audio);
-    return audioDest.stream;
-  }
+    return () => {
+      socket.off("mute", peerChangedAudioTrackMuteState);
+    };
+  }, [socket]);
 
   function createPeer({ iceServers }: any) {
-    console.log("creating PEER");
-    console.log(iceServers);
     peerRef.current = new Peer({
       host:
         process.env.NODE_ENV == "production"
@@ -108,13 +99,11 @@ function Session(props: PageProps) {
     offerConnection();
 
     peerRef.current?.on("open", function (id) {
-      console.log(id);
       peerId.current = id;
     });
 
-    peerRef.current?.on("connection", (connection) => {
-      console.log(connection, "connection");
-      isP2PConEstablishedRef.current = true;
+    peerRef.current?.on("connection", async (connection) => {
+      tryToConnectRef.current = false;
       peerRef.current!.connect(connection.peer);
       connRef.current = connection;
 
@@ -125,32 +114,51 @@ function Session(props: PageProps) {
 
       // Handle disconnection of the remote peer
       connRef.current.on("close", () => {
-        console.log("peer con lost");
-        isP2PConEstablishedRef.current = false;
+        tryToConnectRef.current = true;
         setCallConnectionState(false);
         offerConnection();
       });
-
-      const call = peerRef.current!.call(
-        connection.peer,
-        localAudioRef.current!.srcObject as MediaStream
-      );
-
-      call.on("stream", (stream) => {
-        setCallConnectionState(true);
-        setRemoteStream(stream); // Set the remote stream
-
-        if (remoteAudioRef.current) {
-          remoteAudioRef.current.srcObject = stream;
+      try {
+        const localStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            noiseSuppression: true, // Enable noise suppression
+            echoCancellation: true, // Optional: Reduce echo
+            autoGainControl: true, // Optional: Normalize audio levels
+          },
+        });
+        // Set the audio stream as the local stream
+        setLocalStream(localStream);
+        //  localMediaStreamRecorderRef.current =  createAudioRecorder(stream)
+        // Assign the stream to an audio element reference (for playback)
+        if (localAudioRef.current) {
+          localAudioRef.current.srcObject = localStream;
         }
-        startAudioProcessing(stream);
-      });
+
+        const call = peerRef.current!.call(
+          connection.peer,
+          localAudioRef.current!.srcObject as MediaStream
+        );
+
+        call.on("stream", (remoteStream) => {
+          setCallConnectionState(true);
+
+        
+          recordMixedAudio(localStream, remoteStream);
+          /// remoteMediaStreamRecorderRef.current =  createAudioRecorder(stream)
+
+          if (remoteAudioRef.current) {
+            remoteAudioRef.current.srcObject = remoteStream;
+          }
+          startAudioVisualProcessing(remoteStream);
+        });
+      } catch (error) {
+        console.error("Error accessing local audio:", error);
+      }
     });
   }
   const offerConnection = () => {
     const interval = setInterval(() => {
-      console.log(isP2PConEstablishedRef.current);
-      if (isP2PConEstablishedRef.current) {
+      if (!tryToConnectRef.current) {
         clearInterval(interval);
         return;
       }
@@ -173,7 +181,7 @@ function Session(props: PageProps) {
     };
   }, []);
 
-  useEffect(() => {
+  /* useEffect(() => {
     const getLocalStream = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -186,7 +194,7 @@ function Session(props: PageProps) {
 
         // Set the audio stream as the local stream
         setLocalStream(stream);
-
+      //  localMediaStreamRecorderRef.current =  createAudioRecorder(stream)
         // Assign the stream to an audio element reference (for playback)
         if (localAudioRef.current) {
           localAudioRef.current.srcObject = stream;
@@ -204,63 +212,94 @@ function Session(props: PageProps) {
         localStream.getTracks().forEach((track) => track.stop());
       }
     };
-  }, []);
+  }, []);*/
 
-  useEffect(() => {
-    if (localStream && remoteStream) {
-      const combinedStream = new MediaStream();
-      localStream
-        .getTracks()
-        .forEach((track) => combinedStream.addTrack(track));
-      remoteStream
-        .getTracks()
-        .forEach((track) => combinedStream.addTrack(track));
-      combinedStreamRef.current = combinedStream;
-      startRecording();
-    }
-  }, [localStream, remoteStream]);
-
-  //PRIVATE
-
-  // Start Recording
-  const startRecording = () => {
-    if (!combinedStreamRef.current) {
-      console.error("No combined stream available");
+  function recordMixedAudio(
+    localStream: MediaStream,
+    remoteStream: MediaStream
+  ) {
+    if (!localStream || !remoteStream) {
+      console.error("Local or remote stream is missing!");
       return;
     }
 
-    const recorder = new MediaRecorder(combinedStreamRef.current);
+    const audioContext = new AudioContext();
+    const destination = audioContext.createMediaStreamDestination();
+
+    // Convert both streams to audio sources
+    const localSource = audioContext.createMediaStreamSource(localStream);
+    const remoteSource = audioContext.createMediaStreamSource(remoteStream);
+
+    // Connect both sources to the destination
+    localSource.connect(destination);
+    remoteSource.connect(destination);
+
+    // The mixed stream
+    const mixedStream = destination.stream;
+
+    // Start recording
+    const mediaRecorder = new MediaRecorder(mixedStream);
     const chunks: Blob[] = [];
 
-    recorder.ondataavailable = (event) => {
+    mediaRecorder.ondataavailable = (event) => {
+
       if (event.data.size > 0) {
         chunks.push(event.data);
       }
     };
 
-    recorder.onstop = () => {
-      const audioBlob = new Blob(chunks, { type: "audio/webm" });
-      callAudioRecordBlobRef.current = audioBlob;
-      console.log(audioBlob);
+    mediaRecorder.onstop = async () => {
+      try {
+        const audioBlob = new Blob(chunks, { type: "audio/webm" });
+
+        const form = new FormData();
+        form.append("audio-record", audioBlob);
+
+        await axios.post(
+          `https://${process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL}/api/v1/user/${props.userEmail}/calls/${props.sessionId}`,
+          form
+        );
+        props.endCall(props.sessionId, time);
+      } catch (err) {
+        props.endCall(props.sessionId, time);
+      }
     };
-
-    recorder.start();
-    setMediaRecorder(recorder);
-  };
-
-  const endCall = () => {
-    console.log(mediaRecorder);
+    setMediaRecorder(mediaRecorder);
+    mediaRecorder.start();
+  }
+  const stopMediaRecording = () => {
     if (mediaRecorder) {
       mediaRecorder.stop();
     }
+  };
 
-    props.endCall(props.sessionId, time);
+  const endCall = async () => {
+    stopMediaRecording();
     if (localStream) {
       localStream.getTracks().forEach((track) => track.stop());
     }
   };
 
-  async function startAudioProcessing(stream: MediaStream) {
+  useEffect(() => {
+    function peerLeftTheSession() {
+      //if visitor left session and did not rejoined
+      setCallConnectionState(false);
+      setTimeout(() => {
+        tryToConnectRef.current = false;
+        stopMediaRecording();
+        if (localStream) {
+          localStream.getTracks().forEach((track) => track.stop());
+        }
+      }, 3 * 1000 * 1000);
+    }
+    socket.on("peer-left", peerLeftTheSession);
+
+    return () => {
+      socket.off("peer-left", peerLeftTheSession);
+    };
+  }, [socket]);
+
+  async function startAudioVisualProcessing(stream: MediaStream) {
     try {
       const audioContext = new (window.AudioContext ||
         (window as any).webkitAudioContext)();
@@ -543,7 +582,9 @@ function Session(props: PageProps) {
                 </div>
                 Chat
               </button>{" "}*/}
-              <button className="p-2" onClick={endCall}>
+              <button className="p-2" onClick={()=> {
+                setEndCallSessionWarning(true)
+              }}>
                 <div className="icon-container end-session mb-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -579,6 +620,10 @@ function Session(props: PageProps) {
           </div>
         </div>
       </div>
+
+      <AttemptingToEndActiveSessionWarning isOpen={endCallSessionWarning} closeModal={() =>{
+        setEndCallSessionWarning(false)
+      }} endCallSession={endCall}/>
     </div>
   );
 }

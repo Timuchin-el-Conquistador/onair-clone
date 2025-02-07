@@ -19,13 +19,13 @@ const SlButton = dynamic(
     ssr: false,
   }
 );
-type PageProps = {
+type ComponentProps = {
   attemptingToDeleteSession: boolean;
   proceedDeletingSession: () => void;
   cancel: () => void;
 };
 
-function DeletingSessionAttemptWarning(props: PageProps) {
+function DeletingLintWarning(props: ComponentProps) {
   return (
     <SlDialog
       no-header=""
@@ -37,12 +37,11 @@ function DeletingSessionAttemptWarning(props: PageProps) {
       <div className="p-2">
         <div className="flex items-center mb-2">
           <h2 className="text-xl font-semibold text-gray-700">
-            Delete Session
+            Delete Link
           </h2>
         </div>{" "}
         <p className="text-gray-700 mt-2">
-          Are you sure you want to delete this session and data? This action
-          cannot be undone.
+        Are you sure? All call records associated with this link will be permanently deleted. This operation is not reversible. 
         </p>{" "}
         <div className="flex justify-between mt-8">
           <SlButton
@@ -73,4 +72,4 @@ function DeletingSessionAttemptWarning(props: PageProps) {
   );
 }
 
-export default DeletingSessionAttemptWarning;
+export default DeletingLintWarning;

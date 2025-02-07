@@ -7,10 +7,12 @@ import Layout from "@/components/layouts/private";
 import InternalServerError from "@/components/Presentational/500";
 import PublicLayout from "@/components/layouts/public";
 
+import { Session } from "@/lib/types/user";
+
 async function ActiveCallSessionPage(props: {
   params: { slug: string; sessionId: string };
 }) {
-  const session = await retrieveSession();
+  const session = await retrieveSession() as Session;
 
   const slug = props.params.slug;
 
@@ -35,7 +37,8 @@ async function ActiveCallSessionPage(props: {
       <Layout page="" sidebar={false} notifications={false}>
         <ActiveCallSession
           url={url!}
-          isAuth={session != null}
+          isAuth={true}
+          userEmail={session.email}
           call={call!}
           slug={slug}
           sessionId={props.params.sessionId}
@@ -44,7 +47,7 @@ async function ActiveCallSessionPage(props: {
     );
   }
   return (
-    <PublicLayout ownerId={null}>
+    <PublicLayout userId={null}>
       <ActiveCallSession
         url={url!}
         isAuth={session != null}

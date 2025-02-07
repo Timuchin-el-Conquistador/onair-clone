@@ -20,7 +20,7 @@ async function EditPage(props: { params: { slug: string } }) {
   return (
     <Layout page="pages" sidebar={true} notifications={true}>
       <Edit
-        domain={process.env.NEXT_PUBLIC_FRONTEND_URL!}
+        domain={process.env.FRONTEND_URL!}
         link={{
           _id: url._id,
           slug: url.slug,

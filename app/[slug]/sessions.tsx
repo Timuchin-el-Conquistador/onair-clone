@@ -1,12 +1,12 @@
 "use client";
 
-import dynamic from "next/dynamic";
-
 import { useState, useEffect, useRef } from "react";
 
 import "@/styles/calls/sessions.scss";
+
 import Table from "@/components/Tables/sessions";
-import Pulse from "@/components/Loaders/pulse";
+import { TableSkeletonPulse } from "@/components/Loaders/pulse";
+import ActiveCallSessionDrawer from "@/components/Drawer/active-call-session-drawer";
 
 import { useRouter } from "next/navigation";
 
@@ -16,31 +16,8 @@ import { socket } from "@/utils/socket";
 
 import useSession from "@/hooks/session";
 
-import { ExtendedLink } from "@/lib/types/links";
-
-const SlButton = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
-  {
-    //loading: () => <>Loading...</>,
-    ssr: false,
-  }
-);
-
-const SlDrawer = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react/drawer/index.js"),
-  {
-    // loading: () => <>Loading...</>,
-    ssr: false,
-  }
-);
-
-const SlIcon = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
-  {
-    //  loading: () => <>Loading...</>,
-    ssr: false,
-  }
-);
+import { type ExtendedLink } from "@/lib/types/links";
+import { type Caller } from "@/lib/types/call";
 
 type PageProps = {
   domain: string;
@@ -52,17 +29,29 @@ function Sessions(props: PageProps) {
   const router = useRouter();
   const { session, goOffline, goOnline } = useSession({ ...props.url });
 
-  const { sessions, error, loaded, success, retrieveActiveSessions, pullSession } =
-    useSessionStore((state) => state);
+  const {
+    sessions,
+    error,
+    loaded,
+    success,
+    retrieveActiveSessions,
+    pullSession,
+  } = useSessionStore((state) => state);
 
   const [isDropdownVisible, setDropdownVisibility] = useState(false);
 
   const [drawer, setDrawerState] = useState<{
     isOpen: boolean;
-    id: string | null;
+    sessionId: string;
+    caller: Caller | null;
+    slug: string;
+    callStartedTime: string;
   }>({
     isOpen: false,
-    id: null,
+    sessionId: "", //call id,
+    slug: "",
+    caller: null,
+    callStartedTime: "",
   });
 
   const elementRef = useRef<HTMLUListElement | null>(null);
@@ -89,10 +78,6 @@ function Sessions(props: PageProps) {
   useEffect(() => {
     retrieveActiveSessions(props.slug, router);
   }, []);
-
-  const viewSession = drawer.isOpen
-    ? sessions.filter((el) => el._id == drawer.id)[0]
-    : null;
 
   return (
     <div id="main" className="mt-0 sm:mt-0 relative p-6">
@@ -173,7 +158,7 @@ function Sessions(props: PageProps) {
                       onClick={() => {
                         goOnline();
                         setDropdownVisibility(false);
-                        socket.emit('go-online', {slug:props.slug})
+                        socket.emit("go-online", { slug: props.slug });
                       }}
                     >
                       <span className="status-dot online mr-3"></span>{" "}
@@ -183,11 +168,11 @@ function Sessions(props: PageProps) {
                       id="option2"
                       role="option"
                       className="relative flex items-center select-none py-2 pr-4 hover:bg-gray-100 text-gray-900 cursor-pointer pl-3"
-                      style={{ fontSize: "12px" }}    
+                      style={{ fontSize: "12px" }}
                       onClick={() => {
                         goOffline();
                         setDropdownVisibility(false);
-                        socket.emit('go-offline', {slug:props.slug})
+                        socket.emit("go-offline", { slug: props.slug });
                       }}
                     >
                       <span className="status-dot offline mr-3"></span>{" "}
@@ -209,20 +194,27 @@ function Sessions(props: PageProps) {
           </div>
         </div>
       </div>
-      {!loaded && <Pulse />}
+
       {loaded && sessions.length > 0 && (
         <Table
           sessions={sessions}
-          openDrawer={(id: string) => {
+          openDrawer={(
+            sessionId: string,
+            slug: string,
+            callStartedTime: string,
+            caller: Caller
+          ) => {
             setDrawerState((prevState) => ({
               ...prevState,
               isOpen: true,
-              id,
+              sessionId,
+              slug,
+              callStartedTime,
+              caller,
             }));
           }}
         />
       )}
-
 
       {loaded && !sessions.length && (
         <div id="no-sessions">
@@ -252,102 +244,31 @@ function Sessions(props: PageProps) {
           </div>
         </div>
       )}
-
-      <SlDrawer
-        no-header=""
-        label=""
-        placement="end"
-        className="drawer-overview"
-        open={drawer.isOpen}
-        onSlAfterHide={() =>
+      {!loaded && <TableSkeletonPulse />}
+      <ActiveCallSessionDrawer
+        isOpen={drawer.isOpen}
+        sessionId={drawer.sessionId}
+        slug={drawer.slug}
+        caller={drawer.caller}
+        callStartedTime={drawer.callStartedTime}
+        closeDrawer={() => {
           setDrawerState((prevState) => ({
             ...prevState,
             isOpen: false,
-          }))
-        }
-      >
-        <div>
-          <div className="mt-4 text-gray-500 text-sm">Name</div>{" "}
-          <div>{viewSession?.callerInfo.fullName}</div>{" "}
-          <div className="mt-4">
-            <div className="text-gray-500 text-sm">Email</div>{" "}
-            <div>{viewSession?.callerInfo.email}</div>
-          </div>{" "}
-          <div className="mt-4">
-            <div className="mt-4 text-gray-500 text-sm">Waiting</div>{" "}
-            <div>a few seconds ago</div>
-          </div>{" "}
-          <div className="mt-4 text-gray-500 text-sm">Info</div>{" "}
-          <div>
-            Azerbaijan 🇦🇿
-            <br />
-            <small>Windows, Chrome/131</small>
-          </div>{" "}
-          <hr className="my-4" />{" "}
-          <div>
-            <SlButton
-              size="medium"
-              variant="success"
-              data-optional=""
-              data-valid=""
-              className="mt-4 block animation-pulse"
-              onClick={() => {
-                setDrawerState((prevState) => ({
-                  ...prevState,
-                  isOpen: false,
-                }));
-                socket.emit("answer", { callId: viewSession!._id });
-                //router.replace(`/session/${props.slug}/${viewSession!._id}`);
-                window.open(`/session/${props.slug}/${viewSession!._id}`, '_blank');
-              }}
-            >
-              Join Call
-            </SlButton>{" "}
-            <SlButton
-              size="medium"
-              variant="warning"
-              outline
-              data-optional=""
-              className="mt-4 block"
-              data-valid=""
-              data-user-valid=""
-              onClick={() => {
-                setDrawerState((prevState) => ({
-                  ...prevState,
-                  isOpen: false,
-                }));
-                socket.emit("decline", { callId: viewSession!._id });
-              pullSession(viewSession!._id )
-              }}
-            >
-              <div>End Call</div>
-            </SlButton>
-          </div>
-        </div>{" "}
-        <div slot="footer" className="flex justify-between">
-          <span>
-            <SlButton
-              variant="text"
-              size="medium"
-              data-optional=""
-              data-valid=""
-              onClick={() => {
-                setDrawerState((prevState) => ({
-                  ...prevState,
-                  isOpen: false,
-                }));
-              }}
-            >
-              <SlIcon
-                name="arrow-left"
-                aria-hidden="true"
-                library="default"
-              ></SlIcon>{" "}
-              Back
-            </SlButton>
-          </span>{" "}
-        </div>
-      </SlDrawer>
+          }));
+        }}
+        declineCall={(sessionId: string) => {
+          setDrawerState((prevState) => ({
+            ...prevState,
+            isOpen: false,
+            sessionId: "",
+            slug: "",
+            callStartedTime: "",
+            caller: null,
+          }));
+          pullSession(sessionId);
+        }}
+      />
     </div>
   );
 }

@@ -14,11 +14,11 @@ const SlTooltip = dynamic(
     ssr: false,
   }
 );
-type PageProps = {
+type ComponentProps = {
   integration:IIntegration|null
 }
 
-function Integration(props:PageProps) {
+function Integration(props:ComponentProps) {
   return (
     <div className="p-6">
       <div className="bg-white p-6">

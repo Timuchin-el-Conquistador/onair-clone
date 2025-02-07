@@ -24,7 +24,7 @@ export enum SubscriptionStatus {
 
 
 export interface User {
-  id: string;
+  userId: string;
   fullName: string;
   email: string;
   accountStatus:AccountStatus
@@ -54,7 +54,7 @@ export interface  Integration  {
 
 
 export interface Session{
-  id:string,
+  userId:string,
   fullName: string,
   email: string,
   planName: string,
@@ -68,7 +68,7 @@ export interface Session{
 }
 
 export interface Account{
-  id:string,
+  userId:string,
   fullName: string,
   email: string,
   planName: string,

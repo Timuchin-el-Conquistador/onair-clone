@@ -10,7 +10,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@livekit/krisp-noise-filter": "^0.2.16",
     "@shoelace-style/shoelace": "^2.19.1",
     "@stripe/react-stripe-js": "^3.1.1",
     "@stripe/stripe-js": "^3.5.0",

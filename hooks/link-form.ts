@@ -186,7 +186,6 @@ const useLinkForm = (
 
   useEffect(() => {
     socket.on("slug-validation-result", (response) => {
-      console.log("Received from server:", response);
 
       setForm({
         type: "SLUGSTATUSCHANGE",

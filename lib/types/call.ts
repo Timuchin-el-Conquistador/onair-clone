@@ -22,7 +22,7 @@ export interface Call {
   slug: string;
   owner: User;
   callerInfo: Caller;
-  callStatus: "waiting" | "missed" | "live" | "ended" | "declined";
+  callStatus: "waiting" | "missed" | "live" | "ended" | "declined"|'left';
   duration: number;
   callStartedTime: string;
   callAnsweredTime: string;

@@ -1,0 +1,20 @@
+
+	#recording {
+		margin-bottom: 20px;
+	}
+
+	#transcription {
+		margin-top: 20px;
+	}
+
+	.transcription-word {
+		display: inline-block;
+	}
+
+	.transcription-word:hover {
+		background-color: #e0e0e0;
+	}
+
+	.transcription-word.bg-yellow-500 {
+		background-color: #ffd700;
+	}

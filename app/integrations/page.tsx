@@ -1,10 +1,15 @@
-import Layout from "@/components/layouts/private";
+
 import Integrations from ".";
 
 import { retrieveIntegrations } from "@/lib/actions/user";
 import { retrieveSession } from "@/lib/session";
+import { type Session } from "@/lib/types/user";
 
-import { redirect } from "next/navigation";
+
+import InternalServerError from "@/components/Presentational/500";
+import Layout from "@/components/layouts/private";
+
+
 
 async function IntegrationsPage() {
   const response = await retrieveIntegrations();
@@ -14,9 +19,9 @@ async function IntegrationsPage() {
       ? []
       : response;
 
-  const session = await retrieveSession();
+  const session = await retrieveSession() as Session;
   if (session == null) {
-    redirect("/404");
+      return <InternalServerError/>
   }
 
 
@@ -25,6 +30,7 @@ async function IntegrationsPage() {
       <Integrations
         integrations={integrations}
         monthlyIntegrationsCapacity={session.monthlyIntegrationsCapacity as number}
+        planName={session.planName}
       />
     </Layout>
   );

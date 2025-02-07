@@ -13,10 +13,12 @@ import { UserStoreProvider } from "@/providers/user";
 import { SessionStoreProvider } from "@/providers/session";
 
 import { retrieveSession } from "@/lib/session";
+import { Session } from "@/lib/types/user";
+
+import SocketConnectionLayout from "@/components/layouts/socket";
 
 export default async function RootLayout(props: { children: React.ReactNode }) {
-  const session = await retrieveSession();
-
+  const session = (await retrieveSession()) as Session;
   return (
     <html lang="en">
       <head>
@@ -34,13 +36,18 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
         <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
       </head>
       <body>
- 
-          <UserStoreProvider>
-            <SessionStoreProvider>
-              <ShoelaceSetup>{props.children}</ShoelaceSetup>
-            </SessionStoreProvider>
-          </UserStoreProvider>
-
+        <UserStoreProvider>
+          <SessionStoreProvider>
+            <ShoelaceSetup>
+              <SocketConnectionLayout
+                isAuth={session != null}
+                userId={session?.userId || null}
+              >
+                {props.children}
+              </SocketConnectionLayout>
+            </ShoelaceSetup>
+          </SessionStoreProvider>
+        </UserStoreProvider>
       </body>
     </html>
   );

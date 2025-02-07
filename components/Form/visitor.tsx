@@ -55,7 +55,7 @@ const SlInput = dynamic(
   }
 );
 
-type PageProps = {
+type ComponentProps = {
   slug: string;
   linkName: string;
   message: string;
@@ -69,7 +69,7 @@ type PageProps = {
   ) => void;
 };
 
-function Visitor(props: PageProps) {
+function Visitor(props: ComponentProps) {
   const [error, setError] = useState<{ field: null | string; message: string }>(
     { field: null, message: "" }
   );
@@ -108,7 +108,7 @@ function Visitor(props: PageProps) {
         setAudioInputDevices(audioDevices);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

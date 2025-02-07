@@ -24,7 +24,6 @@ export async function decrypt(token: string|undefined='' ) {
     });
     return payload as Session;
   } catch (error) {
-    console.log("Failed to verify session");
     return null
   }
 }
@@ -33,11 +32,11 @@ export async function decrypt(token: string|undefined='' ) {
 // Validate a Token (e.g., in middleware)
 export async function validateToken(token: string) {
   const session = await decrypt(token);
-  if (!session || !session.id) return null;
+  if (!session || !session.userId) return null;
   //ill need to write backed user validation (send request to check if user exist)
   return {
     isAuth: true,
-    id: session.id,
+    userId: session.userId,
     email: session.email,
     fullName: session.fullName,
     subscriptionStatus: session.subscriptionStatus,

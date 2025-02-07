@@ -9,17 +9,18 @@ export const verifySession = cache(async () => {
   const cookie = (await cookies()).get("session");
   const session = await decrypt(cookie?.value) as Session
 
-  if (!session?.id) {
+  if (!session?.userId) {
     return null;
   }
 
   return {
     isAuth: true,
-    id: session.id,
+    userId: session.userId,
     email: session.email,
     fullName: session.fullName,
     subscriptionStatus:session.subscriptionStatus,
-    watchedTutorial:session.watchedTutorial
+    watchedTutorial:session.watchedTutorial,
+    planName:session.planName
   };
 });
 

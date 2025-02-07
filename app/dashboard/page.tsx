@@ -1,7 +1,6 @@
 
 import dynamic from "next/dynamic";
 
-import Layout from "@/components/layouts/private";
 
 
 
@@ -9,15 +8,19 @@ import { retrieveUrlsAction, removeLinkAction } from "@/lib/actions/link";
 
 import { retrieveSession } from "@/lib/session";
 
-import { redirect } from "next/navigation";
 
+import { type Session } from "@/lib/types/user";
+
+import InternalServerError from "@/components/Presentational/500";
+import Layout from "@/components/layouts/private";
 
 const Dashboard = dynamic(() => import('.'));
 
 async function DashboardPage() {
-  const session = await retrieveSession();
+  const session = await retrieveSession() as Session;
+
   if (session == null) {
-    redirect("/404");
+    return <InternalServerError/>
   }
   return (
     <Layout page="dashboard" sidebar={true} notifications={true}>
@@ -25,7 +28,7 @@ async function DashboardPage() {
         removeLinkAction={removeLinkAction}
         retrieveUrlsAction={retrieveUrlsAction}
         monthlyLinksCapacity={session.monthlyLinksCapacity as number}
- 
+        planName={session.planName}
       />
     </Layout>
   );

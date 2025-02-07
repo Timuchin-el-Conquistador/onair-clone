@@ -3,7 +3,6 @@ import { encrypt, decrypt } from "./utils/session";
 import { cookies } from "next/headers";
 import { validateToken } from "./utils/session";
 
-
 //all routes
 const routes = [
   /^\/dashboard$/,
@@ -12,6 +11,7 @@ const routes = [
   /^\/([a-zA-Z0-9]+)$/,
   /^\/calls$/,
   /^\/calls\/([a-zA-Z0-9]+)$/,
+  /^\/calls\/([a-zA-Z0-9]+)\/recording$/,
   /^\/session\/([a-zA-Z0-9]+)\/([a-zA-Z0-9]+)$/,
   /^\/settings$/,
   /^\/integrations$/,
@@ -41,6 +41,7 @@ const protectedRoutes = [
   /^\/embed\/([a-zA-Z0-9]+)$/,
   /^\/calls$/,
   /^\/calls\/([a-zA-Z0-9]+)$/,
+  /^\/calls\/([a-zA-Z0-9]+)\/recording$/,
   /^\/settings$/,
   /^\/integrations$/,
   /^\/integrations\/new$/,
@@ -73,6 +74,7 @@ const requireActiveSubscriptionRoutes = [
   /^\/embed\/([a-zA-Z0-9]+)$/,
   /^\/calls$/,
   /^\/calls\/([a-zA-Z0-9]+)$/,
+  /^\/calls\/([a-zA-Z0-9]+)\/recording$/,
   /^\/integrations$/,
   /^\/integrations\/new$/,
   /^\/integrations\/new\/mobile$/,
@@ -81,7 +83,6 @@ const requireActiveSubscriptionRoutes = [
   /^\/pages\/new$/,
   /^\/pages\/edit\/([a-zA-Z0-9]+)$/,
 ];
-
 
 export default async function middleware(req: NextRequest) {
   // 2. Check if the current route is protected or public
@@ -107,7 +108,6 @@ export default async function middleware(req: NextRequest) {
     }
   }
 
-
   // Check if the current route matches any public route
   const isPublicRoute = publicRoutes.some((route) => route.test(path));
 
@@ -115,15 +115,12 @@ export default async function middleware(req: NextRequest) {
   const cookie = (await cookies()).get("session")?.value;
   const session = await decrypt(cookie);
 
+  // Check if the current route matches any protected route
 
-
-    // Check if the current route matches any protected route
-
-    const isProtectedRoute = protectedRoutes.some((route) => route.test(path));
-
+  const isProtectedRoute = protectedRoutes.some((route) => route.test(path));
 
   // 4. Redirect to /login if the user is not authenticated
-  if (isProtectedRoute && !session?.id) {
+  if (isProtectedRoute && !session?.userId) {
     return NextResponse.redirect(new URL("/users/sign_in", req.nextUrl));
   }
 
@@ -143,7 +140,7 @@ export default async function middleware(req: NextRequest) {
   // 6. Redirect to /dashboard if the user is authenticated
   if (
     isPublicRoute &&
-    session?.id &&
+    session?.userId &&
     !req.nextUrl.pathname.startsWith("/dashboard")
   ) {
     return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
@@ -157,7 +154,6 @@ export default async function middleware(req: NextRequest) {
   ) {
     return NextResponse.next();
   }
-
 
   //check if rout eexist
   const isRouteExist = routes.some((route) => route.test(path));

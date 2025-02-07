@@ -1,30 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
 
-const SlButton = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
-  {
-    //  loading: () => <>Loading...</>,
-    ssr: false,
-  }
-);
 
-const SlDialog = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),
-  {
-    // loading: () => <>Loading...</>,
-    ssr: false,
-  }
-);
-
-const SlSpinner = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react/spinner/index.js"),
-  {
-    //loading: () => <>Loading...</>,
-    ssr: false,
-  }
-);
 
 function CallEnded(props: { isAuth: boolean; slug: string; domain: string }) {
   return (
@@ -34,11 +11,6 @@ function CallEnded(props: { isAuth: boolean; slug: string; domain: string }) {
       style={{ position: "relative", top: "0", left: "0", height:'fit-content' }}
     >
       <div id="conference-container">
-        <div className="text-center" style={{ display: "none" }}>
-          You have left the channel.{" "}
-          <span className="text-blue-500 cursor-pointer">Refresh</span> to
-          rejoin.
-        </div>{" "}
         <div className="p-6">
           <div className="flex items-center">
             <h2 className="text-lg font-semibold text-gray-700">Call ended</h2>

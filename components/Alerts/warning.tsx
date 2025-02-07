@@ -19,12 +19,12 @@ const SlIcon = dynamic(
   }
 );
 
-type PageProps = {
+type ComponentProps = {
   children?: React.ReactNode;
   closeNoIntegratedDevicesAlert:() => void
 };
 
-function NoDevice(props: PageProps) {
+function NoDevice(props: ComponentProps) {
   return (
 
       <div className="w-full px-6 pt-4">
@@ -38,9 +38,9 @@ function NoDevice(props: PageProps) {
                 height="12"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 id=""
                 className="text-gray-900"
                 style={{ display: "inline-block" }}
@@ -54,9 +54,9 @@ function NoDevice(props: PageProps) {
                 height="18"
                 fill="none"
                 stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 id=""
                 className="mr-2 mt-0 sm:mt-1"
                 style={{ display: "inline-block", color: "rgb(217, 119, 7)" }}

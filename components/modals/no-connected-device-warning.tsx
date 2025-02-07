@@ -19,16 +19,15 @@ const SlButton = dynamic(
     ssr: false,
   }
 );
-type PageProps = {
+type ComponentProps = {
   isNoConnectedMobileDeviceModalVisible: boolean;
   proceedWithoutConnectingDevice: () => void;
   continueEditingLink: () => void;
 };
-function NoConnectedDeviceWarning(props: PageProps) {
+function NoConnectedDeviceWarning(props: ComponentProps) {
   return (
     <SlDialog
-      no-header=""
-      label=""
+      noHeader
       className="dialog-overview"
       open={props.isNoConnectedMobileDeviceModalVisible}
       onSlAfterHide={() => {

@@ -11,7 +11,7 @@ async function EditDeviceIntegration(props: {
   const response = await retrieveIntegration(props.params.integrationId);
   const integration =
     response instanceof Error || response == null ? null: response;
-console.log(integration)
+
   return (
     <Layout page="integrations" sidebar={true} notifications={true}>
       <Integration integration={integration} />

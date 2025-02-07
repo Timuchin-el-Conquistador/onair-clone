@@ -9,14 +9,20 @@ export type SessionState = {
   loaded: boolean;
   error: Error | null;
   success: string | null;
+  filter: {
+    slug: string;
+    caller:string
+  };
 };
 
 export type SessionActions = {
   retrieveActiveSessions: (slug: string, router: any) => void;
+  retrieveSessions: (router: any) => void;
   pushNotification: (session: Call, router: any) => void;
   pullSession: (sessionId: string) => void;
   removeInactiveCall: (callId: string, router: any) => void;
   reset: () => void;
+  filterCalls: (slug: string, filterByCallerWord: string, router: any) => void;
 };
 
 export type SessionStore = SessionState & SessionActions;
@@ -27,22 +33,58 @@ const defaultInitState: SessionState = {
   loaded: false,
   error: null,
   success: null,
+  filter: {
+    slug: "All Links",
+    caller: "",
+  },
 };
-
-let path = "/api/v1/user";
 
 export const createSessionStore = (
   initState: SessionState = defaultInitState
 ) => {
-  return createStore<SessionStore>()((set) => ({
+  return createStore<SessionStore>()((set, get) => ({
     ...initState,
-    retrieveActiveSessions: async (slug: string, router) => {
+    retrieveSessions: async (router) => {
       try {
+        set((prevState) => ({
+          ...prevState,
+          loaded: false,
+        }));
         const session = await verifySession();
 
         if (!session) return router.replace("/users/sign_in");
 
-        path += `/${session.email}/urls/${slug}/calls/active-sessions`;
+        const path = `/api/v1/user/${session.email}/calls`;
+
+        const response: { message: string; calls: Call[] } =
+          await fakeBackend.get(path);
+
+        set((prevState) => ({
+          ...prevState,
+          loaded: true,
+          sessions: response.calls,
+          success: response.message,
+        }));
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          loaded: true,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+
+    retrieveActiveSessions: async (slug, router) => {
+      try {
+        set((prevState) => ({
+          ...prevState,
+          loaded: false,
+        }));
+        const session = await verifySession();
+
+        if (!session) return router.replace("/users/sign_in");
+
+        const path = `api/v1/user/${session.email}/urls/${slug}/calls/active-sessions`;
 
         const response: { sessions: Call[]; message: string } =
           await fakeBackend.get(path);
@@ -93,22 +135,29 @@ export const createSessionStore = (
 
     removeInactiveCall: async (callId: string, router) => {
       try {
+        set((prevState) => ({
+          ...prevState,
+          loaded: false,
+        }));
+
         const session = await verifySession();
 
         if (!session) return router.replace("/users/sign_in");
-        path += `/${session.email}/calls/${callId}`;
+        const path = `/api/v1/user/${session.email}/calls/${callId}`;
 
         const response: { message: string } = await fakeBackend.delete(path);
 
         router.back();
         set((prevState) => ({
           ...prevState,
+          loaded: true,
           success: response.message,
           sessions: prevState.sessions.filter((el) => el._id != callId),
         }));
       } catch (error) {
         set((prevState) => ({
           ...prevState,
+          loaded: true,
           error: error instanceof Error ? error : new Error(String(error)),
         }));
       }
@@ -119,6 +168,43 @@ export const createSessionStore = (
         error: null,
         success: null,
       }));
+    },
+
+    filterCalls: async (slug, filterByCaller, router) => {
+      try {
+        set((prevState) => ({
+          ...prevState,
+          loaded: false,
+        }));
+
+        const session = await verifySession();
+
+        if (!session) return router.replace("/users/sign_in");
+
+        let path = `/api/v1/user/${session.email}/calls/filter?caller=${filterByCaller}`;
+
+        if (slug != "All Links") {
+          path += `&slug=${slug}`;
+        } 
+        const response: { message: string; calls: Call[] } =
+          await fakeBackend.get(path);
+
+        set((prevState) => ({
+          ...prevState,
+          loaded: true,
+          sessions: response.calls,
+          filter:{
+            slug,
+            caller:filterByCaller
+          }
+        }));
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          loaded: true,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
     },
   }));
 };

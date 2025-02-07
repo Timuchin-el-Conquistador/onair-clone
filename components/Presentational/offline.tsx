@@ -1,11 +1,11 @@
 
 
-type PageProps = {
+type ComponentProps = {
     linkName:string,
     message:string
   }
   
-  function UrlIsOffline(props:PageProps) {
+  function UrlIsOffline(props:ComponentProps) {
   return (
     <div
       id="visitor-dialog"

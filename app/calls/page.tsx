@@ -1,19 +1,16 @@
-import { retrieveCalls } from "@/lib/actions/call";
-
+import { retrieveLinks } from "@/lib/actions/link"; //this returns {slug,linkName}
 import Calls from ".";
 
 import Layout from "@/components/layouts/private";
 
-
-
 async function CallsPage() {
-  const response = await retrieveCalls();
-  const calls = response instanceof Error || response == null ? [] : response;
-
+  const response = await retrieveLinks();
+  const allLinks =
+    response instanceof Error || response == null ? [] : response;
 
   return (
     <Layout page="calls" sidebar={true} notifications={true}>
-      <Calls calls={calls} />
+      <Calls allLinks={allLinks} />
     </Layout>
   );
 }

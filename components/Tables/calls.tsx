@@ -6,14 +6,7 @@ import "@/styles/table.scss";
 
 import { Call } from "@/lib/types/call";
 
-const SlDialog = dynamic(
-  // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
-  () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),
-  {
-    // loading: () => <p>Loading...</p>,
-    ssr: false,
-  }
-);
+import { Caller } from "@/lib/types/call";
 
 const SlButton = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
@@ -24,29 +17,6 @@ const SlButton = dynamic(
   }
 );
 
-const SlIcon = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
-  {
-    //  loading: () => <p>Loading...</p>,
-    ssr: false,
-  }
-);
-
-const SlDrawer = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react/drawer/index.js"),
-  {
-    //  loading: () => <p>Loading...</p>,
-    ssr: false,
-  }
-);
-
-const SlAlert = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react/alert/index.js"),
-  {
-    // loading: () => <p>Loading...</p>,
-    ssr: false,
-  }
-);
 const SlBadge = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/badge/index.js"),
   {
@@ -62,13 +32,18 @@ const SlRelativeTime = dynamic(
   }
 );
 
-type PageProps = {
+type ComponentProps = {
   calls: Call[];
-  openSession: (sessionId: string) => void;
-  openDrawer:(sessionId:string) =>void
+  openCall: (callId: string) => void;
+  openDrawer: (
+    sessionId: string,
+    slug: string,
+    callStartedTime: string,
+    caller: Caller
+  ) => void;
 };
 
-function Table(props: PageProps) {
+function Table(props: ComponentProps) {
   return (
     <>
       <div id="sessions" className="mb-6 mx-0 sm:mx-0 hidden sm:block">
@@ -143,12 +118,29 @@ function Table(props: PageProps) {
                         data-optional=""
                         data-valid=""
                         onClick={() => {
+                          if (
+                            call.callStatus == "live" ||
+                            call.callStatus == "waiting"
+                          ) {
+                            // Step 2: Parse the date
+                            const date = new Date(
+                              call.callStartedTime.replace(
+                                /(\d+)(st|nd|rd|th)/,
+                                "$1"
+                              )
+                            );
 
-                          if(call.callStatus == 'live' || call.callStatus== 'waiting'){
-                            props.openDrawer(call._id)
-                            return
+                            // Step 3: Convert to ISO 8601 format
+                            const isoDate = date.toISOString();
+                            props.openDrawer(
+                              call._id,
+                              call.slug,
+                              isoDate,
+                              call.callerInfo
+                            );
+                            return;
                           }
-                          props.openSession(call._id);
+                          props.openCall(call._id);
                         }}
                       >
                         Details
@@ -168,7 +160,7 @@ function Table(props: PageProps) {
             <li
               key={call._id}
               onClick={() => {
-                props.openSession(call._id);
+                props.openCall(call._id);
               }}
             >
               <div className="block px-4 py-4 bg-white hover:bg-gray-50">
@@ -203,9 +195,9 @@ function Table(props: PageProps) {
                     height="24"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     id=""
                     className="flex-shrink-0 h-7 w-7 text-gray-400"
                     style={{ display: "inline-block" }}

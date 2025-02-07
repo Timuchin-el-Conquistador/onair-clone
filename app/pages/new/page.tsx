@@ -18,7 +18,7 @@ async function NewLinkPage(props: { params: { slug: string } }) {
   return (
     <Layout page="pages" sidebar={true} notifications={true}>
       <NewLink
-        domain={process.env.NEXT_PUBLIC_FRONTEND_URL!}
+        domain={process.env.FRONTEND_URL!}
         hasDevices={devices.length > 0}
         devices={devices}
         // integrations={integrations}

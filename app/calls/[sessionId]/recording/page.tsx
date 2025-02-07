@@ -1,22 +1,22 @@
-import Details from ".";
+import Recording from ".";
 
 import Layout from "@/components/layouts/private";
 
 import { retrieveCall } from "@/lib/actions/call";
 
-async function DetailsPage(props: { params: { sessionId: string } }) {
+async function RecordingPage(props: { params: { sessionId: string } }) {
+
+
   const response = await retrieveCall(props.params.sessionId);
   const call = response instanceof Error || response == null ? null : response;
-
-
 
   if (call == null) return;
 
 
   return (
     <Layout page="calls" sidebar={true} notifications={true}>
-      <Details
-        caller={call.callerInfo}
+      <Recording
+
         linkName={call.link.linkName}
         callId={props.params.sessionId}
         callStartedTime={call.callStartedTime}
@@ -31,4 +31,4 @@ async function DetailsPage(props: { params: { sessionId: string } }) {
   );
 }
 
-export default DetailsPage;
+export default RecordingPage;

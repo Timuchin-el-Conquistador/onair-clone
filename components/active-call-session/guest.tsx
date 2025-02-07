@@ -10,13 +10,13 @@ import { formatHHMMSSTime } from "@/utils/timer";
 
 import Image from "next/image";
 
-type PageProps = {
+type ComponentProps = {
   slug: string;
   sessionId: string;
-  endCall: (callId: string, duration: number) => void;
+  leaveSession: (callId: string) => void;
 };
 
-function Session(props: PageProps) {
+function Session(props: ComponentProps) {
   const [isCallConEstablished, setCallConnectionState] = useState(false);
 
   const [time, setTime] = useState(0); // time in seconds
@@ -47,35 +47,13 @@ function Session(props: PageProps) {
     if (localStream) {
       const audioTrack = localStream.getAudioTracks()[0];
       if (audioTrack) {
-        console.log(isMuted, "enabled");
         audioTrack.enabled = isMuted; // Toggle mute state
         setIsMuted(!isMuted);
       }
     }
   };
 
-  async function demonBeastTransform(stream: MediaStream) {
-    const ctx = new AudioContext();
-    const gainNode = ctx.createGain();
-    const audioDest = ctx.createMediaStreamDestination();
-    const source = ctx.createMediaStreamSource(stream);
-
-    // gainNode is set to 0.5
-    gainNode.connect(audioDest);
-    gainNode.gain.value = 0.5;
-    source.connect(gainNode);
-
-    const audio = new Audio();
-    audio.controls = true;
-    audio.autoplay = true;
-    audio.srcObject = audioDest.stream;
-    // audio.play();
-    // document.getElementById('audioContainer').appendChild(audio);
-    return audioDest.stream;
-  }
-
   function createPeer({ iceServers }: any) {
-    console.log(iceServers);
     peerRef.current = new Peer({
       host:
         process.env.NODE_ENV == "production"
@@ -93,27 +71,21 @@ function Session(props: PageProps) {
       },
     });
 
-    peerRef.current?.on("open", function (id) {
-      console.log(id);
-    });
+    peerRef.current?.on("open", function (id) {});
     peerRef.current!.on("call", (call) => {
-      console.log("CALLL");
       call.answer(localAudioRef.current!.srcObject as MediaStream); // Answer the call
       call.on("stream", (stream) => {
         setCallConnectionState(true);
-        console.log("STREMMMMM");
-        console.log(stream);
 
         if (remoteAudioRef.current) {
           remoteAudioRef.current.srcObject = stream;
         }
-        startAudioProcessing(stream);
+        startAudioVisualProcessing(stream);
       });
     });
   }
 
   useEffect(() => {
-    console.log("JOINING");
     socket.emit("join-session", { callId: props.sessionId });
     socket.on("ice-servers", createPeer);
     return () => {
@@ -123,14 +95,12 @@ function Session(props: PageProps) {
 
   useEffect(() => {
     function setConnection(data: { peerId: string }) {
-      console.log("recieved offer to  connect");
+
       connRef.current = peerRef.current!.connect(data.peerId);
 
       connRef.current.on("open", function () {
-        connRef.current!.on("data", function (data) {
-          console.log("Received", data);
-        });
-        connRef.current!.send("Hello World");
+        connRef.current!.on("data", function (data) {});
+        //connRef.current!.send("Hello World");
       });
 
       connRef.current.on("close", () => {
@@ -184,7 +154,24 @@ function Session(props: PageProps) {
     };
   }, []); // Empty array to ensure this effect runs once on mount
 
-  async function startAudioProcessing(stream: MediaStream) {
+
+
+
+
+
+  const endCall = () => {
+    if (localStream) {
+      localStream.getTracks().forEach((track) => track.stop());
+    }
+    props.leaveSession(props.sessionId);
+  };
+
+
+
+
+
+  
+  async function startAudioVisualProcessing(stream: MediaStream) {
     try {
       const audioContext = new (window.AudioContext ||
         (window as any).webkitAudioContext)();
@@ -217,13 +204,6 @@ function Session(props: PageProps) {
       console.error("Error accessing microphone:", err);
     }
   }
-
-  const endCall = () => {
-    props.endCall(props.sessionId, time);
-    if (localStream) {
-      localStream.getTracks().forEach((track) => track.stop());
-    }
-  };
   return (
     <div id="conference">
       <div id="active-audio">
@@ -293,7 +273,7 @@ function Session(props: PageProps) {
           <div className="audio-call-header">
             <div className="text-lg font-thin">{formatHHMMSSTime(time)}</div>{" "}
             <Image
-              src="/logo-white.svg"
+              src="/session-call-logo.png"
               alt="Profile Picture"
               width="80"
               height="80"

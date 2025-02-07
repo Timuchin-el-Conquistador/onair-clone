@@ -20,9 +20,9 @@ interface CardPageLink
   removeLink: (slug: string) => void;
 }
 
-type PageProps = CardPageLink;
+type ComponentProps = CardPageLink;
 
-function Card(props: PageProps) {
+function Card(props: ComponentProps) {
   const [isDropdownVisible, setDropDownVisibility] = useState(false);
 
   const elementRef = useRef<HTMLDivElement | null>(null);

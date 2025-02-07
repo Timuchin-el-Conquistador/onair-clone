@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-type PageProps = {
+type ComponentProps = {
   email: string;
   fullName: string;
   phone: string;
@@ -12,7 +12,7 @@ type PageProps = {
   decline: (callId: string) => void;
 };
 
-function WebCallNotification(props: PageProps) {
+function WebCallNotification(props: ComponentProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   useEffect(() => {
     /* используем поток */

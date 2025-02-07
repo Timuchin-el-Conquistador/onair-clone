@@ -269,8 +269,41 @@ input[type="checkbox"]:checked,
   border-color: rgba(0, 0, 0, 0);
 }
 
-
 .border-brand-400 {
   --tw-border-opacity: 1;
   border-color: rgb(0 86 255 / var(--tw-border-opacity));
+}
+
+.sp-tooltip {
+  &:hover {
+    .sp-tooltip-body {
+      display: block;
+    }
+  }
+}
+.sp-tooltip-arrow {
+  position: relative;
+  background-color: #444;
+  top: -8px;
+  width: 20px;
+  height: 10px;
+  transform: rotate(45deg);
+}
+
+.sp-tooltip-body {
+  position: absolute;
+  border-radius: 5px;
+  background-color: #444;
+  color: #fff;
+  font-size: 12px;
+  line-height: 150%;
+  padding: 8px;
+  z-index: 99;
+  margin-top: 3px;
+  display: none;
+  &:hover {
+    .sp-tooltip-body {
+      display: block;
+    }
+  }
 }

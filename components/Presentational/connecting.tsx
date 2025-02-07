@@ -16,11 +16,11 @@ const SlSpinner = dynamic(
 
 
 
-type PageProps = {
+type ComponentProps = {
   linkName:string
 }
 
-function ConnectingCall(props:PageProps) {
+function ConnectingCall(props:ComponentProps) {
 
   return (
 

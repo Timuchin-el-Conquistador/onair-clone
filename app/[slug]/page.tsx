@@ -12,7 +12,7 @@ import InternalServerError from "@/components/Presentational/500";
 
 
 
-async function Page(props: { params: { slug: string } }) {
+async function SessionPage(props: { params: { slug: string } }) {
   const session = await retrieveSession();
 
   const slug = props.params.slug;
@@ -37,10 +37,10 @@ async function Page(props: { params: { slug: string } }) {
     );
   }
   return (
-    <PublicLayout ownerId={url.owner}>
+    <PublicLayout userId={url.owner}>
       <Visitor slug={slug} url={url} />
     </PublicLayout>
   );
 }
 
-export default Page;
+export default SessionPage;

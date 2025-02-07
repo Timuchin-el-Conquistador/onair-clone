@@ -102,7 +102,7 @@ export async function retrieveSession() {
   const cookie = (await cookies()).get("session");
   const session = await decrypt(cookie?.value);
 
-  if (!session?.id) {
+  if (!session?.userId) {
     return null;
   }
   return session;

@@ -1,12 +1,7 @@
-
-
 import NotificationsLayout from "./notifications";
 
 import { retrieveSubscription } from "@/lib/actions/billing";
-import {
-  retrieveDevices,
-  retrieveUser,
-} from "@/lib/actions/user";
+import { retrieveDevices, retrieveUser } from "@/lib/actions/user";
 import { createUrlAction } from "@/lib/actions/link";
 
 import Sidebar from "../sidebar";
@@ -22,7 +17,6 @@ async function PrivateLayout({
   sidebar: boolean;
   notifications: boolean;
 }) {
-  
   const user = await retrieveUser();
 
   const subscription = await retrieveSubscription();
@@ -47,7 +41,7 @@ async function PrivateLayout({
           <NotificationsLayout
             hasActiveDevices={devices.length > 0}
             subscription={subscription}
-            userId={user.id as string}
+            userId={user.userId as string}
             watchedTutorial={user.watchedTutorial}
             isNotificationsOn={notifications}
             createUrlAction={createUrlAction}
