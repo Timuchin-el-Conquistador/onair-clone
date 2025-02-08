@@ -6,6 +6,8 @@ import { createUrlAction } from "@/lib/actions/link";
 
 import Sidebar from "../sidebar";
 
+import ErrorBoundary from "../error-bound";
+
 async function PrivateLayout({
   children,
   page,
@@ -19,9 +21,9 @@ async function PrivateLayout({
 }) {
   const user = await retrieveUser();
 
-  const responseResponse  = await retrieveSubscription();
+  const responseResponse = await retrieveSubscription();
   const subscription =
-  responseResponse instanceof Error || responseResponse == null
+    responseResponse instanceof Error || responseResponse == null
       ? null
       : responseResponse;
   const devicesResponse = await retrieveDevices();
@@ -29,7 +31,7 @@ async function PrivateLayout({
     devicesResponse instanceof Error || devicesResponse == null
       ? []
       : devicesResponse;
-console.log(user, devices,subscription)
+
   return (
     <div className="flex overflow-hidden bg-gray-100 h-screen">
       {sidebar && (
@@ -49,8 +51,7 @@ console.log(user, devices,subscription)
             isNotificationsOn={notifications}
             createUrlAction={createUrlAction}
           />
-
-          {children}
+          <ErrorBoundary>{children}</ErrorBoundary>
         </main>
       </div>
     </div>

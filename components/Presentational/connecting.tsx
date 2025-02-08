@@ -6,6 +6,9 @@ import "@/styles/modal.scss";
 import dynamic from "next/dynamic";
 import Timer from "./timer";
 
+
+import {socket} from '@/utils/socket'
+
 const SlSpinner = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/spinner/index.js"),
   {
@@ -17,11 +20,16 @@ const SlSpinner = dynamic(
 
 
 type ComponentProps = {
-  linkName:string
+  linkName:string;
+  callId:string
 }
 
 function ConnectingCall(props:ComponentProps) {
 
+
+  const sendAsMissedCall = () =>{
+  socket.emit('missed-call', {callId:props.callId})
+  }
   return (
 
       <div
@@ -39,7 +47,7 @@ function ConnectingCall(props:ComponentProps) {
             <SlSpinner></SlSpinner>
           </div>{" "}
           <div>Ringing... may take 1-3 minutes. Keep this window open.</div>{" "}
-          <Timer />
+          <Timer sendAsMissedCall={sendAsMissedCall}/>
         </div>
       </div>
 

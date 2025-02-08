@@ -127,7 +127,7 @@ function Calls(props: PageProps) {
     const value = event.target.value;
     updateDebouncedValue(value);
   };
-
+console.log(sessions)
   return (
     <div id="main" className="mt-0 sm:mt-0 relative p-6">
       <div

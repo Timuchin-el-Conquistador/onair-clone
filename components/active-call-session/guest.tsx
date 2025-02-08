@@ -54,14 +54,15 @@ function Session(props: ComponentProps) {
   };
 
   function createPeer({ iceServers }: any) {
+       const isProduction =  process.env.NODE_ENV == "production"
     peerRef.current = new Peer({
       host:
-        process.env.NODE_ENV == "production"
+      isProduction
           ? process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
           : "localhost", // Your public IP or domain
-      port: process.env.NODE_ENV == "production" ? 443 : 9000, // The port your PeerJS server is running on
+      port:isProduction ? 443 : 9000, // The port your PeerJS server is running on
       path: "/myapp", // The path to your PeerJS server (configured in Apache)
-      secure: process.env.NODE_ENV == "production", // Set to true if using https
+      secure: isProduction, // Set to true if using https
       config: {
         iceServers: iceServers.urls.map((url: string) => ({
           urls: url, // Each URL should be a string

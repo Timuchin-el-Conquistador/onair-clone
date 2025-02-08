@@ -139,7 +139,6 @@ function Notifications({
   useEffect(() => {
     if (!isNotificationsOn) return;
     function call(data: { call: Call }) {
-
       setIncommingCalls((calls) => [
         ...calls,
         {
@@ -175,6 +174,8 @@ function Notifications({
   const closeNoIntegratedDevicesAlert = () => {
     setNoIntegratedDeviceAlertVisibility(false);
   };
+
+  const isProduction = process.env.NODE_ENV == "production";
 
   if (isNotificationsOn) {
     return (
@@ -240,7 +241,11 @@ function Notifications({
         <CreateFirstLink
           modalIsOpen={tutorial.firstModalIsOpen}
           slugStatus={form.slugStatus}
-          domain={process.env.NEXT_PUBLIC_FRONTEND_URL!}
+          domain={
+            isProduction
+              ? process.env.NEXT_PUBLIC_FRONTEND_URL!
+              : process.env.NEXT_PUBLIC_FRONTEND_LOCAL_URL!
+          }
           loading={loading}
           handleSlugChange={(value: string) => {
             handleSlugChange(value);
@@ -255,7 +260,11 @@ function Notifications({
 
         <WatchTutorial
           modalIsOpen={tutorial.secondModalIsOpen}
-          domain={process.env.NEXT_PUBLIC_FRONTEND_URL!}
+          domain={
+            isProduction
+              ? process.env.NEXT_PUBLIC_FRONTEND_URL!
+              : process.env.NEXT_PUBLIC_FRONTEND_LOCAL_URL!
+          }
           slug={form.link.slug}
           closeModal={() => {
             toggleSecondModalState(false); //close

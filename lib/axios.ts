@@ -75,23 +75,23 @@ class FakeBackend {
       throw this.handleAxiosError(error);
     }
   }
- // Generic PUT request method
- async patch<T>(
-  url: string,
-  data: any,
-  config: AxiosRequestConfig = {}
-): Promise<T> {
-  try {
-    const response: AxiosResponse<T> = await this.axiosInstance.put(
-      url,
-      data,
-      config
-    );
-    return response.data;
-  } catch (error) {
-    throw this.handleAxiosError(error);
+  // Generic PUT request method
+  async patch<T>(
+    url: string,
+    data: any,
+    config: AxiosRequestConfig = {}
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<T> = await this.axiosInstance.put(
+        url,
+        data,
+        config
+      );
+      return response.data;
+    } catch (error) {
+      throw this.handleAxiosError(error);
+    }
   }
-}
   // Generic DELETE request method
   async delete<T>(url: string, config: AxiosRequestConfig = {}): Promise<T> {
     try {
@@ -151,13 +151,19 @@ class FakeBackend {
   }
 }
 
+const isProduction = process.env.NODE_ENV === "production";
 const productionUrl =
   typeof window !== undefined
-    ? "https://" + process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
-    : "https://" + process.env.PRODUCTION_BACKEND_URL;
+    ? "https://" + process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL!
+    : "https://" + process.env.PRODUCTION_BACKEND_URL!;
+
+const localhost =
+  typeof window !== undefined
+  ? "http://" + process.env.NEXT_PUBLIC_LOCAL_BACKEND_URL!
+  : "http://" + process.env.LOCAL_BACKEND_URL!;
 
 const fakeBackend = FakeBackend.getInstance(
-  process.env.NODE_ENV == "production" ? productionUrl : "http://localhost:4000"
+  isProduction ? productionUrl : localhost
 );
 //const axiosInstance = backend.getAxiosInstance();
 

@@ -47,8 +47,7 @@ function Session(props: ComponentProps) {
 
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder>();
 
-
-  const [endCallSessionWarning, setEndCallSessionWarning] = useState(false) 
+  const [endCallSessionWarning, setEndCallSessionWarning] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -80,14 +79,14 @@ function Session(props: ComponentProps) {
   }, [socket]);
 
   function createPeer({ iceServers }: any) {
+    const isProduction = process.env.NODE_ENV == "production";
     peerRef.current = new Peer({
-      host:
-        process.env.NODE_ENV == "production"
-          ? process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
-          : "localhost", // Your public IP or domain
-      port: process.env.NODE_ENV == "production" ? 443 : 9000, // The port your PeerJS server is running on
+      host: isProduction
+        ? process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
+        : "localhost", // Your public IP or domain
+      port: isProduction ? 443 : 9000, // The port your PeerJS server is running on
       path: "/myapp", // The path to your PeerJS server (configured in Apache)
-      secure: process.env.NODE_ENV == "production", // Set to true if using https
+      secure: isProduction, // Set to true if using https
       config: {
         iceServers: iceServers.urls.map((url: string) => ({
           urls: url, // Each URL should be a string
@@ -142,7 +141,6 @@ function Session(props: ComponentProps) {
         call.on("stream", (remoteStream) => {
           setCallConnectionState(true);
 
-        
           recordMixedAudio(localStream, remoteStream);
           /// remoteMediaStreamRecorderRef.current =  createAudioRecorder(stream)
 
@@ -242,21 +240,26 @@ function Session(props: ComponentProps) {
     const chunks: Blob[] = [];
 
     mediaRecorder.ondataavailable = (event) => {
-  
       if (event.data.size > 0) {
         chunks.push(event.data);
       }
     };
 
     mediaRecorder.onstop = async () => {
+      const isProduction = process.env.NODE_ENV == "production";
+
+      const domain = isProduction
+        ? `https://${process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL}`
+        : `http://${process.env.NEXT_PUBLIC_LOCAL_BACKEND_URL}`;
+
       try {
-        const audioBlob = new Blob(chunks, { type: "audio/webm" });
+        const audioBlob = new Blob(chunks, { type: "audio/mp4" });
 
         const form = new FormData();
         form.append("audio-record", audioBlob);
 
         await axios.post(
-          `https://${process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL}/api/v1/user/${props.userEmail}/calls/${props.sessionId}`,
+          `${domain}/api/v1/user/${props.userEmail}/calls/${props.sessionId}`,
           form
         );
         props.endCall(props.sessionId, time);
@@ -582,9 +585,12 @@ function Session(props: ComponentProps) {
                 </div>
                 Chat
               </button>{" "}*/}
-              <button className="p-2" onClick={()=> {
-                setEndCallSessionWarning(true)
-              }}>
+              <button
+                className="p-2"
+                onClick={() => {
+                  setEndCallSessionWarning(true);
+                }}
+              >
                 <div className="icon-container end-session mb-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -620,10 +626,13 @@ function Session(props: ComponentProps) {
           </div>
         </div>
       </div>
-
-      <AttemptingToEndActiveSessionWarning isOpen={endCallSessionWarning} closeModal={() =>{
-        setEndCallSessionWarning(false)
-      }} endCallSession={endCall}/>
+      <AttemptingToEndActiveSessionWarning
+        isOpen={endCallSessionWarning}
+        closeModal={() => {
+          setEndCallSessionWarning(false);
+        }}
+        endCallSession={endCall}
+      />
     </div>
   );
 }

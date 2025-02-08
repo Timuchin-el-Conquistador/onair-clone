@@ -2,29 +2,20 @@ import Recording from ".";
 
 import Layout from "@/components/layouts/private";
 
-import { retrieveCall } from "@/lib/actions/call";
+import { retrieveAudioRecordUrlAction } from "@/lib/actions/call";
 
 async function RecordingPage(props: { params: { sessionId: string } }) {
 
 
-  const response = await retrieveCall(props.params.sessionId);
-  const call = response instanceof Error || response == null ? null : response;
 
-  if (call == null) return;
-
-
+ 
   return (
     <Layout page="calls" sidebar={true} notifications={true}>
       <Recording
 
-        linkName={call.link.linkName}
+      
         callId={props.params.sessionId}
-        callStartedTime={call.callStartedTime}
-        callAnsweredTime={call.callAnsweredTime}
-        callEndedTime={call.callEndedTime}
-        duration={Math.round(call.duration / 60)}
-        callStatus={call.callStatus}
-        ownerFullName={call.owner.fullName}
+        retrieveAudioRecordUrlAction={retrieveAudioRecordUrlAction}
 
       />
     </Layout>

@@ -18,7 +18,6 @@ const Dashboard = dynamic(() => import('.'));
 
 async function DashboardPage() {
   const session = await retrieveSession() as Session;
-
   if (session == null) {
     return <InternalServerError/>
   }

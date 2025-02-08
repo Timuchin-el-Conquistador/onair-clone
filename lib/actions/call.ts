@@ -44,3 +44,25 @@ export async function retrieveCall(callId:string) {
 
 
 
+
+export async function retrieveAudioRecordUrlAction(callId:string) {
+  'use server'
+  try {
+    const session = await verifySession();
+
+    if (!session) return redirect("/users/sign_in");
+    const path = `api/v1/user/${session.email}/calls/${callId}/audio-record`;
+
+    const response: { message: string; recordUrl: string } = await fakeBackend.get(
+      path
+    );
+
+    return { status:200, message:response.message,recordUrl:response.recordUrl };
+  } catch (error) {
+    return { status:400, message: error instanceof Error ? error.message : String(error),recordUrl:null };
+  }
+}
+
+
+
+

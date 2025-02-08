@@ -17,10 +17,13 @@ async function EditPage(props: { params: { slug: string } }) {
       : devicesResponse;
 
   if (url == null) return;
+  const isProduction = process.env.NODE_ENV == "production";
   return (
     <Layout page="pages" sidebar={true} notifications={true}>
       <Edit
-        domain={process.env.FRONTEND_URL!}
+        domain={
+          isProduction ? process.env.FRONTEND_URL! : process.env.LOCAL_FRONTEND_URL!
+        }
         link={{
           _id: url._id,
           slug: url.slug,

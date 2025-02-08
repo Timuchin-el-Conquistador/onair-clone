@@ -27,10 +27,11 @@ type Componentprops = {
 function AttemptingToEndActiveSessionWarning(props:Componentprops) {
   return (
     <SlDialog
-    label="Devices"
+    label=""
     className="dialog-overview with-header"
     open={props.isOpen}
     onSlAfterHide={props.closeModal}
+    noHeader
   >
     <div className="p-2">
       <div className="flex items-center mb-2">

@@ -10,8 +10,6 @@ import { retrieveSession } from "@/lib/session";
 
 import InternalServerError from "@/components/Presentational/500";
 
-
-
 async function SessionPage(props: { params: { slug: string } }) {
   const session = await retrieveSession();
 
@@ -21,15 +19,19 @@ async function SessionPage(props: { params: { slug: string } }) {
 
   const url = response instanceof Error || response == null ? null : response;
 
+
+
   if (url == null) {
-    return <InternalServerError/>
+    return <InternalServerError />;
   }
+
+  const isProduction = process.env.NODE_ENV == "production";
 
   if (session) {
     return (
       <PrivateLayout page="dashboard" sidebar={true} notifications={true}>
         <Sessions
-          domain={process.env.FRONTEND_URL || ""}
+          domain={isProduction ? process.env.FRONTEND_URL! : process.env.LOCAL_FRONTEND_URL!}
           slug={slug}
           url={url}
         />

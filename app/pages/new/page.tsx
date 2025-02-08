@@ -14,11 +14,13 @@ async function NewLinkPage(props: { params: { slug: string } }) {
     devicesResponse instanceof Error || devicesResponse == null
       ? []
       : devicesResponse;
-
+  const isProduction = process.env.NODE_ENV == "production";
   return (
     <Layout page="pages" sidebar={true} notifications={true}>
       <NewLink
-        domain={process.env.FRONTEND_URL!}
+        domain={
+          isProduction ? process.env.FRONTEND_URL! : process.env.LOCAL_FRONTEND_URL!
+        }
         hasDevices={devices.length > 0}
         devices={devices}
         // integrations={integrations}

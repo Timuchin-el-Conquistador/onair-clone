@@ -69,11 +69,11 @@ function ActiveCallSession(props: PageProps) {
     setStatus("ended");
   };
 
-
-  const leaveSession = (callId:string) =>{
+  const leaveSession = (callId: string) => {
     socket.emit("leave-session", { callId });
     setStatus("left");
-  }
+  };
+  const isProduction = process.env.NODE_ENV == "production";
 
   if (status == "declined") {
     return <CallDeclined />;
@@ -82,15 +82,13 @@ function ActiveCallSession(props: PageProps) {
   if (props.isAuth) {
     if (status == "live") {
       return (
-
-          <UserCall
-            userEmail={props.userEmail!}
-            slug={session.link.slug}
-            sessionId={props.sessionId}
-            callerInfo={props.call.callerInfo}
-            endCall={endCall}
-          />
-
+        <UserCall
+          userEmail={props.userEmail!}
+          slug={session.link.slug}
+          sessionId={props.sessionId}
+          callerInfo={props.call.callerInfo}
+          endCall={endCall}
+        />
       );
     } else {
       return (
@@ -104,7 +102,6 @@ function ActiveCallSession(props: PageProps) {
             <CallEnded
               isAuth={true}
               slug={props.slug}
-              domain={process.env.NEXT_PUBLIC_FRONTEND_URL!}
             />
           </div>
         </>
@@ -128,7 +125,7 @@ function ActiveCallSession(props: PageProps) {
             <div className="waiting-room-bg waiting-room-bg3"></div>
           </div>
           <div className="flex justify-center items-center w-full h-full">
-            <ConnectingCall linkName={session.link.linkName} />
+            <ConnectingCall linkName={session.link.linkName} callId={props.call._id as string}/>
           </div>
         </>
       );
@@ -144,25 +141,28 @@ function ActiveCallSession(props: PageProps) {
             <CallEnded
               isAuth={false}
               slug={props.slug}
-              domain={process.env.NEXT_PUBLIC_FRONTEND_URL!}
+              domain={
+                isProduction
+                  ? 'https://' + process.env.NEXT_PUBLIC_FRONTEND_URL!
+                  :'http://' + process.env.NEXT_PUBLIC_FRONTEND_LOCAL_URL!
+              }
             />
           </div>
         </>
       );
-    }
-    else if(status == 'left'){
+    } else if (status == "left") {
       return (
         <>
-        <div id="animated-background" className="">
-          <div className="waiting-room-bg"></div>
-          <div className="waiting-room-bg waiting-room-bg2"></div>
-          <div className="waiting-room-bg waiting-room-bg3"></div>
-        </div>
-        <div className="flex justify-center items-center w-full h-full">
-        <LeftCallSession/>
-        </div>
+          <div id="animated-background" className="">
+            <div className="waiting-room-bg"></div>
+            <div className="waiting-room-bg waiting-room-bg2"></div>
+            <div className="waiting-room-bg waiting-room-bg3"></div>
+          </div>
+          <div className="flex justify-center items-center w-full h-full">
+            <LeftCallSession />
+          </div>
         </>
-      )
+      );
     }
   }
 }

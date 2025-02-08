@@ -6,8 +6,11 @@ import { NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const slug = searchParams.get("slug");
+  
 
-  const domain = process.env.FRONTEND_URL!.split('https://')[1]
+  const isProduction = process.env.NODE_ENV == 'production'
+
+  const domain = isProduction ?  process.env.FRONTEND_URL!:  process.env.LOCAL_FRONTEND_URL!
 
   if (!slug) {
     return new Response("Missing slug parameter", {

@@ -4,11 +4,19 @@ import "@/styles/spinner/pulse.scss";
 
 function CardSkeletonPulse() {
   return (
-    <div className="index-card item-overflow-visible relative skeleton-wrapper">
+    <div className="index-card item-overflow-visible relative skeleton-wrapper max-w-xs">
       <div className="skeleton-image"></div>
       <div className="skeleton-text"></div>
       <div className="skeleton-text"></div>
       <div className="skeleton-text short"></div>
+    </div>
+  );
+}
+
+function AudioLoadingSkeletonPulse() {
+  return (
+    <div className="item-overflow-visible relative skeleton-wrapper w-full">
+      <div className="skeleton-text"></div>
     </div>
   );
 }
@@ -79,4 +87,4 @@ function TableSkeletonPulse() {
     </>
   );
 }
-export { CardSkeletonPulse, TableSkeletonPulse };
+export { CardSkeletonPulse, TableSkeletonPulse, AudioLoadingSkeletonPulse };

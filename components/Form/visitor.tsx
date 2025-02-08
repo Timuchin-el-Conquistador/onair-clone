@@ -7,6 +7,8 @@ import "@/styles/modal.scss";
 import { useRef, useState } from "react";
 import AvailableAudioInputDevices from "../modals/available-audio-input-devices";
 
+import Spinner from "../Loaders/spinner";
+
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
   {
@@ -61,6 +63,7 @@ type ComponentProps = {
   message: string;
   isEmailRequired: boolean;
   isPhoneRequired: boolean;
+  isLoading: boolean;
   call: (
     fullName: string,
     email: string | null,
@@ -144,7 +147,15 @@ function Visitor(props: ComponentProps) {
         <div className="status-card m-3">
           <div className="status online"></div>{" "}
           <div className="title">{props.linkName}</div>{" "}
-          <div className="subtitle">Online</div>
+          <div className="subtitle">
+            {props.isLoading ? (
+              <div className="flex items-center gap-2">
+                Creating Session Call <Spinner />
+              </div>
+            ) : (
+              "Online"
+            )}
+          </div>
         </div>{" "}
         <div>
           <div>

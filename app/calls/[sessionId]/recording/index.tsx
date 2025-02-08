@@ -4,19 +4,36 @@ import Link from "next/link";
 
 import "@/styles/calls/index.scss";
 import "@/styles/calls/recording.scss";
+import { useEffect, useState } from "react";
+
+import { AudioLoadingSkeletonPulse } from "@/components/Loaders/pulse";
 
 type PageProps = {
-  linkName: string;
   callId: string;
-  callStartedTime: string;
-  callAnsweredTime: string;
-  callEndedTime: string;
-  duration: number;
-  callStatus: string;
-  ownerFullName: string;
+  retrieveAudioRecordUrlAction: (
+    callId: string
+  ) => Promise<{ status: number; message: string; recordUrl: string | null }>;
 };
 
 function Recording(props: PageProps) {
+  const [url, setUrl] = useState<string>();
+  const [loading, setLoadingState] = useState(false);
+  const [errpr, setErrorMessage] = useState(false);
+  useEffect(() => {
+    async function retrieveCallRecordId(callId: string) {
+      setLoadingState(true);
+      const response = await props.retrieveAudioRecordUrlAction(callId);
+
+      if (response.status == 200) {
+        setUrl(response.recordUrl!);
+      } else {
+      }
+      setLoadingState(false);
+    }
+
+    retrieveCallRecordId(props.callId);
+  }, []);
+
   return (
     <div id="session" className="p-6">
       <div className="bg-white p-6">
@@ -47,14 +64,14 @@ function Recording(props: PageProps) {
           </div>
         </div>{" "}
         <div id="recording">
-          <audio controls className="w-full">
-            <source
-              src="https://onair-recordings.s3.amazonaws.com/livekit-cloud/timuchin3/w0hxQFcBVEoOTLNk/recording.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIA6ODU7YWEJXLIJHPA%2F20250206%2Fus-east-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20250206T190444Z&amp;X-Amz-Expires=900&amp;X-Amz-SignedHeaders=host&amp;X-Amz-Signature=996e203d7e3832893fb7b1e6649a0798bd4ce48000ee94c847e84647b6182745"
-              type="audio/mp4"
-            />{" "}
-            Your browser does not support the audio element.
-          </audio>{" "}
-          <div id="transcription" className="mt-6">
+          {loading && <AudioLoadingSkeletonPulse />}
+          {!loading && (
+            <audio controls className="w-full">
+              <source src={url} type="audio/mp4" /> Your browser does not
+              support the audio element.
+            </audio>
+          )}
+         {/*<div id="transcription" className="mt-6">
             <div className="mt-2 items-center dotted-container text-gray-400">
               <span>
                 Transcription is not available on the Basic Plan. Please{" "}
@@ -65,7 +82,7 @@ function Recording(props: PageProps) {
                 to a higher plan to access this feature.
               </span>
             </div>
-          </div>
+          </div>*/}
         </div>
       </div>
     </div>

@@ -27,6 +27,7 @@ type PageProps = {
 function Visitor(props: PageProps) {
   const router = useRouter();
 
+  const [isLoading, setLoadingState] = useState(false);
 
   const { session, goOnline, goOffline } = useSession({
     ...props.url,
@@ -44,22 +45,13 @@ function Visitor(props: PageProps) {
     phone: string | null,
     slug: string
   ) => {
-
+    setLoadingState(true)
     socket.emit("call", {
-      callerInfo: { fullName, email, phone, info: infoRef.current },
+   callerInfo: { fullName, email, phone, info: infoRef.current },
       slug,
-    });
+   });
   };
 
-  function callSessionCreated({ callId }: { callId: string }) {
-    router.push(`/session/${props.slug}/${callId}`);
-  }
-  function online() {
-    goOnline();
-  }
-  function offline() {
-    goOffline();
-  }
 
 
   useEffect(() => {
@@ -154,8 +146,19 @@ function Visitor(props: PageProps) {
   }, []);
 
 
-
   useEffect(() => {
+    function callSessionCreated({ callId }: { callId: string }) {
+
+      router.push(`/session/${props.slug}/${callId}`);
+      setLoadingState(false)
+    }
+    function online() {
+      goOnline();
+    }
+    function offline() {
+      goOffline();
+    }
+  
     socket.on("session-created", callSessionCreated);
     socket.on("online", online);
     socket.on("offline", offline);
@@ -180,7 +183,7 @@ function Visitor(props: PageProps) {
         <div className="waiting-room-bg waiting-room-bg3"></div>
       </div>
       <div className="flex justify-center items-center w-full h-full">
-
+  
         {session.link.availability == "online" && (
           <VisitorForm
             call={makeCall}
@@ -189,6 +192,7 @@ function Visitor(props: PageProps) {
             message={session.link.settings.onlineMessage}
             isEmailRequired={props.url.settings.visitorForm.includes("email")}
             isPhoneRequired={props.url.settings.visitorForm.includes("phone")}
+            isLoading={isLoading}
           />
         )}
         {session.link.availability == "offline" && (
