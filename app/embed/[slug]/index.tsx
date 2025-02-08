@@ -36,7 +36,7 @@ function Embed(props: PageProps) {
             </div>{" "}
             <div className="preview-bg">
               <iframe
-                src="https://onair.io/embed/widget?slug=chinqiz&amp;color=%230056FF&amp;location=right"
+                src="https://ShopLine.io/embed/widget?slug=chinqiz&amp;color=%230056FF&amp;location=right"
                 style={{ height: "60px" }}
               ></iframe>
             </div>{" "}
@@ -46,9 +46,9 @@ function Embed(props: PageProps) {
             </div>{" "}
             <textarea id="code" readOnly className="w-full">
               {" "}
-              &lt;div id="onair-widget" data-slug="chinqiz" data-float="true"
+              &lt;div id="ShopLine-widget" data-slug="chinqiz" data-float="true"
               data-color="#0056FF" data-location="right"&gt;&lt;/div&gt;
-              &lt;script src="https://onair.io/embeds/widget-v1.js"
+              &lt;script src="https://ShopLine.io/embeds/widget-v1.js"
               type="text/javascript"&gt;&lt;/script&gt;
             </textarea>
           </div>{" "}

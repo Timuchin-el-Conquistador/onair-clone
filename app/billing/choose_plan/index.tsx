@@ -207,7 +207,7 @@ function ChoosePlan(props: PageProps) {
               ))}
 
               {/*<div className="text-sm -mt-2">
-              <a href="https://onair.io/pricing" target="_blank">
+              <a href="https://ShopLine.io/pricing" target="_blank">
                 Compare Plans
               </a>
             </div>{" "}
@@ -522,7 +522,7 @@ function ChoosePlan(props: PageProps) {
                 </label>
               </div>{" "}
               {/*} <div className="text-sm -mt-2">
-              <a href="https://onair.io/pricing" target="_blank">
+              <a href="https://ShopLine.io/pricing" target="_blank">
                 Compare Plans
               </a>
             </div>{" "}

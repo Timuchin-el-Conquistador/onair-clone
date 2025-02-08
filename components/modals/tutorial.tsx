@@ -215,7 +215,7 @@ function WatchTutorial(props: {
             ></SlCopyButton>{" "}
             <div className="text-xs text-gray-500">
               Customize your availability, offline message, and other settings{" "}
-              <a href="https://onair.io/pages/edit/timuchin2">here</a>
+              <a href={process.env.NEXT_PUBLIC_FRONTEND_URL}>here</a>
             </div>
           </div>
         </div>{" "}

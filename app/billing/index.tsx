@@ -127,7 +127,7 @@ function Billing(props: PageProps) {
               {props.subscriptionStatus == "trialing" ? (
                 `You're on a trial plan . Your trial ends after ${props.daysLeftToExpiration} days. Sign up to a paid plan and get full access by clicking on "Subscribe" below.`
               ) : props.subscriptionStatus == "trial_ended" ? (
-                "Your trial ended. If you found value in using OnAir, please consider subscribing. Sign up to a paid plan and get full access by clicking on 'Subscribe' below."
+                "Your trial ended. If you found value in using ShopLine, please consider subscribing. Sign up to a paid plan and get full access by clicking on 'Subscribe' below."
               ) : props.subscriptionStatus == "active" ? (
                 <h2>
                   You're on a {props.planName}. <br />

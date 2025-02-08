@@ -282,7 +282,7 @@ function Session(props: ComponentProps) {
             />{" "}
             <div className="text-2xl font-normal flex items-center">
               <span className="mr-2"></span>
-              Onair
+              ShopLine
             </div>{" "}
             {!isCallConEstablished && (
               <div className="mt-1 text-red-500 text-sm font-thin">Offline</div>

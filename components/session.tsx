@@ -1,4 +1,4 @@
-import dynamic from "next/dynamic";
+/*import dynamic from "next/dynamic";
 
 const SlTooltip = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/tooltip/index.js"),
@@ -62,7 +62,7 @@ function Session() {
                 <tr>
                   <td>Link</td>{" "}
                   <td>
-                    <a href="https://onair.io/napoleon">Teambuilding</a>
+                    <a href="https://ShopLine.io/napoleon">Teambuilding</a>
                   </td>
                 </tr>{" "}
                 <tr>
@@ -134,7 +134,7 @@ function Session() {
           <div id="recording">
             <audio controls className="w-full">
               <source
-                src="https://onair-recordings.s3.amazonaws.com/livekit-cloud/napoleon/QL4cit39Xq8hWvvS/recording.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIA6ODU7YWEJXLIJHPA%2F20250118%2Fus-east-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20250118T100004Z&amp;X-Amz-Expires=900&amp;X-Amz-SignedHeaders=host&amp;X-Amz-Signature=b5787dc539ca55cb1daef9f260fa28e6d80c5b225de622067cd0597b69658b33"
+                src="https://ShopLine-recordings.s3.amazonaws.com/livekit-cloud/napoleon/QL4cit39Xq8hWvvS/recording.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Credential=AKIA6ODU7YWEJXLIJHPA%2F20250118%2Fus-east-1%2Fs3%2Faws4_request&amp;X-Amz-Date=20250118T100004Z&amp;X-Amz-Expires=900&amp;X-Amz-SignedHeaders=host&amp;X-Amz-Signature=b5787dc539ca55cb1daef9f260fa28e6d80c5b225de622067cd0597b69658b33"
                 type="audio/mp4"
               />{" "}
               Your browser does not support the audio element.
@@ -167,3 +167,4 @@ function Session() {
 }
 
 export default Session;
+*/
