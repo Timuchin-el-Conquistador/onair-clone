@@ -103,6 +103,12 @@ function Settings(props: PageProps) {
   const [editableFields, setEditableFields] = useState<string[]>([]);
 
 
+  function sanitizeInput(input:string) {
+    // Replace spaces or any character that's not alphanumeric or dash with a dash
+    return input.replace(/[^a-zA-Z0-9]/g, '-');
+  }
+  
+
   return (
     <div id="settings" className="p-6 mb-24">
 
@@ -233,9 +239,9 @@ function Settings(props: PageProps) {
                     value={user.email}
                     className="p-1.5 rounded w-full block"
                     onChange={(event) => {
-                      const email = (
+                      const email = sanitizeInput((
                         event.target as HTMLInputElement
-                      ).value.trim();
+                      ).value);
                       updateUser((prevState) => ({
                         ...prevState,
                         email,

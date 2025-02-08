@@ -17,7 +17,7 @@ import { type Settings } from "@/lib/types/links";
 import { type Device } from "@/lib/types/device";
 
 import { useRouter } from "next/navigation";
-import { Fragment, useState } from "react";
+import { Fragment, useCallback, useState } from "react";
 
 import { socket } from "@/utils/socket";
 
@@ -137,10 +137,18 @@ function NewLink(props: PageProps) {
 
   const checkedDevices: Device[] = [];
 
-  const linkDevices = () => {
+  const linkDevices = useCallback(() => {
     connectDevices(checkedDevices);
     setAvailableDevicesModalState(false);
-  };
+  }, [checkedDevices]);
+
+
+  function sanitizeInput(input:string) {
+    // Replace spaces or any character that's not alphanumeric or dash with a dash
+    return input.replace(/[^a-zA-Z0-9]/g, '-');
+  }
+  
+
 
   const createLink = async () => {
     //setLoading(true);
@@ -237,9 +245,9 @@ function NewLink(props: PageProps) {
                     name="Slug"
                     placeholder="yourname"
                     className="rounded-none rounded-e-md border border-gray-300 text-gray-700 focus:border-blue-300 focus:outline-none block w-full text-sm py-2 pl-3 pr-10 !truncate"
-                    // value={form.link.slug}
+                     value={form.link.slug}
                     onChange={(event) => {
-                      const value = event.target.value.trim();
+                      const value = sanitizeInput(event.target.value);
                       handleSlugChange(value);
                       setTimeout(() => {
                         socket.emit("slug-validation", { slug: value });
@@ -322,8 +330,9 @@ function NewLink(props: PageProps) {
                   name="Name"
                   placeholder="Enter unique name for your page"
                   className="border border-gray-300 text-gray-700 text-sm rounded-md focus:border-blue-300 focus:outline-none block w-full py-2 px-3 !truncate"
+                  value={form.link.linkName}
                   onChange={(event) => {
-                    const value = event.target.value.trim();
+                    const value = event.target.value;
                     handleLinkNameChange(value);
                   }}
                 />
