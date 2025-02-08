@@ -64,7 +64,7 @@ function Recording(props: PageProps) {
           </div>
         </div>{" "}
         <div id="recording">
-          {loading && <AudioLoadingSkeletonPulse />}
+          {loading && url && <AudioLoadingSkeletonPulse />}
           {!loading && (
             <audio controls className="w-full">
               <source src={url} type="audio/mp4" /> Your browser does not

@@ -14,12 +14,14 @@ import { type Link as ILink } from "@/lib/types/links";
 import { type Device } from "@/lib/types/device";
 import { type Settings } from "@/lib/types/links";
 
-import { Fragment, useCallback, useRef, useState } from "react";
+import { Fragment, useCallback, useMemo, useState } from "react";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { socket } from "@/utils/socket";
+
+import { QRCodeCanvas } from "qrcode.react";
 
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
@@ -37,14 +39,6 @@ const SlCheckbox = dynamic(
 );
 const SlTooltip = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/tooltip/index.js"),
-  {
-    //  loading: () => <>Loading...</>,
-    ssr: false,
-  }
-);
-
-const SlQrCode = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react/qr-code/index.js"),
   {
     //  loading: () => <>Loading...</>,
     ssr: false,
@@ -78,6 +72,7 @@ type PageProps = {
 };
 function EditLink(props: PageProps) {
   const router = useRouter();
+
   const {
     form,
     unlinkDeviceFromUrl,
@@ -92,6 +87,7 @@ function EditLink(props: PageProps) {
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string | null>(null);
+
   const [
     isNoConnectedMobileDeviceModalVisible,
     setNoConnectedMobileDeviceModalVisibility,
@@ -112,12 +108,32 @@ function EditLink(props: PageProps) {
     setAvailableDevicesModalState(false);
   }, [checkedDevices]);
 
-
-  function sanitizeInput(input:string) {
+  function sanitizeInput(input: string) {
     // Replace spaces or any character that's not alphanumeric or dash with a dash
-    return input.replace(/[^a-zA-Z0-9\-]/g, '-');
+    return input.replace(/[^a-zA-Z0-9\-]/g, "-");
   }
+
+  const downloadQR = useCallback(() => {
+    const canvas = document.getElementById("qr-code") as HTMLCanvasElement;
+    
+    if (!canvas) {
+      console.error("QR Code canvas not found");
+      return;
+    }
   
+    const pngUrl = canvas.toDataURL("image/png"); // Keep "image/png"
+    
+    const downloadLink = document.createElement("a");
+    downloadLink.href = pngUrl;
+    downloadLink.download = `${form.link.slug || "qr-code"}.png`; // Default name if slug is missing
+  
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  }, [form.link.slug]); // Ensure `form.link.slug` is properly included in dependencies
+  const link = useMemo(() => {
+    return `https://${props.domain}/${form.link.slug}`;
+  }, [form.link.slug]);
 
   return (
     <div id="main" className="p-6 mb-20">
@@ -134,7 +150,7 @@ function EditLink(props: PageProps) {
             <div className="md:w-1/2 relative">
               <div className="flex relative">
                 <span className="flex items-center px-3 text-sm text-gray-950 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md max-w-48">
-                {props.domain}
+                  {props.domain}
                 </span>{" "}
                 <input
                   name="Slug"
@@ -206,10 +222,14 @@ function EditLink(props: PageProps) {
               )}
 
               <div className="mt-5">
-                <SlQrCode
-                  value={props.domain + "/" + form.link.slug}
-                  label="Scan this code to visit Shoelace on the web!"
-                />
+                <QRCodeCanvas value={link} id="qr-code" />
+                <button
+                  onClick={() => {
+                    downloadQR();
+                  }}
+                >
+                  Download
+                </button>
               </div>
             </div>
           </div>{" "}

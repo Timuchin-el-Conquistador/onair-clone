@@ -17,19 +17,14 @@ import { type Settings } from "@/lib/types/links";
 import { type Device } from "@/lib/types/device";
 
 import { useRouter } from "next/navigation";
-import { Fragment, useCallback, useState } from "react";
+import { Fragment, useCallback, useMemo, useState } from "react";
 
 import { socket } from "@/utils/socket";
 
 import Link from "next/link";
 
-const SlQrCode = dynamic(
-  () => import("@shoelace-style/shoelace/dist/react/qr-code/index.js"),
-  {
-    //  loading: () => <>Loading...</>,
-    ssr: false,
-  }
-);
+import { QRCodeCanvas } from "qrcode.react";
+
 
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
@@ -172,6 +167,32 @@ function NewLink(props: PageProps) {
     }
     router.back();
   };
+
+
+
+    const downloadQR = useCallback(() => {
+      const canvas = document.getElementById("qr-code") as HTMLCanvasElement;
+      
+      if (!canvas) {
+        console.error("QR Code canvas not found");
+        return;
+      }
+    
+      const pngUrl = canvas.toDataURL("image/png"); // Keep "image/png"
+      
+      const downloadLink = document.createElement("a");
+      downloadLink.href = pngUrl;
+      downloadLink.download = `${form.link.slug || "qr-code"}.png`; // Default name if slug is missing
+    
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }, [form.link.slug]); // Ensure `form.link.slug` is properly included in dependencies
+    
+    const link = useMemo(() => {
+      return `https://${props.domain}/${form.link.slug}`;
+    }, [form.link.slug]);
+
   return (
     <>
       <div id="main" className="p-6 mb-20">
@@ -310,10 +331,14 @@ function NewLink(props: PageProps) {
                   </span>
                 )}
                 <div className="mt-5">
-                  <SlQrCode
-                    value={props.domain + "/" + form.link.slug}
-                    label="Scan this code to visit Shoelace on the web!"
-                  />
+                <QRCodeCanvas value={link} id="qr-code" />
+                <button
+                  onClick={() => {
+                    downloadQR();
+                  }}
+                >
+                  Download
+                </button>
                 </div>
               </div>
             </div>{" "}
