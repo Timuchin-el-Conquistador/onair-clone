@@ -45,7 +45,8 @@ export async function validateToken(token: string) {
     monthlyLinksCapacity:session.monthlyLinksCapacity,
     monthlyIntegrationsCapacity:session.monthlyIntegrationsCapacity,
     accountStatus:session.accountStatus,
-    watchedTutorial:session.watchedTutorial
+    watchedTutorial:session.watchedTutorial,
+    monthlyMinutesCapacityReached:session.monthlyMinutesCapacityReached
   };
 
 
