@@ -28,7 +28,7 @@ export interface Call {
   callAnsweredTime: string;
   callEndedTime: string;
   callAnsweredBy: string;
-  callEndedBy: string;
+  callDeclinedBy: string;
   peerId: string;
   callAudioRecordUrl: string;
   link: Link;

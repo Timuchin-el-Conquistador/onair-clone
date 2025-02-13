@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-import "@/styles/integrations/device.scss";
+
 
 const SlDialog = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/dialog/index.js"),

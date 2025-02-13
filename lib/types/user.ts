@@ -64,6 +64,7 @@ export interface Session{
   subscriptionStatus:string,
   monthlyIntegrationsCapacity:number,
   watchedTutorial:boolean
+  monthlyMinutesCapacityReached:boolean
   [key: string]: unknown;
 }
 

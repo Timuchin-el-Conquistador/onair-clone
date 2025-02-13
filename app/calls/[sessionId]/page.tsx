@@ -24,8 +24,8 @@ async function DetailsPage(props: { params: { sessionId: string } }) {
         callEndedTime={call.callEndedTime}
         duration={Math.round(call.duration / 60)}
         callStatus={call.callStatus}
-        ownerFullName={call.owner.fullName}
-
+        answeredBy={call.callAnsweredBy}
+        declinedBy={call.callDeclinedBy}
       />
     </Layout>
   );

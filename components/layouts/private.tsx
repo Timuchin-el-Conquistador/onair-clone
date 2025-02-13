@@ -1,12 +1,19 @@
 import NotificationsLayout from "./notifications";
 
 import { retrieveSubscription } from "@/lib/actions/billing";
-import { retrieveDevices, retrieveUser } from "@/lib/actions/user";
+import {
+  retrieveDevices,
+  retrieveAccountInformation,
+} from "@/lib/actions/user";
 import { createUrlAction } from "@/lib/actions/link";
 
 import Sidebar from "../sidebar";
 
 import ErrorBoundary from "../error-bound";
+import { retrieveSession } from "@/lib/session";
+import InternalServerError from "../Presentational/500";
+
+import {type  Session } from "@/lib/types/user";
 
 async function PrivateLayout({
   children,
@@ -19,26 +26,40 @@ async function PrivateLayout({
   sidebar: boolean;
   notifications: boolean;
 }) {
-  const user = await retrieveUser();
+  const session = await retrieveSession() as Session;
+  if (session == null) return <InternalServerError />;
 
-  const responseResponse = await retrieveSubscription();
+  const subscriptionResponse = await retrieveSubscription();
   const subscription =
-    responseResponse instanceof Error || responseResponse == null
+    subscriptionResponse instanceof Error || subscriptionResponse == null
       ? null
-      : responseResponse;
+      : subscriptionResponse;
+
   const devicesResponse = await retrieveDevices();
   const devices =
     devicesResponse instanceof Error || devicesResponse == null
       ? []
       : devicesResponse;
 
+  let response = await retrieveAccountInformation();
+
+  const account =
+    response instanceof Error || response == null ? null : response;
+
+  if (account == null) return <InternalServerError />;
+
+  const monthlyMinutesCapacity = session.monthlyMinutesCapacity as number;
+
+  const monthlyMinutesCapacityReached =
+    monthlyMinutesCapacity < account?.monthlyMinutesConsumed;
+
   return (
     <div className="flex overflow-hidden bg-gray-100 h-screen">
       {sidebar && (
         <Sidebar
           page={page}
-          fullName={user.fullName as string}
-          email={user.email as string}
+          fullName={session.fullName as string}
+          email={session.email as string}
         />
       )}
       <div className="flex flex-col w-0 flex-1 overflow-hidden">
@@ -46,10 +67,12 @@ async function PrivateLayout({
           <NotificationsLayout
             hasActiveDevices={devices.length > 0}
             subscription={subscription}
-            userId={user.userId as string}
-            watchedTutorial={user.watchedTutorial}
+            watchedTutorial={session.watchedTutorial as boolean}
             isNotificationsOn={notifications}
             createUrlAction={createUrlAction}
+            monthlyMinutesCapacityReached={monthlyMinutesCapacityReached}
+            prevMonthlyMinutesCapacityReached={session.monthlyMinutesCapacityReached}
+            user={session.fullName}
           />
           <ErrorBoundary>{children}</ErrorBoundary>
         </main>

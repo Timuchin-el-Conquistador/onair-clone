@@ -152,10 +152,12 @@ function Visitor(props: PageProps) {
       router.push(`/session/${props.slug}/${callId}`);
       setLoadingState(false)
     }
-    function online() {
+    function online(data:{slug:string}) {
+      if(props.slug != data.slug) return
       goOnline();
     }
-    function offline() {
+    function offline(data:{slug:string}) {
+      if(props.slug != data.slug) return
       goOffline();
     }
   

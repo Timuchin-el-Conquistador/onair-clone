@@ -4,19 +4,29 @@ import Link from "next/link";
 
 import "@/styles/calls/index.scss";
 import "@/styles/calls/recording.scss";
+
 import { useEffect, useState } from "react";
 
 import { AudioLoadingSkeletonPulse } from "@/components/Loaders/pulse";
 
+
+
 type PageProps = {
   callId: string;
+  planName:string
   retrieveAudioRecordUrlAction: (
     callId: string
-  ) => Promise<{ status: number; message: string; recordUrl: string | null }>;
+  ) => Promise<{
+    status: number;
+    message: string;
+    recordUrl: string | null;
+    transcriptionUrl: string | null;
+  }>;
 };
 
 function Recording(props: PageProps) {
-  const [url, setUrl] = useState<string>();
+  const [recordUrl, setRecordUrl] = useState<string>();
+  const [transcriptionUrl, setTranscriptionUrl] = useState<string>();
   const [loading, setLoadingState] = useState(false);
   const [errpr, setErrorMessage] = useState(false);
   useEffect(() => {
@@ -25,8 +35,9 @@ function Recording(props: PageProps) {
       const response = await props.retrieveAudioRecordUrlAction(callId);
 
       if (response.status == 200) {
-        setUrl(response.recordUrl!);
-      } else {
+
+        setRecordUrl(response.recordUrl!);
+        setTranscriptionUrl(response.transcriptionUrl!);
       }
       setLoadingState(false);
     }
@@ -64,25 +75,35 @@ function Recording(props: PageProps) {
           </div>
         </div>{" "}
         <div id="recording">
-          {loading && url && <AudioLoadingSkeletonPulse />}
-          {!loading && (
-            <audio controls className="w-full">
-              <source src={url} type="audio/mp4" /> Your browser does not
+          {loading && <AudioLoadingSkeletonPulse />}
+          {!loading && recordUrl && (
+            <audio
+              controls
+              className="w-full"
+              onError={() => {
+                setRecordUrl("");
+              }}
+            >
+              <source src={recordUrl} type="audio/mp4" /> Your browser does not
               support the audio element.
             </audio>
           )}
-         {/*<div id="transcription" className="mt-6">
+          {!loading && !recordUrl && <h1>No Audio Records</h1>}
+          <div id="transcription" className="mt-6">
             <div className="mt-2 items-center dotted-container text-gray-400">
-              <span>
+              {props.planName == 'Professional Plan' || props.planName == 'Business Plan' ? <a download={props.callId + "json"} href={transcriptionUrl}>
+                Download Transcription
+              </a> : 
+               <span>
                 Transcription is not available on the Basic Plan. Please{" "}
                 <a href="/billing/choose_plan" className="text-blue-500">
                   {" "}
                   upgrade{" "}
                 </a>{" "}
                 to a higher plan to access this feature.
-              </span>
+              </span>}
             </div>
-          </div>*/}
+          </div>
         </div>
       </div>
     </div>

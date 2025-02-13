@@ -42,13 +42,20 @@ type ComponentProps = {
   sessionId: string;
   slug: string;
   callStartedTime: string;
-  caller: Caller|null;
+  caller: Caller | null;
+  monthlyMinutesCapacityReached: boolean;
+  callAnsweredBy: string; //user fullname
+  callStatus: string;
+  user:string
   closeDrawer: () => void;
-  declineCall:(sessionId:string) => void
+  declineCall:(user:string,callId:string) => void
+  joinSession:(user:string,callId:string) => void
+  endSession:(callId:string) => void
 };
 
 function ActiveCallSessionDrawer(props: ComponentProps) {
-
+  const firstName = props.callAnsweredBy.split(" ")[0];
+  const lastName = props.callAnsweredBy.split(" ")[1];
   return (
     <SlDrawer
       noHeader
@@ -73,12 +80,41 @@ function ActiveCallSessionDrawer(props: ComponentProps) {
         <div className="mt-4 text-gray-500 text-sm">Info</div>{" "}
         <div>
           {props.caller?.country}, {props.caller?.countryCode}
-          <br />
           <small>
             {props.caller?.info.browser}, {props.caller?.info.operatingSystem},{" "}
             {props.caller?.info.device}
           </small>
         </div>{" "}
+        <hr className="my-4" />{" "}
+        {props.callStatus == 'live' &&  <div>
+          <hr className="my-4" />{" "}
+          <div className="flex items-center">
+            <span className="w-10 h-10 bg-blue-600 text-white flex justify-center items-center rounded-full text-lg font-medium mr-2">
+              {firstName.split("")[0]}
+              {lastName.split("")[0]}
+            </span>{" "}
+            <div>
+              <div className="flex items-center text-xs text-gray-500">
+                <svg
+                  width="24"
+                  height="24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  id=""
+                  className="h-3 w-3 !text-green-600 mr-1"
+                  style={{ display: "inline-block" }}
+                >
+                  <use xlinkHref="/feather-sprite.svg#phone-call"></use>
+                </svg>
+                Answered by
+              </div>{" "}
+              <p className="font-medium text-gray-800">{props.callAnsweredBy}</p>
+            </div>
+          </div>
+        </div>}
         <hr className="my-4" />{" "}
         <div>
           <SlButton
@@ -88,30 +124,48 @@ function ActiveCallSessionDrawer(props: ComponentProps) {
             data-valid=""
             className="mt-4 block animation-pulse"
             onClick={() => {
-              props.closeDrawer();
-              socket.emit("answer", { callId: props.sessionId });
-              window.open(`/session/${props.slug}/${props.sessionId}`, "_blank");
+  
+              if (!props.monthlyMinutesCapacityReached) {
 
+                socket.emit("answer", {
+                  callId: props.sessionId,
+                  user: props.user,
+                });
+              }
+              window.open(
+                `/session/${props.slug}/${props.sessionId}`,
+                "_blank"
+              );
+
+              props.joinSession(props.user,props.sessionId);
+              props.closeDrawer()
             }}
           >
             Join Call
           </SlButton>{" "}
-          <SlButton
-            size="medium"
-            variant="warning"
-            outline
-            data-optional=""
-            className="mt-4 block"
-            data-valid=""
-            data-user-valid=""
-            onClick={() => {
-              props.closeDrawer();
-              socket.emit("decline", { callId: props.sessionId });
-              props.declineCall(props.sessionId)
-            }}
-          >
-            <div>End Call</div>
-          </SlButton>
+       
+            <SlButton
+              size="medium"
+              variant="warning"
+              outline
+              data-optional=""
+              className="mt-4 block"
+              data-valid=""
+              data-user-valid=""
+              onClick={() => {
+     
+
+                socket.emit("decline", {
+                  user: props.user,
+                  callId: props.sessionId,
+                });
+                props.declineCall(props.user,props.sessionId);
+                props.closeDrawer()
+              }}
+            >
+              <div>End Call</div>
+            </SlButton>
+          
         </div>
       </div>{" "}
       <div slot="footer" className="flex justify-between">

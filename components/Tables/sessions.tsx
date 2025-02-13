@@ -27,7 +27,9 @@ type ComponentProps = {
     sessionId: string,
     slug: string,
     callStartedTime: string,
-    caller: Caller
+    caller: Caller,
+    callStatus:string,
+    callAnsweredBy:string
   ) => void;
 };
 function Table(props: ComponentProps) {
@@ -100,7 +102,9 @@ function Table(props: ComponentProps) {
                           session._id,
                           session.slug,
                           isoDate,
-                          session.callerInfo
+                          session.callerInfo,
+                          session.callStatus,
+                          session?.callAnsweredBy ?? ''
                         );
                       }}
                     >
@@ -130,7 +134,9 @@ function Table(props: ComponentProps) {
                   session._id,
                   session.slug,
                   isoDate,
-                  session.callerInfo
+                  session.callerInfo,
+                  session.callStatus,
+                  session?.callAnsweredBy ?? ''
                 );
               }}
             >

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 
 import "@/styles/calls/sessions.scss";
 
@@ -23,20 +23,16 @@ type PageProps = {
   domain: string;
   slug: string;
   url: ExtendedLink;
+  monthlyMinutesCapacityReached: boolean;
+  user: string; //user fullname
 };
 
 function Sessions(props: PageProps) {
   const router = useRouter();
   const { session, goOffline, goOnline } = useSession({ ...props.url });
 
-  const {
-    sessions,
-    error,
-    loaded,
-    success,
-    retrieveActiveSessions,
-    pullSession,
-  } = useSessionStore((state) => state);
+  const { sessions, loaded, retrieveSessions, joinSession, declineSession,pullNotification } =
+    useSessionStore((state) => state);
 
   const [isDropdownVisible, setDropdownVisibility] = useState(false);
 
@@ -46,12 +42,16 @@ function Sessions(props: PageProps) {
     caller: Caller | null;
     slug: string;
     callStartedTime: string;
+    callStatus: string;
+    callAnsweredBy: string;
   }>({
     isOpen: false,
-    sessionId: "", //call id,
+    sessionId: "",
     slug: "",
-    caller: null,
     callStartedTime: "",
+    caller: null,
+    callStatus: "waiting",
+    callAnsweredBy: "",
   });
 
   const elementRef = useRef<HTMLUListElement | null>(null);
@@ -76,7 +76,26 @@ function Sessions(props: PageProps) {
   }, []);
 
   useEffect(() => {
-    retrieveActiveSessions(props.slug, router);
+    retrieveSessions(props.slug);
+  }, []);
+
+  const activeSessions = useMemo(() => {
+    return sessions
+      .filter((el) => el.slug == props.slug)
+      .filter((el) => el.callStatus == "live" || el.callStatus == "waiting");
+  }, [sessions]);
+
+  const resetDrawer = useCallback(() => {
+    setDrawerState((prevState) => ({
+      ...prevState,
+      isOpen: false,
+      sessionId: "",
+      slug: "",
+      callStartedTime: "",
+      caller: null,
+      callStatus: "waiting",
+      callAnsweredBy: "",
+    }));
   }, []);
 
   return (
@@ -195,14 +214,16 @@ function Sessions(props: PageProps) {
         </div>
       </div>
 
-      {loaded && sessions.length > 0 && (
+      {loaded && activeSessions.length > 0 && (
         <Table
-          sessions={sessions}
+          sessions={activeSessions}
           openDrawer={(
-            sessionId: string,
-            slug: string,
-            callStartedTime: string,
-            caller: Caller
+            sessionId,
+            slug,
+            callStartedTime,
+            caller,
+            callStatus,
+            callAnsweredBy
           ) => {
             setDrawerState((prevState) => ({
               ...prevState,
@@ -211,12 +232,14 @@ function Sessions(props: PageProps) {
               slug,
               callStartedTime,
               caller,
+              callStatus,
+              callAnsweredBy,
             }));
           }}
         />
       )}
 
-      {loaded && !sessions.length && (
+      {loaded && !activeSessions.length && (
         <div id="no-sessions">
           <div className="text-gray-400">
             <svg
@@ -251,23 +274,25 @@ function Sessions(props: PageProps) {
         slug={drawer.slug}
         caller={drawer.caller}
         callStartedTime={drawer.callStartedTime}
+        monthlyMinutesCapacityReached={props.monthlyMinutesCapacityReached}
+        callAnsweredBy={drawer.callAnsweredBy}
+        callStatus={drawer.callStatus}
+        user={props.user}
         closeDrawer={() => {
           setDrawerState((prevState) => ({
             ...prevState,
             isOpen: false,
           }));
         }}
-        declineCall={(sessionId: string) => {
-          setDrawerState((prevState) => ({
-            ...prevState,
-            isOpen: false,
-            sessionId: "",
-            slug: "",
-            callStartedTime: "",
-            caller: null,
-          }));
-          pullSession(sessionId);
+        declineCall={(user,callId) => {
+          declineSession(user,callId, router);
+          pullNotification(callId,router)
         }}
+        joinSession={(user,callId) => {
+          joinSession(user,callId, router);
+          pullNotification(callId,router)
+        }}
+        endSession={() => {}}
       />
     </div>
   );

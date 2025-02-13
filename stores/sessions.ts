@@ -5,31 +5,35 @@ import { fakeBackend } from "@/lib/axios";
 
 export type SessionState = {
   sessions: Call[];
-  joinSession: string | null;
+  notifications: Call[];
   loaded: boolean;
   error: Error | null;
   success: string | null;
   filter: {
     slug: string;
-    caller:string
+    caller: string;
   };
 };
 
 export type SessionActions = {
-  retrieveActiveSessions: (slug: string, router: any) => void;
+  // retrieveActiveSessions: (slug: string, router: any) => void;
   retrieveSessions: (router: any) => void;
-  pushNotification: (session: Call, router: any) => void;
-  pullSession: (sessionId: string) => void;
-  removeInactiveCall: (callId: string, router: any) => void;
-  reset: () => void;
+  pushNotification: (notification: Call, router: any) => void;
+  pullNotification: (notifiationId: string, router: any) => void;
+  pushSession: (call: Call, router: any) => void;
+  joinSession: (callAnsweredBy:string,callId: string, router: any) => void;
+  endSession: (callId: string, router: any) => void;
+  declineSession: (callDeclinedBy:string,callId: string, router: any) => void;
+  removeInactiveCall: (callId: string, router: any) => void; //delete call
   filterCalls: (slug: string, filterByCallerWord: string, router: any) => void;
+  reset: () => void;
 };
 
 export type SessionStore = SessionState & SessionActions;
 
 const defaultInitState: SessionState = {
   sessions: [],
-  joinSession: null,
+  notifications: [],
   loaded: false,
   error: null,
   success: null,
@@ -74,35 +78,7 @@ export const createSessionStore = (
       }
     },
 
-    retrieveActiveSessions: async (slug, router) => {
-      try {
-        set((prevState) => ({
-          ...prevState,
-          loaded: false,
-        }));
-        const session = await verifySession();
-
-        if (!session) return router.replace("/users/sign_in");
-
-        const path = `api/v1/user/${session.email}/urls/${slug}/calls/active-sessions`;
-
-        const response: { sessions: Call[]; message: string } =
-          await fakeBackend.get(path);
-        set((prevState) => ({
-          ...prevState,
-          loaded: true,
-          sessions: response.sessions,
-          success: response.message,
-        }));
-      } catch (error) {
-        set((prevState) => ({
-          ...prevState,
-          loaded: true,
-          error: error instanceof Error ? error : new Error(String(error)),
-        }));
-      }
-    },
-    pushNotification: async (activeSession: Call, router) => {
+    pushNotification: async (notifiation, router) => {
       try {
         const session = await verifySession();
 
@@ -110,7 +86,7 @@ export const createSessionStore = (
 
         set((prevState) => ({
           ...prevState,
-          sessions: [...prevState.sessions, activeSession],
+          notifications: [...prevState.notifications, notifiation],
         }));
       } catch (error) {
         set((prevState) => ({
@@ -119,11 +95,17 @@ export const createSessionStore = (
         }));
       }
     },
-    pullSession: (sessionId: string) => {
+    pullNotification: async (notifiationId, router) => {
       try {
+        const session = await verifySession();
+
+        if (!session) return router.replace("/users/sign_in");
+
         set((prevState) => ({
           ...prevState,
-          sessions: prevState.sessions.filter((el) => el._id != sessionId),
+          notifications: prevState.notifications.filter(
+            (el) => el._id != notifiationId
+          ),
         }));
       } catch (error) {
         set((prevState) => ({
@@ -132,7 +114,97 @@ export const createSessionStore = (
         }));
       }
     },
+    pushSession: async (call, router) => {
+      try {
+        const session = await verifySession();
 
+        if (!session) return router.replace("/users/sign_in");
+
+        set((prevState) => ({
+          ...prevState,
+          sessions: [...prevState.sessions, call],
+        }));
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+    joinSession: async (callAnsweredBy,callId, router) => {
+      try {
+        const session = await verifySession();
+
+        if (!session) return router.replace("/users/sign_in");
+
+        set((prevState) => ({
+          ...prevState,
+          sessions:prevState.sessions.map((el) => {
+            if(el._id == callId){
+              return {
+                ...el,
+                callStatus:'live',
+                callAnsweredBy
+              }
+            }
+            return el
+          }),
+        }));
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+    endSession: async (callId, router) => {
+      try {
+        const session = await verifySession();
+
+        if (!session) return router.replace("/users/sign_in");
+        set((prevState) => ({
+          ...prevState,
+          sessions:prevState.sessions.map((el) => {
+            if(el._id == callId){
+              return {
+                ...el,
+                callStatus:'ended'
+              }
+            }
+            return el
+          }),
+        }));
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
+    declineSession: async (callDeclinedBy,callId, router) => {
+      try {
+        const session = await verifySession();
+
+        if (!session) return router.replace("/users/sign_in");
+        set((prevState) => ({
+          ...prevState,
+          sessions:prevState.sessions.map((el) => {
+            if(el._id == callId){
+              return {
+                ...el,
+                callStatus:'declined'
+              }
+            }
+            return el
+          }),
+        }));
+      } catch (error) {
+        set((prevState) => ({
+          ...prevState,
+          error: error instanceof Error ? error : new Error(String(error)),
+        }));
+      }
+    },
     removeInactiveCall: async (callId: string, router) => {
       try {
         set((prevState) => ({
@@ -185,7 +257,7 @@ export const createSessionStore = (
 
         if (slug != "All Links") {
           path += `&slug=${slug}`;
-        } 
+        }
         const response: { message: string; calls: Call[] } =
           await fakeBackend.get(path);
 
@@ -193,10 +265,10 @@ export const createSessionStore = (
           ...prevState,
           loaded: true,
           sessions: response.calls,
-          filter:{
+          filter: {
             slug,
-            caller:filterByCaller
-          }
+            caller: filterByCaller,
+          },
         }));
       } catch (error) {
         set((prevState) => ({

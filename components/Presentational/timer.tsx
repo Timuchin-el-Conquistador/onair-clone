@@ -15,7 +15,7 @@ export default function Timer(props: { sendAsMissedCall: () => void }) {
   useEffect(() => {
     const interval = setInterval(function(){
 
-      if (countRef.current >= 10) {
+      if (countRef.current/60 >3) {
         props.sendAsMissedCall();
         return clearInterval(interval);
       }

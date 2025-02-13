@@ -1,6 +1,7 @@
 import ActiveCallSession from ".";
 
 import { retrieveUrl, retrieveActiveCallSession } from "@/lib/actions/public";
+import { retrieveAccountInformation } from "@/lib/actions/user";
 import { retrieveSession } from "@/lib/session";
 
 import Layout from "@/components/layouts/private";
@@ -12,7 +13,7 @@ import { Session } from "@/lib/types/user";
 async function ActiveCallSessionPage(props: {
   params: { slug: string; sessionId: string };
 }) {
-  const session = await retrieveSession() as Session;
+  const session = (await retrieveSession()) as Session;
 
   const slug = props.params.slug;
 
@@ -32,6 +33,9 @@ async function ActiveCallSessionPage(props: {
     return <InternalServerError />;
   }
 
+
+
+
   if (session) {
     return (
       <Layout page="" sidebar={false} notifications={false}>
@@ -42,12 +46,13 @@ async function ActiveCallSessionPage(props: {
           call={call!}
           slug={slug}
           sessionId={props.params.sessionId}
+          monthlyMinutesCapacityReached={session.monthlyMinutesCapacityReached as boolean}
         />
       </Layout>
     );
   }
   return (
-    <PublicLayout userId={null}>
+    <PublicLayout>
       <ActiveCallSession
         url={url!}
         isAuth={session != null}

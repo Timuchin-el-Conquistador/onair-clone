@@ -8,9 +8,9 @@ async function PublicLayout({
   userId,
 }: {
   children: React.ReactNode;
-  userId: string | null;
+  userId?: string ;
 }) {
-  if (userId != null) {
+  if (userId) {
     let response = await retrieveAccountStatus(userId);
 
     const accountStatus =

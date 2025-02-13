@@ -40,7 +40,9 @@ type ComponentProps = {
     sessionId: string,
     slug: string,
     callStartedTime: string,
-    caller: Caller
+    caller: Caller,
+    callStatus: string,
+    callAnsweredBy: string
   ) => void;
 };
 
@@ -116,7 +118,7 @@ function Table(props: ComponentProps) {
                           {call.callStatus}
                         </SlBadge>
                       )}
-                      {!showBadge && callStatus != 'ended' && (
+                      {!showBadge && callStatus != "ended" && (
                         <span className="text-red-500"> {call.callStatus}</span>
                       )}
                     </td>
@@ -145,7 +147,9 @@ function Table(props: ComponentProps) {
                               call._id,
                               call.slug,
                               isoDate,
-                              call.callerInfo
+                              call.callerInfo,
+                              call.callStatus,
+                              call?.callAnsweredBy ?? ""
                             );
                             return;
                           }
@@ -180,6 +184,27 @@ function Table(props: ComponentProps) {
               <li
                 key={call._id}
                 onClick={() => {
+                  if (
+                    call.callStatus == "live" ||
+                    call.callStatus == "waiting"
+                  ) {
+                    // Step 2: Parse the date
+                    const date = new Date(
+                      call.callStartedTime.replace(/(\d+)(st|nd|rd|th)/, "$1")
+                    );
+
+                    // Step 3: Convert to ISO 8601 format
+                    const isoDate = date.toISOString();
+                    props.openDrawer(
+                      call._id,
+                      call.slug,
+                      isoDate,
+                      call.callerInfo,
+                      call.callStatus,
+                      call?.callAnsweredBy ?? ""
+                    );
+                    return;
+                  }
                   props.openCall(call._id);
                 }}
               >
@@ -207,7 +232,7 @@ function Table(props: ComponentProps) {
                         </SlBadge>
                       )}
 
-                      {!showBadge && callStatus != 'ended' && (
+                      {!showBadge && callStatus != "ended" && (
                         <span className="text-red-500"> {call.callStatus}</span>
                       )}
                     </span>{" "}

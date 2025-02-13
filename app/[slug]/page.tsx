@@ -10,15 +10,15 @@ import { retrieveSession } from "@/lib/session";
 
 import InternalServerError from "@/components/Presentational/500";
 
+import {type Session } from "@/lib/types/user";
+
 async function SessionPage(props: { params: { slug: string } }) {
-  const session = await retrieveSession();
+  const session = await retrieveSession() as Session;
 
   const slug = props.params.slug;
 
   let response = await retrieveUrl(slug);
-
   const url = response instanceof Error || response == null ? null : response;
-
 
 
   if (url == null) {
@@ -34,6 +34,8 @@ async function SessionPage(props: { params: { slug: string } }) {
           domain={isProduction ? process.env.FRONTEND_URL! : process.env.LOCAL_FRONTEND_URL!}
           slug={slug}
           url={url}
+          monthlyMinutesCapacityReached={session.monthlyMinutesCapacityReached as boolean}
+          user ={session.fullName}
         />
       </PrivateLayout>
     );

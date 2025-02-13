@@ -165,7 +165,8 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           monthlyIntegrationsCapacity:response.account.monthlyIntegrationsCapacity,
           subscriptionStatus: response.account.subscriptionStatus,
           accountStatus:response.account.accountStatus,
-          watchedTutorial:response.account.watchedTutorial
+          watchedTutorial:response.account.watchedTutorial,
+          monthlyMinutesCapacityReached:response.account.monthlyMinutesCapacity<response.account.monthlyMinutesConsumed
         });
 
         set((prevState) => ({
@@ -399,7 +400,8 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
        //   isBrowserNotificationsOn:response.account.isBrowserNotificationsOn,
          subscriptionStatus: response.account.subscriptionStatus,
          accountStatus:response.account.accountStatus,
-         watchedTutorial:response.account.watchedTutorial
+         watchedTutorial:response.account.watchedTutorial,
+         monthlyMinutesCapacityReached:response.account.monthlyMinutesCapacity <response.account.monthlyMinutesConsumed
          
         });
         set((prevState) => ({

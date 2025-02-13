@@ -16,6 +16,7 @@ import { ExtendedLink } from "@/lib/types/links";
 import { Call } from "@/lib/types/call";
 
 import LeftCallSession from "@/components/Presentational/left-call-session";
+import MonthlyCallMinutesReached from "@/components/Presentational/montly-call-limit-reached";
 
 type PageProps = {
   url: ExtendedLink;
@@ -24,6 +25,7 @@ type PageProps = {
   slug: string;
   sessionId: string;
   userEmail?: string;
+  monthlyMinutesCapacityReached?: boolean
 };
 
 function ActiveCallSession(props: PageProps) {
@@ -32,7 +34,7 @@ function ActiveCallSession(props: PageProps) {
   const { session, goOnline, goOffline } = useSession(props.url);
 
   useEffect(() => {
-    //if (props.isAuth) return;
+    if (props.isAuth) return;
 
     function online() {
       goOnline();
@@ -80,6 +82,10 @@ function ActiveCallSession(props: PageProps) {
   }
 
   if (props.isAuth) {
+
+    if(props.monthlyMinutesCapacityReached){
+      return <MonthlyCallMinutesReached/>
+    }
     if (status == "live") {
       return (
         <UserCall
@@ -88,6 +94,7 @@ function ActiveCallSession(props: PageProps) {
           sessionId={props.sessionId}
           callerInfo={props.call.callerInfo}
           endCall={endCall}
+
         />
       );
     } else {

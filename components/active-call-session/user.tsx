@@ -5,15 +5,28 @@ import "@/styles/calls/active-session.scss";
 import { useEffect, useRef, useState } from "react";
 
 import { socket } from "@/utils/socket";
-import Peer, { DataConnection } from "peerjs";
-import { formatHHMMSSTime } from "@/utils/timer";
 
-import Image from "next/image";
+import Peer, { DataConnection } from "peerjs";
+
+import { formatHHMMSSTime } from "@/utils/timer";
 
 import { type Caller } from "@/lib/types/call";
 
+import Image from "next/image";
+
+
+
 import axios from "axios";
+
 import AttemptingToEndActiveSessionWarning from "../modals/end-call-warning";
+
+//import {EventStreamCodec } from '@smithy/eventstream-codec'
+//import {fromUtf8,toUtf8}  from '@smithy/util-utf8'
+
+//import mic from "microphone-stream";
+
+//const eventStreamMarshaller = new EventStreamCodec(toUtf8,fromUtf8);
+
 
 type ComponentProps = {
   userEmail: string;
@@ -49,9 +62,20 @@ function Session(props: ComponentProps) {
 
   const [endCallSessionWarning, setEndCallSessionWarning] = useState(false);
 
+  const timeRefinMs = useRef(0);
+
+  //const audioContextRef = useRef<AudioContext>();
+  //const audioInputRef = useRef<MediaStreamAudioSourceNode>();
+  //const audioWorkletNodeRef = useRef<AudioWorkletNode>();
+
+  const micStreamRef = useRef<any>();
+  const sampleRate = useRef<any>();
+  const inputSampleRate = useRef<any>();
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTime((prevTime) => prevTime + 1);
+      timeRefinMs.current += 1;
     }, 1000);
 
     return () => clearInterval(interval); // cleanup on unmount
@@ -127,6 +151,9 @@ function Session(props: ComponentProps) {
         });
         // Set the audio stream as the local stream
         setLocalStream(localStream);
+      //  streamAudioToWebSocket(localStream)
+        //startAudioProcessing();
+        //  startStreaming(localStream);
         //  localMediaStreamRecorderRef.current =  createAudioRecorder(stream)
         // Assign the stream to an audio element reference (for playback)
         if (localAudioRef.current) {
@@ -247,25 +274,16 @@ function Session(props: ComponentProps) {
 
     mediaRecorder.onstop = async () => {
       const isProduction = process.env.NODE_ENV == "production";
-
       const domain = isProduction
         ? `https://${process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL}`
         : `http://${process.env.NEXT_PUBLIC_LOCAL_BACKEND_URL}`;
-
-      try {
-        const audioBlob = new Blob(chunks, { type: "audio/mp4" });
-
-        const form = new FormData();
-        form.append("audio-record", audioBlob);
-
-        await axios.post(
-          `${domain}/api/v1/user/${props.userEmail}/calls/${props.sessionId}`,
-          form
-        );
-        props.endCall(props.sessionId, time);
-      } catch (err) {
-        props.endCall(props.sessionId, time);
-      }
+      const audioBlob = new Blob(chunks, { type: "audio/mp4" });
+      const form = new FormData();
+      form.append("audio-record", audioBlob);
+      await axios.post(
+        `${domain}/api/v1/user/${props.userEmail}/calls/${props.sessionId}`,
+        form
+      );
     };
     setMediaRecorder(mediaRecorder);
     mediaRecorder.start();
@@ -274,14 +292,25 @@ function Session(props: ComponentProps) {
     if (mediaRecorder) {
       mediaRecorder.stop();
     }
+    if (localStream) {
+      localStream.getTracks().forEach((track) => track.stop());
+    }
+
+    // stopStreaming();
   };
 
   const endCall = async () => {
     stopMediaRecording();
-    if (localStream) {
-      localStream.getTracks().forEach((track) => track.stop());
-    }
+    props.endCall(props.sessionId, timeRefinMs.current);
   };
+
+  useEffect(() => {
+    socket.on("call-ended", stopMediaRecording);
+
+    return () => {
+      socket.off("call-ended", stopMediaRecording);
+    };
+  }, []);
 
   useEffect(() => {
     function peerLeftTheSession() {
@@ -302,6 +331,7 @@ function Session(props: ComponentProps) {
     };
   }, [socket]);
 
+  //audio speaking effect
   async function startAudioVisualProcessing(stream: MediaStream) {
     try {
       const audioContext = new (window.AudioContext ||
@@ -336,6 +366,190 @@ function Session(props: ComponentProps) {
     }
   }
 
+  //transcription stream
+
+  // Start Recording
+  /*
+  const startStreaming = async (stream: MediaStream) => {
+    console.log("Start button clicked");
+    try {
+      // Create AudioContext if not already created
+      if (!audioContextRef.current) {
+        audioContextRef.current = new AudioContext();
+      }
+      audioInputRef.current =
+        audioContextRef.current.createMediaStreamSource(stream);
+
+      // Create AudioWorkletNode
+      await audioContextRef.current.audioWorklet.addModule(
+        "/worklet-processor.js"
+      );
+      console.log("AudioWorklet module loaded successfully.");
+
+      audioWorkletNodeRef.current = new AudioWorkletNode(
+        audioContextRef.current,
+        "my-worklet-processor"
+      );
+
+      console.log(audioContextRef.current);
+      audioInputRef.current.connect(audioWorkletNodeRef.current);
+      audioWorkletNodeRef.current.connect(audioContextRef.current.destination);
+
+      // Handle audio processing in worklet processor
+      audioWorkletNodeRef.current.port.onmessage = (event) => {
+        const audioChunk = event.data;  // This is the Int16Array.buffer sent from the AudioWorkletProcessor
+        console.log('Sending audio chunk to server, size:', audioChunk);
+      
+        // Handle WebSocket emission here
+        socket.emit('audioData', audioChunk);
+      };
+
+      socket.emit("startTranscription");
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+    }
+  };
+
+  const stopStreaming = () => {
+    if (
+      audioContextRef.current &&
+      audioContextRef.current.state !== "closed" &&
+      audioInputRef.current &&
+      audioWorkletNodeRef.current
+    ) {
+      audioInputRef.current.disconnect();
+      audioWorkletNodeRef.current.disconnect();
+      audioContextRef.current.close();
+      socket.emit("stopTranscription");
+
+      audioInputRef.current.mediaStream
+        .getTracks()
+        .forEach((track) => track.stop());
+    }
+  };
+
+  */
+ /*
+  let streamAudioToWebSocket = function (userMediaStream: MediaStream) {
+    //let's get the mic input from the browser, via the microphone-stream module
+    micStreamRef.current = new mic();
+
+    micStreamRef.current.on("format", function (data: any) {
+      inputSampleRate.current = data.sampleRate;
+    });
+
+    micStreamRef.current.setStream(userMediaStream);
+
+    // Pre-signed URLs are a way to authenticate a request (or WebSocket connection, in this case)
+    // via Query Parameters. Learn more: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html
+    // let url = createPresignedUrl();
+
+    //open up our WebSocket connection
+    //  socket = new WebSocket(url);
+    //  socket.binaryType = "arraybuffer";
+
+    let sampleRate = 0;
+
+    // when we get audio data from the mic, send it to the WebSocket if possible
+    // socket.onopen = function () {
+    micStreamRef.current.on("data", function (rawAudioChunk: any) {
+
+      // the audio stream is raw audio bytes. Transcribe expects PCM with additional metadata, encoded as binary
+      let binary = convertAudioToBinaryMessage(rawAudioChunk);
+
+      console.log("binary", binary)
+      //  if (socket.readyState === socket.OPEN) socket.send(binary);
+      socket.emit("audioData", binary);
+    });
+    //   };
+
+    // handle messages, errors, and close events
+    // wireSocketEvents();
+
+    socket.emit("startTranscription");
+  };
+  function convertAudioToBinaryMessage(audioChunk: any) {
+    let raw = mic.toRaw(audioChunk);
+
+    if (raw == null) return;
+
+    // downsample and convert the raw audio bytes to PCM
+    let downsampledBuffer = downsampleBuffer(raw, inputSampleRate.current, sampleRate.current);
+    let pcmEncodedBuffer = pcmEncode(downsampledBuffer);
+
+    // add the right JSON headers and structure to the message
+    let audioEventMessage = getAudioEventMessage(Buffer.from(pcmEncodedBuffer));
+
+    //convert the JSON object + headers into a binary event stream message
+    let binary = eventStreamMarshaller.encode(audioEventMessage as any);
+
+    return binary;
+  }
+
+  function pcmEncode(input: any) {
+    var offset = 0;
+    var buffer = new ArrayBuffer(input.length * 2);
+    var view = new DataView(buffer);
+    for (var i = 0; i < input.length; i++, offset += 2) {
+      var s = Math.max(-1, Math.min(1, input[i]));
+      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+    }
+    return buffer;
+  }
+
+  function downsampleBuffer(
+    buffer: any,
+    inputSampleRate = 44100,
+    outputSampleRate = 16000
+  ) {
+    if (outputSampleRate === inputSampleRate) {
+      return buffer;
+    }
+
+    var sampleRateRatio = inputSampleRate / outputSampleRate;
+    var newLength = Math.round(buffer.length / sampleRateRatio);
+    var result = new Float32Array(newLength);
+    var offsetResult = 0;
+    var offsetBuffer = 0;
+
+    while (offsetResult < result.length) {
+      var nextOffsetBuffer = Math.round((offsetResult + 1) * sampleRateRatio);
+
+      var accum = 0,
+        count = 0;
+
+      for (
+        var i = offsetBuffer;
+        i < nextOffsetBuffer && i < buffer.length;
+        i++
+      ) {
+        accum += buffer[i];
+        count++;
+      }
+
+      result[offsetResult] = accum / count;
+      offsetResult++;
+      offsetBuffer = nextOffsetBuffer;
+    }
+
+    return result;
+  }
+  function getAudioEventMessage(buffer: any) {
+    // wrap the audio data in a JSON envelope
+    return {
+      headers: {
+        ":message-type": {
+          type: "string",
+          value: "event",
+        },
+        ":event-type": {
+          type: "string",
+          value: "AudioEvent",
+        },
+      },
+      body: buffer,
+    };
+  }*/
   return (
     <div id="conference">
       <div id="active-audio">

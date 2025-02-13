@@ -13,7 +13,7 @@ import { Plan } from "@/lib/types/billing";
 
 import { socket } from "@/utils/socket";
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 
 import WebCallNotification from "../Notifications/call";
 import { CreateFirstLink, WatchTutorial } from "../modals/tutorial";
@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import useTutorial from "@/hooks/tutorial";
 import useLinkForm from "@/hooks/link-form";
 import { Settings } from "@/lib/types/links";
+import { updateSession } from "@/lib/session";
 
 const SlIcon = dynamic(
   // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
@@ -43,20 +44,25 @@ const SlAlert = dynamic(
     ssr: false,
   }
 );
+const isProduction = process.env.NODE_ENV == "production";
 
 function Notifications({
   hasActiveDevices,
   subscription,
-  userId,
   isNotificationsOn,
   watchedTutorial,
+  monthlyMinutesCapacityReached,
+  prevMonthlyMinutesCapacityReached,
+  user,
   createUrlAction,
 }: {
   isNotificationsOn: boolean;
   hasActiveDevices: boolean;
   subscription: Plan;
-  userId: string;
   watchedTutorial: boolean;
+  monthlyMinutesCapacityReached: boolean;
+  prevMonthlyMinutesCapacityReached: boolean;
+  user: string;
   createUrlAction: (
     slug: string,
     linkName: string,
@@ -69,14 +75,22 @@ function Notifications({
 }) {
   const router = useRouter();
 
-  const [incommingCalls, setIncommingCalls] = useState<any[]>([]);
+  // const [incommingCalls, setIncommingCalls] = useState<any[]>([]);
 
   const [
     isNoIntegratedDeviceAlertVisible,
     setNoIntegratedDeviceAlertVisibility,
   ] = useState(!hasActiveDevices);
 
-  const { pushNotification, pullSession } = useSessionStore((state) => state);
+  const {
+    notifications,
+    pushNotification,
+    pullNotification,
+    joinSession,
+    declineSession,
+    pushSession,
+    endSession,
+  } = useSessionStore((state) => state);
 
   //tutorial
   const [error, setErrorMessage] = useState<string>("");
@@ -101,6 +115,7 @@ function Notifications({
     },
   });
 
+  //tutorial
   const createLink = async () => {
     setLoading(true);
     const response = await createUrlAction(
@@ -134,22 +149,25 @@ function Notifications({
     }, 500);
   };
 
-  //tutorial
+  useEffect(() => {
+    async function updateCookie() {
+      await updateSession(
+        "monthlyMinutesCapacityReached",
+        monthlyMinutesCapacityReached
+      );
+    }
+    if (prevMonthlyMinutesCapacityReached == monthlyMinutesCapacityReached) {
+      return;
+    }
+    updateCookie();
+  }, []);
 
   useEffect(() => {
     if (!isNotificationsOn) return;
     function call(data: { call: Call }) {
-      setIncommingCalls((calls) => [
-        ...calls,
-        {
-          email: data.call.callerInfo.email,
-          fullName: data.call.callerInfo.fullName,
-          phone: data.call.callerInfo.phone,
-          id: data.call._id,
-          slug: data.call.slug,
-        },
-      ]);
       pushNotification(data.call, router);
+      pushSession(data.call, router);
+      // pushSession(data.call, router);
     }
     socket.on("new-session", call);
 
@@ -158,24 +176,34 @@ function Notifications({
     };
   }, [socket]);
 
+  //notification
   const answerCall = (slug: string, callId: string) => {
-    socket.emit("answer", { callId });
-    setIncommingCalls((prevState) => prevState.filter((el) => el.id != callId));
-    //router.push(`/session/${slug}/${callId}`)
+    socket.emit("answer", { callId, user });
     window.open(`/session/${slug}/${callId}`, "_blank");
+    pullNotification(callId, router);
+    joinSession(user,callId, router);
   };
 
   const declineCall = (callId: string) => {
-    socket.emit("decline", { callId });
-    setIncommingCalls((prevState) => prevState.filter((el) => el.id != callId));
-    pullSession(callId);
+    socket.emit("decline", { callId, user });
+    pullNotification(callId, router);
+    declineSession(user,callId, router);
   };
 
-  const closeNoIntegratedDevicesAlert = () => {
+  const closeNoIntegratedDevicesAlert = useCallback(() => {
     setNoIntegratedDeviceAlertVisibility(false);
-  };
+  }, [setNoIntegratedDeviceAlertVisibility]);
 
-  const isProduction = process.env.NODE_ENV == "production";
+  useEffect(() => {
+    function callEnded(data: { callId: string }) {
+      endSession(data.callId, router);
+    }
+    socket.on("call-ended", callEnded);
+
+    return () => {
+      socket.off("call-ended", callEnded);
+    };
+  }, [socket]);
 
   if (isNotificationsOn) {
     return (
@@ -223,13 +251,13 @@ function Notifications({
         {subscription?.status == "incomplete" && <IncompletePayment />}
         {subscription?.status == "canceled" && <NoActiveSubscription />}
         <div className="fixed top-2 right-2 z-[9999] space-y-2">
-          {incommingCalls.map((call) => (
-            <Fragment key={call.id}>
+          {notifications.map((call) => (
+            <Fragment key={call._id}>
               <WebCallNotification
-                email={call.email}
-                fullName={call.fullName}
-                phone={call.phone}
-                callId={call.id}
+                email={call.callerInfo.email}
+                fullName={call.callerInfo.fullName!}
+                phone={call.callerInfo.phone}
+                callId={call._id}
                 slug={call.slug}
                 answer={answerCall}
                 decline={declineCall}

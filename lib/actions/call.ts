@@ -53,13 +53,13 @@ export async function retrieveAudioRecordUrlAction(callId:string) {
     if (!session) return redirect("/users/sign_in");
     const path = `api/v1/user/${session.email}/calls/${callId}/audio-record`;
 
-    const response: { message: string; recordUrl: string } = await fakeBackend.get(
+    const response: { message: string; recordUrl: string,transcriptionUrl:string } = await fakeBackend.get(
       path
     );
 
-    return { status:200, message:response.message,recordUrl:response.recordUrl };
+    return { status:200, message:response.message,recordUrl:response.recordUrl,transcriptionUrl:response.transcriptionUrl };
   } catch (error) {
-    return { status:400, message: error instanceof Error ? error.message : String(error),recordUrl:null };
+    return { status:400, message: error instanceof Error ? error.message : String(error),recordUrl:null,transcriptionUrl:null  };
   }
 }
 

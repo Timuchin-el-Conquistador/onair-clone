@@ -43,6 +43,8 @@ function debounce(func: Function, delay: number) {
 
 type PageProps = {
   allLinks: { linkName: string; slug: string }[];
+  monthlyMinutesCapacityReached: boolean;
+  user: string; //user fullname
 };
 
 function Calls(props: PageProps) {
@@ -53,11 +55,13 @@ function Calls(props: PageProps) {
     error,
     loaded,
     success,
-    pullSession,
     sessions,
     retrieveSessions,
     filterCalls,
     filter,
+    joinSession,
+    declineSession,
+    pullNotification
   } = useSessionStore((state) => state); //session store
 
   //const [sessions, setSessions] = useState(props.calls); //all sessions
@@ -68,12 +72,16 @@ function Calls(props: PageProps) {
     caller: Caller | null;
     slug: string;
     callStartedTime: string;
+    callStatus: string;
+    callAnsweredBy: string;
   }>({
     isOpen: false,
-    sessionId: "", //call id,
+    sessionId: "",
     slug: "",
-    caller: null,
     callStartedTime: "",
+    caller: null,
+    callStatus: "waiting",
+    callAnsweredBy: "",
   });
 
   const { isDangerAlertVisible, isSuccessAlertVisible } = useVisibility(
@@ -127,7 +135,20 @@ function Calls(props: PageProps) {
     const value = event.target.value;
     updateDebouncedValue(value);
   };
-console.log(sessions)
+
+  const resetDrawer = useCallback(() => {
+    setDrawerState((prevState) => ({
+      ...prevState,
+      isOpen: false,
+      sessionId: "",
+      slug: "",
+      callStartedTime: "",
+      caller: null,
+      callStatus: "waiting",
+      callAnsweredBy: "",
+    }));
+  }, []);
+
   return (
     <div id="main" className="mt-0 sm:mt-0 relative p-6">
       <div
@@ -279,10 +300,12 @@ console.log(sessions)
             router.push(`/calls/${callId}`);
           }}
           openDrawer={(
-            sessionId: string,
-            slug: string,
-            callStartedTime: string,
-            caller: Caller
+            sessionId,
+            slug,
+            callStartedTime,
+            caller,
+            callStatus,
+            callAnsweredBy
           ) => {
             setDrawerState((prevState) => ({
               ...prevState,
@@ -291,6 +314,8 @@ console.log(sessions)
               slug,
               callStartedTime,
               caller,
+              callStatus,
+              callAnsweredBy,
             }));
           }}
         />
@@ -325,23 +350,25 @@ console.log(sessions)
         slug={drawer.slug}
         caller={drawer.caller}
         callStartedTime={drawer.callStartedTime}
+        monthlyMinutesCapacityReached={props.monthlyMinutesCapacityReached}
+        callAnsweredBy={drawer.callAnsweredBy}
+        callStatus={drawer.callStatus}
+        user={props.user}
         closeDrawer={() => {
           setDrawerState((prevState) => ({
             ...prevState,
             isOpen: false,
           }));
         }}
-        declineCall={(sessionId: string) => {
-          setDrawerState((prevState) => ({
-            ...prevState,
-            isOpen: false,
-            sessionId: "",
-            slug: "",
-            callStartedTime: "",
-            caller: null,
-          }));
-          pullSession(sessionId);
+        declineCall={(user, callId) => {
+          declineSession(user, callId, router);
+          pullNotification(callId,router)
         }}
+        joinSession={(user, callId) => {
+          joinSession(user, callId, router);
+          pullNotification(callId,router)
+        }}
+        endSession={() => {}}
       />
     </div>
   );

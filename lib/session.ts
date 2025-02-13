@@ -86,6 +86,7 @@ export async function updateSubscription(
     monthlyLinksCapacity,
     monthlyIntegrationsCapacity,
     subscriptionStatus,
+    
   }
 
   const session = await encrypt(payload);

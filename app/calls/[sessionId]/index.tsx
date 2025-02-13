@@ -36,7 +36,8 @@ type PageProps = {
   callEndedTime: string;
   duration: number;
   callStatus: string;
-  ownerFullName: string;
+  answeredBy:string
+  declinedBy:string
 };
 
 function Details(props: PageProps) {
@@ -133,7 +134,7 @@ function Details(props: PageProps) {
               {props.callStatus == "ended" && (
                 <>
                   <tr>
-                    <td>Answered By</td> <td> {props.ownerFullName}</td>
+                    <td>Answered By</td> <td> {props.answeredBy}</td>
                   </tr>
                   <tr>
                     <td>Date</td> <td>{<SlRelativeTime date={isoDate!} />}</td>
@@ -146,7 +147,7 @@ function Details(props: PageProps) {
               {props.callStatus == "declined" && (
                 <>
                   <tr>
-                    <td>Declined by</td> <td> {props.ownerFullName}</td>
+                    <td>Declined by</td> <td> {props.declinedBy}</td>
                   </tr>
                   <tr>
                     <td>Date</td> <td>{<SlRelativeTime date={isoDate!} />}</td>
@@ -190,7 +191,7 @@ function Details(props: PageProps) {
                       {props.callAnsweredTime}
                     </time>{" "}
                     <h3 className="text-gray-900 text-small">
-                      Answered by {props.ownerFullName}
+                      Answered by {props.answeredBy}
                     </h3>
                   </li>
                 </SlTooltip>
@@ -208,7 +209,7 @@ function Details(props: PageProps) {
                       {props.callEndedTime}
                     </time>{" "}
                     <h3 className="text-gray-900 text-small">
-                      Declined by {props.ownerFullName}
+                      Declined by {props.declinedBy}
                     </h3>
                   </li>
                 </SlTooltip>

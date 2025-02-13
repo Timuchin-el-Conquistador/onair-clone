@@ -107,7 +107,7 @@ function Settings(props: PageProps) {
     // Replace spaces or any character that's not alphanumeric or dash with a dash
     return input.replace(/[^a-zA-Z0-9]/g, '-');
   }
-  
+
 
   return (
     <div id="settings" className="p-6 mb-24">
@@ -306,7 +306,7 @@ function Settings(props: PageProps) {
       <div className="bg-white p-6">
         <dl style={{ marginTop: "-1rem" }}>
           <div>
-            <dt># of Links</dt> <dd>{props.numberOfCreatedLinks} link</dd>
+            <dt># of Links</dt> <dd>{props.numberOfCreatedLinks}/{props.monthlyLinksCapacity} link</dd>
           </div>{" "}
           <div>
             <dt>Monthly Minutes Capacity</dt>
@@ -332,9 +332,8 @@ function Settings(props: PageProps) {
               {props.subscriptionStatus == "active" ||
               props.subscriptionStatus == "trialing"
                 ? Math.round(
-                    100 -
-                      (props.monthlyMinutesConsumed / 100) *
-                        props.monthlyMinutesCapacity
+                    props.monthlyMinutesConsumed/props.monthlyMinutesCapacity*100
+                    
                   )
                 : 0}
               %)

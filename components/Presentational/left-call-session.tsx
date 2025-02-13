@@ -1,11 +1,7 @@
 "use client";
 
-
-
 function LeftCallSession() {
   return (
-
-    
     <div
       id="visitor-dialog"
       className="modal-dialog no-transition visible"
@@ -19,8 +15,15 @@ function LeftCallSession() {
       <div id="conference-container">
         <div className="text-center">
           You have left the channel.{" "}
-          <span className="text-blue-500 cursor-pointer">Refresh</span> to
-          rejoin.
+          <span
+            className="text-blue-500 cursor-pointer"
+            onClick={() => {
+              window.location.reload();
+            }}
+          >
+            Refresh
+          </span>{" "}
+          to rejoin.
         </div>{" "}
       </div>
     </div>

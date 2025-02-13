@@ -2,8 +2,6 @@
 
 import dynamic from "next/dynamic";
 
-import "@/styles/integrations/device.scss";
-
 import { Device } from "@/lib/types/device";
 
 import { Fragment } from "react";

@@ -3,9 +3,9 @@
 import { useEffect, useRef } from "react";
 
 type ComponentProps = {
-  email: string;
+  email: string|null;
   fullName: string;
-  phone: string;
+  phone: string|null;
   callId: string;
   slug:string
   answer: (slug:string,callId: string) => void;

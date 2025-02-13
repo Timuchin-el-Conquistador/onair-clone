@@ -4,7 +4,7 @@
 
 
 function CallEnded(props: { isAuth: boolean; slug: string; domain?: string }) {
-  console.log(props)
+
   return (
     <div
       id="visitor-dialog"
