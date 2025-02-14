@@ -43,7 +43,7 @@ function Sidebar({
                   className="inline-block"
                   src="/logo.svg"
                   alt="logo"
-                  width={100}
+                  width={150}
                   height={0}
                 />
               </a>

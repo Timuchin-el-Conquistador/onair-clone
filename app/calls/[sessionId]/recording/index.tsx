@@ -9,14 +9,10 @@ import { useEffect, useState } from "react";
 
 import { AudioLoadingSkeletonPulse } from "@/components/Loaders/pulse";
 
-
-
 type PageProps = {
   callId: string;
-  planName:string
-  retrieveAudioRecordUrlAction: (
-    callId: string
-  ) => Promise<{
+  planName: string;
+  retrieveAudioRecordUrlAction: (callId: string) => Promise<{
     status: number;
     message: string;
     recordUrl: string | null;
@@ -35,7 +31,6 @@ function Recording(props: PageProps) {
       const response = await props.retrieveAudioRecordUrlAction(callId);
 
       if (response.status == 200) {
-
         setRecordUrl(response.recordUrl!);
         setTranscriptionUrl(response.transcriptionUrl!);
       }
@@ -89,21 +84,27 @@ function Recording(props: PageProps) {
             </audio>
           )}
           {!loading && !recordUrl && <h1>No Audio Records</h1>}
-          <div id="transcription" className="mt-6">
-            <div className="mt-2 items-center dotted-container text-gray-400">
-              {props.planName == 'Professional Plan' || props.planName == 'Business Plan' ? <a download={props.callId + "json"} href={transcriptionUrl}>
-                Download Transcription
-              </a> : 
-               <span>
-                Transcription is not available on the Basic Plan. Please{" "}
-                <a href="/billing/choose_plan" className="text-blue-500">
-                  {" "}
-                  upgrade{" "}
-                </a>{" "}
-                to a higher plan to access this feature.
-              </span>}
+          {transcriptionUrl && (
+            <div id="transcription" className="mt-6">
+              <div className="mt-2 items-center dotted-container text-gray-400">
+                {props.planName == "Professional Plan" ||
+                props.planName == "Business Plan" ? (
+                  <a download={props.callId + "json"} href={transcriptionUrl}>
+                    Download Transcription
+                  </a>
+                ) : (
+                  <span>
+                    Transcription is not available on the Basic Plan. Please{" "}
+                    <a href="/billing/choose_plan" className="text-blue-500">
+                      {" "}
+                      upgrade{" "}
+                    </a>{" "}
+                    to a higher plan to access this feature.
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
