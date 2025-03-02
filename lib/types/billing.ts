@@ -13,4 +13,5 @@ export interface Plan {
   expiration: string;
   subscriptionPeriod: string;
   subscriptionId: string;
+  daysLeftToExpiration:number
 }

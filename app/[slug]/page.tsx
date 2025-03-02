@@ -5,7 +5,7 @@ import Sessions from "./sessions";
 
 import Visitor from "../../components/visitor";
 
-import { retrieveUrl } from "@/lib/actions/public";
+import { retrieveUrl } from "@/lib/actions/visitor";
 import { retrieveSession } from "@/lib/session";
 
 import InternalServerError from "@/components/Presentational/500";
@@ -41,7 +41,7 @@ async function SessionPage(props: { params: { slug: string } }) {
     );
   }
   return (
-    <PublicLayout userId={url.owner}>
+    <PublicLayout email={url.owner.email}>
       <Visitor slug={slug} url={url} />
     </PublicLayout>
   );

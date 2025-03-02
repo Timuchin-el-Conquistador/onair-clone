@@ -1,22 +1,22 @@
-import { retrieveAccountStatus } from "@/lib/actions/public";
+import { retrieveUserAccountStatus } from "@/lib/actions/visitor";
 import AccountInactive from "../Presentational/account-inactive";
 
 import ErrorBoundary from "../error-bound";
 
 async function PublicLayout({
   children,
-  userId,
+  email,
 }: {
   children: React.ReactNode;
-  userId?: string ;
+  email?: string ;
 }) {
-  if (userId) {
-    let response = await retrieveAccountStatus(userId);
+  if (email) {
+    let response = await retrieveUserAccountStatus(email);
 
-    const accountStatus =
-      response instanceof Error || response == null ? null : response;
+    const account =
+      response instanceof Error || response == null ? null : {role:response.role, status:response.accountStatus};
 
-    if (accountStatus != "active") {
+    if (account?.status != "active" && account?.role != 'admin') {
       return <AccountInactive />;
     }
   }

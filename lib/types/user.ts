@@ -19,7 +19,8 @@ export enum SubscriptionStatus {
   PAST_DUE = "past_due",
   CANCELED = "canceled",
   UNPAID = "unpaid",
-  PENDING = "pending",      
+  PENDING = "pending",
+  TRIAL_WILL_END = "trial_will_end",            
 }
 
 

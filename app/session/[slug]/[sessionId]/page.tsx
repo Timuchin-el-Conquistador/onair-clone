@@ -1,6 +1,6 @@
 import ActiveCallSession from ".";
 
-import { retrieveUrl, retrieveActiveCallSession } from "@/lib/actions/public";
+import { retrieveUrl, retrieveActiveCallSession } from "@/lib/actions/visitor";
 import { retrieveAccountInformation } from "@/lib/actions/user";
 import { retrieveSession } from "@/lib/session";
 

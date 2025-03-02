@@ -10,7 +10,7 @@ export interface Link {
   linkName: string;
   integrations: Integration[];
   settings: Settings;
-  owner:string
+  owner:{email:string,_id:string,fullName:string}
 }
 
 export interface Settings {
@@ -20,8 +20,7 @@ export interface Settings {
   recording: boolean;
 }
 
-export interface ExtendedLink
-  extends Link{
-    totalCallDuration: number;
+export interface ExtendedLink extends Link {
+  totalCallDuration: number;
   hasConnectedDevice: boolean;
 }

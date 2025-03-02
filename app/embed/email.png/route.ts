@@ -6,12 +6,15 @@ import { NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const slug = searchParams.get("slug");
-  
 
-  const isProduction = process.env.NODE_ENV == 'production'
+  const isProduction = process.env.NODE_ENV == "production";
 
-  const domain = isProduction ?  process.env.FRONTEND_URL!:  process.env.LOCAL_FRONTEND_URL!
-
+  const frontendDomain = isProduction
+    ? "https://" + process.env.FRONTEND_URL!
+    : "http://" + process.env.LOCAL_FRONTEND_URL!;
+  const backendDomain = isProduction
+    ? "https://" + process.env.PRODUCTION_BACKEND_URL
+    : "http://" + process.env.LOCAL_BACKEND_URL;
   if (!slug) {
     return new Response("Missing slug parameter", {
       status: 400,
@@ -20,10 +23,10 @@ export async function GET(req: NextRequest) {
   }
 
 
-  ///fetching link 
+  ///fetching link
   try {
     const backendResponse = await axios.get(
-      `https://${process.env.PRODUCTION_BACKEND_URL}/api/v1/url/${slug}`
+      `${backendDomain}/api/v1/url/${slug}`
     );
 
     const { url } = backendResponse.data;
@@ -33,15 +36,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "No page found " }, { status: 400 });
     }
 
-
     const width = 620;
     const height = 50;
-
 
     //status
     const statusColor = url.availability === "offline" ? "#4B4B4B" : "#00C853";
     const statusText =
-      url.availability === "offline" ? "Offline at the moment" : "Online, visit to call";
+      url.availability === "offline"
+        ? "Offline at the moment"
+        : "Online, visit to call";
 
     const image = await sharp({
       create: {
@@ -56,7 +59,7 @@ export async function GET(req: NextRequest) {
           input: Buffer.from(
             `<svg width="${width}" height="${height}">
               <circle cx="10" cy="20" r="8" fill="${statusColor}" />
-              <text x="30" y="25" font-size="20" font-family="Arial" fill="black" font-weight="bold">${domain}/${slug}</text>
+              <text x="30" y="25" font-size="20" font-family="Arial" fill="black" font-weight="bold">${frontendDomain}/${slug}</text>
               <text x="30" y="45" font-size="16" font-family="Arial" fill="black">${statusText}</text>
             </svg>`
           ),

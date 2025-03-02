@@ -6,6 +6,7 @@ import {
   IncompletePayment,
   SubscriptionExpired,
   NoActiveSubscription,
+  TrialPlanWIllSoonEnd,
 } from "../Alerts/billing";
 import { NoDevice } from "../Alerts/warning";
 
@@ -250,6 +251,7 @@ function Notifications({
           (subscription?.status == "past_due" && <SubscriptionExpired />)}
         {subscription?.status == "incomplete" && <IncompletePayment />}
         {subscription?.status == "canceled" && <NoActiveSubscription />}
+        {subscription?.status == "trial_will_end" && <TrialPlanWIllSoonEnd days={subscription.daysLeftToExpiration} />}
         <div className="fixed top-2 right-2 z-[9999] space-y-2">
           {notifications.map((call) => (
             <Fragment key={call._id}>

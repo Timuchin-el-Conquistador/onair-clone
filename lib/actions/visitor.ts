@@ -4,16 +4,7 @@ import { Call } from "../types/call";
 import { type ExtendedLink } from "../types/links";
 import {  AccountStatus } from "../types/user";
 
-export async function confirmEmail(token: string) {
-  try {
-    const path = `api/v1/user/confirm-email/${token}`;
-    const response: { message: string } = await fakeBackend.get(path);
 
-    return response.message;
-  } catch (error) {
-    return error instanceof Error ? error : new Error(String(error));
-  }
-}
 
 export async function retrieveUrl(slug: string) {
   try {
@@ -37,15 +28,15 @@ export async function retrieveActiveCallSession(callId: string) {
     return error instanceof Error ? error : new Error(String(error));
   }
 }
-
-export async function retrieveAccountStatus(ownerId: string) {
+//owner account status
+export async function retrieveUserAccountStatus(email: string) {
 
   try {
-    const path = `api/v1/user/${ownerId}/account-status`;
-    const response: { message: string; accountStatus: AccountStatus } =
+    const path = `api/v1/user/${email}/account-status`;
+    const response: { message: string; accountStatus: AccountStatus, role:string } =
       await fakeBackend.get(path);
 
-      return response.accountStatus;
+      return {accountStatus:response.accountStatus, role:response.role};
     } catch (error) {
       return error instanceof Error ? error : new Error(String(error));
     }
