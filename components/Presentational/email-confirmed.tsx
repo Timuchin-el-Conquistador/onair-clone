@@ -1,10 +1,23 @@
+'use client'
+
+
 import Link from "next/link";
 
+import { useEffect } from "react";
+
+
+
 function EmailConfirmed() {
+
+
+  useEffect(() =>{
+    sessionStorage.removeItem('registration-email')
+  },[])
     return (
   <>
       <div id="stripe-bar" className="w-full border-t-4 border-brand-400 absolute top-0 left-0 right-0 z-50" ></div>
       <div className="max-w-lg mx-auto mt-48 text-center px-8 sm:px-0">
+
         <div className="text-center">
           <svg
             width="64"

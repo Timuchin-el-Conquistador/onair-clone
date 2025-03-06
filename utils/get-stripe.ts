@@ -6,7 +6,7 @@ let stripePromise: Promise<Stripe | null>;
 
 const getStripe = async (): Promise<Stripe | null> => {
   if (!stripePromise) {
-    const publishableKey = process.env.NEXT_PUBLIC_TEST_STRIPE_PUBLISHABLE_KEY;
+    const publishableKey = process.env.NEXT_PUBLIC_LIVE_STRIPE_PUBLISHABLE_KEY;
 
     if (!publishableKey) {
       console.error('Stripe publishable key is missing.');

@@ -8,8 +8,6 @@ import { Account, type NewUser, type User } from "@/lib/types/user";
 
 import { createSession, updateSession } from "@/lib/session";
 
-
-
 export type UserState = {
   loading: boolean;
   error: Error | null;
@@ -33,8 +31,8 @@ export type UserActions = {
     router: any
   ) => void;
 
-  changeEmail:(email:string, router:any) =>void
-  changeName:(fullName:string,router:any) =>void
+  changeEmail: (email: string, router: any) => void;
+  changeName: (fullName: string, router: any) => void;
   //private
   //getAccountInformation: () => void;
   // setCurrentSubscription: (plan: Plan) => void;
@@ -88,17 +86,14 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         success: null,
       }));
       try {
-        const path = `api/v1/user/signup`
-        const response: { message: string } = await fakeBackend.post(
-         path,
-          {
-            email: user.email,
-            fullName: user.fullName,
-            password: user.password,
-          }
-        );
+        const path = `api/v1/user/signup`;
+        const response: { message: string } = await fakeBackend.post(path, {
+          email: user.email,
+          fullName: user.fullName,
+          password: user.password,
+        });
         // await createSession(response.response._id, response.response.email);
-
+        sessionStorage.setItem("registration-email", user.email);
         set((prevState) => ({
           ...prevState,
           loading: false,
@@ -123,7 +118,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           error: null,
           success: null,
         }));
-        const  path = "api/v1/user/resend-confirmation";
+        const path = "api/v1/user/resend-confirmation";
         const response: { message: string } = await fakeBackend.post(path, {
           email,
         });
@@ -134,7 +129,9 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           success: response.message,
           //  token:response.token
         }));
-        router.push("/users");
+        setTimeout(() => {
+          router.push("/users");
+        }, 1000);
       } catch (error) {
         set((prevState) => ({
           ...prevState,
@@ -151,7 +148,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         success: null,
       }));
       try {
-        const path = "api/v1/user/signin"
+        const path = "api/v1/user/signin";
         const response: { message: string; account: Account } =
           await fakeBackend.post(path, { ...user, role: "web" });
 
@@ -159,14 +156,17 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           userId: response.account.userId,
           email: response.account.email,
           fullName: response.account.fullName,
-          planName:response.account.planName,
-          monthlyMinutesCapacity:response.account.monthlyMinutesCapacity,
-          monthlyLinksCapacity:response.account.monthlyLinksCapacity,
-          monthlyIntegrationsCapacity:response.account.monthlyIntegrationsCapacity,
+          planName: response.account.planName,
+          monthlyMinutesCapacity: response.account.monthlyMinutesCapacity,
+          monthlyLinksCapacity: response.account.monthlyLinksCapacity,
+          monthlyIntegrationsCapacity:
+            response.account.monthlyIntegrationsCapacity,
           subscriptionStatus: response.account.subscriptionStatus,
-          accountStatus:response.account.accountStatus,
-          watchedTutorial:response.account.watchedTutorial,
-          monthlyMinutesCapacityReached:response.account.monthlyMinutesCapacity<response.account.monthlyMinutesConsumed
+          accountStatus: response.account.accountStatus,
+          watchedTutorial: response.account.watchedTutorial,
+          monthlyMinutesCapacityReached:
+            response.account.monthlyMinutesCapacity <
+            response.account.monthlyMinutesConsumed,
         });
 
         set((prevState) => ({
@@ -192,7 +192,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           error: null,
           success: null,
         }));
-         const path = "api/v1/user/forgot-password";
+        const path = "api/v1/user/forgot-password";
         const response: { message: string } = await fakeBackend.post(path, {
           email,
         });
@@ -213,15 +213,14 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         }));
       }
     },
-    
+
     changeEmail: async (email, router) => {
       try {
+        const session = await verifySession();
 
-        const session = await verifySession()
-
-        if(session == null){
+        if (session == null) {
           router.replace("/users/sign_in");
-          return
+          return;
         }
 
         set((prevState) => ({
@@ -231,21 +230,18 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           success: null,
         }));
 
-
-         const path = `api/v1/user/${session?.email}/change-email`;
+        const path = `api/v1/user/${session?.email}/change-email`;
         const response: { message: string } = await fakeBackend.put(path, {
           email,
         });
-        await updateSession('email', email)
-        
+        await updateSession("email", email);
+
         set((prevState) => ({
           ...prevState,
           loading: false,
           success: response.message,
           //  token:response.token
         }));
-
-      
       } catch (error) {
         set((prevState) => ({
           ...prevState,
@@ -254,15 +250,14 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         }));
       }
     },
-    
-    changeName: async (name,router) => {
+
+    changeName: async (name, router) => {
       try {
+        const session = await verifySession();
 
-        const session = await verifySession()
-
-        if(session == null){
+        if (session == null) {
           router.replace("/users/sign_in");
-          return
+          return;
         }
         set((prevState) => ({
           ...prevState,
@@ -272,10 +267,10 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         }));
         const path = `api/v1/user/${session?.email}/change-name`;
         const response: { message: string } = await fakeBackend.put(path, {
-          fullName:name
+          fullName: name,
         });
 
-        await updateSession('name', name)
+        await updateSession("name", name);
 
         set((prevState) => ({
           ...prevState,
@@ -283,8 +278,6 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           success: response.message,
           //  token:response.token
         }));
-
-      
       } catch (error) {
         set((prevState) => ({
           ...prevState,
@@ -378,31 +371,30 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           error: null,
           success: null,
         }));
-    
-         const path = `api/v1/user/${token}/reset-password`;
-        const response: { account: Account } = await fakeBackend.post(
-          path,
-          {
-            password,
-          }
-        );
+
+        const path = `api/v1/user/${token}/reset-password`;
+        const response: { account: Account } = await fakeBackend.post(path, {
+          password,
+        });
 
         await createSession({
           userId: response.account.userId,
           email: response.account.email,
           fullName: response.account.fullName,
-          planName:response.account.planName,
-          monthlyMinutesCapacity:response.account.monthlyMinutesCapacity,
-          monthlyLinksCapacity:response.account.monthlyLinksCapacity,
-      //    numberOfCreatedLinks:response.account.numberOfCreatedLinks,
-          monthlyIntegrationsCapacity:response.account.monthlyIntegrationsCapacity,
-        //  monthlyMinutesConsumed:response.account.monthlyMinutesConsumed,
-       //   isBrowserNotificationsOn:response.account.isBrowserNotificationsOn,
-         subscriptionStatus: response.account.subscriptionStatus,
-         accountStatus:response.account.accountStatus,
-         watchedTutorial:response.account.watchedTutorial,
-         monthlyMinutesCapacityReached:response.account.monthlyMinutesCapacity <response.account.monthlyMinutesConsumed
-         
+          planName: response.account.planName,
+          monthlyMinutesCapacity: response.account.monthlyMinutesCapacity,
+          monthlyLinksCapacity: response.account.monthlyLinksCapacity,
+          //    numberOfCreatedLinks:response.account.numberOfCreatedLinks,
+          monthlyIntegrationsCapacity:
+            response.account.monthlyIntegrationsCapacity,
+          //  monthlyMinutesConsumed:response.account.monthlyMinutesConsumed,
+          //   isBrowserNotificationsOn:response.account.isBrowserNotificationsOn,
+          subscriptionStatus: response.account.subscriptionStatus,
+          accountStatus: response.account.accountStatus,
+          watchedTutorial: response.account.watchedTutorial,
+          monthlyMinutesCapacityReached:
+            response.account.monthlyMinutesCapacity <
+            response.account.monthlyMinutesConsumed,
         });
         set((prevState) => ({
           ...prevState,
@@ -410,7 +402,6 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           user: response.account,
         }));
         router.replace("/dashboard");
-
       } catch (error) {
         set((prevState) => ({
           ...prevState,

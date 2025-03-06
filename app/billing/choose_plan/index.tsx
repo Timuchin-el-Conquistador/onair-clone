@@ -130,7 +130,7 @@ function ChoosePlan(props: PageProps) {
 
                 }
                 const response = await props.createSubscriptionSessionAction(
-                  plan.priceTestId
+                  plan.priceId
                 );
                 const sessionUrl =
                   response instanceof Error || response == null
@@ -144,7 +144,7 @@ function ChoosePlan(props: PageProps) {
               }}
             >
               {plans.map((plan: Plan) => (
-                <div key={plan.priceTestId}>
+                <div key={plan.priceId}>
                   <label className={`plan ${plan.active && "border-blue-700"}`}>
                     <div className="flex md:flex-col justify-between col-span-2">
                       <input
@@ -155,7 +155,7 @@ function ChoosePlan(props: PageProps) {
                         onClick={() => {
                           setPlans((prevState) =>
                             prevState.map((el) => {
-                              if (el.priceTestId == plan.priceTestId) {
+                              if (el.priceId == plan.priceId) {
                                 return {
                                   ...el,
                                   active: true,
