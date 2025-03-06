@@ -221,7 +221,7 @@ function WatchTutorial(props: {
         </div>{" "}
         <div className="w-full mt-4 rounded overflow-hidden">
           <div style={{ position: "relative", paddingTop: "56.25%" }}>
-          {props.modalIsOpen && <iframe
+          {/*props.modalIsOpen && <iframe
               src="https://customer-dy1mf0ws9vunh0eq.cloudflarestream.com/eb9c4b48d2c728f157fb0ae17912796a/iframe?poster=https%3A%2F%2Fcustomer-dy1mf0ws9vunh0eq.cloudflarestream.com%2Feb9c4b48d2c728f157fb0ae17912796a%2Fthumbnails%2Fthumbnail.jpg%3Ftime%3D%26height%3D600"
               loading="lazy"
               allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
@@ -234,7 +234,7 @@ function WatchTutorial(props: {
                 height: "100%",
                 width: "100%",
               }}
-            ></iframe>}
+            ></iframe>*/}
           </div>
         </div>{" "}
         <div className="mt-12">
