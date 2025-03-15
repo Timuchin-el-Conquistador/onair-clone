@@ -102,85 +102,99 @@ function Session(props: ComponentProps) {
     };
   }, [socket]);
 
-  function createPeer({ iceServers }: any) {
-    const isProduction = process.env.NODE_ENV == "production";
-    peerRef.current = new Peer({
-      host: isProduction
-        ? process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
-        : "localhost", // Your public IP or domain
-      port: isProduction ? 443 : 9000, // The port your PeerJS server is running on
-      path: "/myapp", // The path to your PeerJS server (configured in Apache)
-      secure: isProduction, // Set to true if using https
-      config: {
-        iceServers: iceServers.urls.map((url: string) => ({
-          urls: url, // Each URL should be a string
-          username: iceServers.username, // TURN server username
-          credential: iceServers.credential, // TURN server credential
-        })),
-      },
-    });
-    offerConnection();
+  useEffect(() => {
+    socket.emit("join-session", { callId: props.sessionId });
+    function createPeer() {
+      const isProduction = process.env.NODE_ENV == "production";
 
-    peerRef.current?.on("open", function (id) {
-      peerId.current = id;
-    });
+      const urls = [
+        ...process.env.NEXT_PUBLIC_XIRSYS_TURN_UDP!.split(","),
+        ...process.env.NEXT_PUBLIC_XIRSYS_TURN_TCP!.split(","),
+      ];
 
-    peerRef.current?.on("connection", async (connection) => {
-      tryToConnectRef.current = false;
-      peerRef.current!.connect(connection.peer);
-      connRef.current = connection;
+      peerRef.current = new Peer({
+        host: isProduction
+          ? process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
+          : "localhost", // Your public IP or domain
+        port: isProduction ? 443 : 9000, // The port your PeerJS server is running on
+        path: "/myapp", // The path to your PeerJS server (configured in Apache)
+        secure: isProduction, // Set to true if using https
+        config: {
+          iceServers: urls.map((url: string) => ({
+            urls: url, // Each URL should be a string
+            username: process.env.NEXT_PUBLIC_XIRSYS_USERNAME, // TURN server username
+            credential: process.env.NEXT_PUBLIC_XIRSYS_CREDENTIAL, // TURN server credential
+          })),
+        },
+      });
+      offerConnection();
 
-      connRef.current.on("open", function () {
-        connRef.current!.on("data", function (data) {});
-        //    connRef.current!.send("Hello World");
+      peerRef.current?.on("open", function (id) {
+        peerId.current = id;
+       // socket.emit("offer", {
+       //   callId: props.sessionId,
+      //    peerId: id,
+    //    });
       });
 
-      // Handle disconnection of the remote peer
-      connRef.current.on("close", () => {
-        tryToConnectRef.current = true;
-        setCallConnectionState(false);
-        offerConnection();
-      });
-      try {
-        const localStream = await navigator.mediaDevices.getUserMedia({
-          audio: {
-            noiseSuppression: true, // Enable noise suppression
-            echoCancellation: true, // Optional: Reduce echo
-            autoGainControl: true, // Optional: Normalize audio levels
-          },
+      peerRef.current?.on("connection", async (connection) => {
+        tryToConnectRef.current = false;
+        peerRef.current!.connect(connection.peer);
+        connRef.current = connection;
+
+        connRef.current.on("open", function () {
+          connRef.current!.on("data", function (data) {});
+          //    connRef.current!.send("Hello World");
         });
-        // Set the audio stream as the local stream
-        setLocalStream(localStream);
-      //  streamAudioToWebSocket(localStream)
-        //startAudioProcessing();
-        //  startStreaming(localStream);
-        //  localMediaStreamRecorderRef.current =  createAudioRecorder(stream)
-        // Assign the stream to an audio element reference (for playback)
-        if (localAudioRef.current) {
-          localAudioRef.current.srcObject = localStream;
-        }
 
-        const call = peerRef.current!.call(
-          connection.peer,
-          localAudioRef.current!.srcObject as MediaStream
-        );
-
-        call.on("stream", (remoteStream) => {
-          setCallConnectionState(true);
-
-          recordMixedAudio(localStream, remoteStream);
-          /// remoteMediaStreamRecorderRef.current =  createAudioRecorder(stream)
-
-          if (remoteAudioRef.current) {
-            remoteAudioRef.current.srcObject = remoteStream;
+        // Handle disconnection of the remote peer
+        connRef.current.on("close", () => {
+          tryToConnectRef.current = true;
+          setCallConnectionState(false);
+          offerConnection();
+        });
+        try {
+          const localStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              noiseSuppression: true, // Enable noise suppression
+              echoCancellation: true, // Optional: Reduce echo
+              autoGainControl: true, // Optional: Normalize audio levels
+            },
+          });
+          // Set the audio stream as the local stream
+          setLocalStream(localStream);
+          //  streamAudioToWebSocket(localStream)
+          //startAudioProcessing();
+          //  startStreaming(localStream);
+          //  localMediaStreamRecorderRef.current =  createAudioRecorder(stream)
+          // Assign the stream to an audio element reference (for playback)
+          if (localAudioRef.current) {
+            localAudioRef.current.srcObject = localStream;
           }
-          startAudioVisualProcessing(remoteStream);
-        });
-      } catch (error) {
-        console.error("Error accessing local audio:", error);
-      }
-    });
-  }
+
+          const call = peerRef.current!.call(
+            connection.peer,
+            localAudioRef.current!.srcObject as MediaStream
+          );
+
+          call.on("stream", (remoteStream) => {
+            setCallConnectionState(true);
+
+            recordMixedAudio(localStream, remoteStream);
+            /// remoteMediaStreamRecorderRef.current =  createAudioRecorder(stream)
+
+            if (remoteAudioRef.current) {
+              remoteAudioRef.current.srcObject = remoteStream;
+            }
+            startAudioVisualProcessing(remoteStream);
+          });
+        } catch (error) {
+          console.error("Error accessing local audio:", error);
+        }
+      });
+    }
+    createPeer();
+  }, []);
   const offerConnection = () => {
     const interval = setInterval(() => {
       if (!tryToConnectRef.current) {
@@ -193,18 +207,11 @@ function Session(props: ComponentProps) {
           peerId: peerId.current,
         });
       }
-    }, 5000);
+    }, 100);
 
     return interval;
   };
 
-  useEffect(() => {
-    socket.emit("join-session", { callId: props.sessionId });
-    socket.on("ice-servers", createPeer);
-    return () => {
-      socket.off("ice-servers", createPeer);
-    };
-  }, []);
 
   /* useEffect(() => {
     const getLocalStream = async () => {
