@@ -24,18 +24,6 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-        {
-            protocol: 'https',                      // Specify the protocol
-            hostname: 'testforms.getinsightiq.com',  // Add the external hostname
-            port: '',                                // Optional: Leave empty for default port
-            pathname: '/advertisers/**',       // Specify the path or use '**' to match all sub-paths
-          },
-          {
-            protocol: 'https',                      // Specify the protocol
-            hostname: 'testforms.getinsightiq.com',  // Add the external hostname
-            port: '',                                // Optional: Leave empty for default port
-            pathname: '/advertisers/test-app/**',       // Specify the path or use '**' to match all sub-paths
-          },
           {
             protocol: 'http',                      // Specify the protocol
             hostname: 'localhost',  // Add the external hostname
