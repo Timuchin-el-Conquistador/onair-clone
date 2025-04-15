@@ -53,46 +53,49 @@ function Session(props: ComponentProps) {
     }
   };
 
-  function createPeer({ iceServers }: any) {
-       const isProduction =  process.env.NODE_ENV == "production"
-    peerRef.current = new Peer({
-      host:
-      isProduction
-          ? process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
-          : "localhost", // Your public IP or domain
-      port:isProduction ? 443 : 9000, // The port your PeerJS server is running on
-      path: "/myapp", // The path to your PeerJS server (configured in Apache)
-      secure: isProduction, // Set to true if using https
-      config: {
-        iceServers: iceServers.urls.map((url: string) => ({
-          urls: url, // Each URL should be a string
-          username: iceServers.username, // TURN server username
-          credential: iceServers.credential, // TURN server credential
-        })),
-      },
-    });
-
-    peerRef.current?.on("open", function (id) {});
-    peerRef.current!.on("call", (call) => {
-      call.answer(localAudioRef.current!.srcObject as MediaStream); // Answer the call
-      call.on("stream", (stream) => {
-        setCallConnectionState(true);
-
-        if (remoteAudioRef.current) {
-          remoteAudioRef.current.srcObject = stream;
-        }
-        startAudioVisualProcessing(stream);
-      });
-    });
-  }
-
   useEffect(() => {
     socket.emit("join-session", { callId: props.sessionId });
-    socket.on("ice-servers", createPeer);
-    return () => {
-      socket.off("ice-servers", createPeer);
-    };
-  }, [socket]);
+    function createPeer() {
+      const isProduction = process.env.NODE_ENV == "production";
+
+      const urls = [
+        ...process.env.NEXT_PUBLIC_XIRSYS_TURN_UDP!.split(","),
+        ...process.env.NEXT_PUBLIC_XIRSYS_TURN_TCP!.split(","),
+      ];
+
+      peerRef.current = new Peer({
+        host: isProduction
+          ? process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL
+          : "localhost", // Your public IP or domain
+        port: isProduction ? 443 : 9000, // The port your PeerJS server is running on
+        path: "/myapp", // The path to your PeerJS server (configured in Apache)
+        secure: isProduction, // Set to true if using https
+        config: {
+          iceServers: urls.map((url: string) => ({
+            urls: url, // Each URL should be a string
+            username: process.env.NEXT_PUBLIC_XIRSYS_USERNAME, // TURN server username
+            credential: process.env.NEXT_PUBLIC_XIRSYS_CREDENTIAL, // TURN server credential
+          })),
+        },
+      });
+
+      peerRef.current?.on("open", function (id) {});
+      peerRef.current!.on("call", (call) => {
+        call.answer(localAudioRef.current!.srcObject as MediaStream); // Answer the call
+        call.on("stream", (stream) => {
+          setCallConnectionState(true);
+
+          if (remoteAudioRef.current) {
+            remoteAudioRef.current.srcObject = stream;
+          }
+          startAudioVisualProcessing(stream);
+        });
+      });
+    }
+    createPeer();
+  }, []);
+
+
 
   useEffect(() => {
     function setConnection(data: { peerId: string }) {
