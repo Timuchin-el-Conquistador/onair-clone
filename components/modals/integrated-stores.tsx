@@ -30,29 +30,31 @@ const SlCheckbox = dynamic(
   }
 );
 type ComponentProps = {
-  setAvailableDevicesModalState: (state: boolean) => void;
-  unlinkDeviceFromUrl: (deviceId: string) => void;
-  linkDevices: () => void;
-  isAvailableDevicesModalOpen: boolean;
+    setIntegratedStoresModalState: (state: boolean) => void;
+    unlinkStores: (deviceId: string) => void;
+    linkStores: () => void;
+    isIntegratedStoresModalOpen: boolean;
   checkedIntegrations: Integration[];
-  availableDevices: Integration[];
-  connectedDevices: Integration[];
+  integratedStores: Integration[];
+  connectedStores: Integration[];
 };
-function AvailableDevices(props: ComponentProps) {
+
+function IntegratedStores(props: ComponentProps) {
+    console.log(props)
   return (
     <SlDialog
-      label="Devices"
+      label="Stores"
       className="dialog-overview with-header"
-      open={props.isAvailableDevicesModalOpen}
+      open={props.isIntegratedStoresModalOpen}
       onSlAfterHide={() => {
-        props.setAvailableDevicesModalState(false);
+        props.setIntegratedStoresModalState(false);
       }}
     >
       <div className="bg-white rounded-md border border-gray-200">
         <div className="divide-y divide-gray-200 max-h-[40vh] overflow-scroll">
           <div className="flex flex-row pl-3 py-3 hover:bg-stone-100 text-sm h-16 cursor-pointer">
-            {props.availableDevices.map((device: Integration) => (
-              <Fragment key={device._id}>
+            {props.integratedStores.map((store: Integration) => (
+              <Fragment key={store._id}>
                 <SlCheckbox
                   size="small"
                   form=""
@@ -63,24 +65,24 @@ function AvailableDevices(props: ComponentProps) {
                     const checked = (event.target as HTMLInputElement).checked;
 
                     if (checked) {
-                      props.checkedIntegrations.push(device);
+                      props.checkedIntegrations.push(store);
                     } else {
-                      props.unlinkDeviceFromUrl(device._id);
+                      props.unlinkStores(store._id);
                     }
                   }}
                   checked={
-                    props.connectedDevices.findIndex(
-                      (el: Integration) => el._id == device._id
+                    props.connectedStores.findIndex(
+                      (el: Integration) => el._id == store._id
                     ) > -1
                   }
                 ></SlCheckbox>{" "}
                 <div className="flex flex-col w-full truncate ml-1">
                   <p className="text-gray-900 truncate font-medium">
-                    {device.owner.fullName}
+                    {store.name}
                   </p>{" "}
                   <p className="text-gray-500 text-xs truncate items-center">
-                    Mobile
-                    <span className="ml-0.5">{device.description}</span>
+                    From
+                    <span className="ml-0.5">{store.from}</span>
                   </p>
                 </div>
               </Fragment>
@@ -90,8 +92,8 @@ function AvailableDevices(props: ComponentProps) {
       </div>
 
       <div className="mt-2 text-sm">
-        <a href="/integrations" target="_blank" className="text-blue-500">
-          + Add Device
+        <a href="/integrations/new/shopify" target="_blank" className="text-blue-500">
+          + Add Store
         </a>
       </div>
 
@@ -103,7 +105,7 @@ function AvailableDevices(props: ComponentProps) {
           data-optional=""
           data-valid=""
           onClick={() => {
-            props.setAvailableDevicesModalState(false);
+            props.setIntegratedStoresModalState(false);
           }}
         >
           Cancel
@@ -114,7 +116,7 @@ function AvailableDevices(props: ComponentProps) {
           size="medium"
           data-optional=""
           data-valid=""
-          onClick={props.linkDevices}
+          onClick={props.linkStores}
         >
           Save
         </SlButton>
@@ -123,4 +125,4 @@ function AvailableDevices(props: ComponentProps) {
   );
 }
 
-export default AvailableDevices;
+export default IntegratedStores;

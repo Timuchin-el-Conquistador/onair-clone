@@ -6,7 +6,7 @@ import { useRef, useState,useEffect } from "react";
 
 import Link from "next/link"
 
-import { type Integration as IIntegration } from "@/lib/types//user";
+import { type Integration as IIntegration } from "@/lib/types/integration";
 
 const SlRelativeTime = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/relative-time/index.js"),

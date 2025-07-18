@@ -39,19 +39,6 @@ export interface NewUser {
 
 
 
-export interface  Integration  {
-  integrationType: string;
-  owner: User;
-  integratedOn: string;
-  _id: string;
-  createdOn: string;
-  lastLogin: string;
-  name: string;
-  uuid: string;
-  links:Link[]
-  toObject: () => Integration;
-  [key: string]: unknown;
-};
 
 
 export interface Session{

@@ -1,7 +1,7 @@
 import "@/styles/integrations/new-integration.scss";
 
 import Layout from "@/components/layouts/private";
-import Integration from "@/components/Integrations/";
+import Integration from "@/components/Form/edit/device";
 
 import { retrieveIntegration } from "@/lib/actions/user";
 

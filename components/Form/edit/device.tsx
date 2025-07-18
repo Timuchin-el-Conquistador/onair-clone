@@ -1,24 +1,38 @@
-
-'use client'
+"use client";
 
 import dynamic from "next/dynamic";
 
-import '@/styles/integrations/device.scss'
+import "@/styles/integrations/device.scss";
 
-import { type Integration as IIntegration } from "@/lib/types/user";
+import { type Integration as IIntegration } from "@/lib/types/integration";
+
+import Spinner from "@/components/Loaders/spinner";
+import { useRef, useState } from "react";
 
 const SlTooltip = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/tooltip/index.js"),
   {
-   // loading: () => <>Loading...</>,
+    // loading: () => <>Loading...</>,
+    ssr: false,
+  }
+);
+const SlButton = dynamic(
+  () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
+  {
+    // loading: () => <>Loading...</>,
     ssr: false,
   }
 );
 type ComponentProps = {
-  integration:IIntegration|null
-}
+  integration: IIntegration | null;
+};
 
-function Integration(props:ComponentProps) {
+function Integration(props: ComponentProps) {
+  const [error, setErrorMessage] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccessMesssage] = useState<string>("");
+
+  const deviceNameRef = useRef<HTMLInputElement | null>(null);
   return (
     <div className="p-6">
       <div className="bg-white p-6">
@@ -26,7 +40,7 @@ function Integration(props:ComponentProps) {
           <div className="mb-6 border-b border-gray-200">
             <div className="flex items-center justify-between flex-wrap sm:flex-nowrap">
               <h3 className="text-2xl text-gray-900 pb-4">
-                {props.integration?.integrationType}<span className="text-gray-400 ml-2"></span>
+                Mobile <span className="text-gray-400 ml-2"></span>
               </h3>
             </div>
           </div>
@@ -53,6 +67,7 @@ function Integration(props:ComponentProps) {
                     placeholder="My Phone, Joe's Phone"
                     className="w-full sm:text-sm"
                     defaultValue={props.integration?.name}
+                    ref={deviceNameRef}
                   />{" "}
                   <span className="text-sm text-gray-500">
                     Help to identify the linked devices.
@@ -99,11 +114,27 @@ function Integration(props:ComponentProps) {
           action=""
           className="bg-white grid grid-cols-2 mt-24"
         >
-          <div className="text-left">
-            <button className="btn btn-red text-lg inline-block">Delete</button>
-          </div>{" "}
-          <div className="text-right">
-            <button className="btn btn-blue text-lg inline-block">Save</button>
+          <div className="w-full flex items-center justify-between mt-16 mb-1">
+            <SlButton
+              variant="default"
+              size="medium"
+              data-optional=""
+              data-valid=""
+              className="inline-block w-50"
+              onClick={() => {}}
+            >
+              Cancel
+            </SlButton>{" "}
+            <SlButton
+              variant="primary"
+              size="medium"
+              data-optional=""
+              data-valid=""
+              className="inline-block w-50"
+              onClick={async () => {}}
+            >
+              {loading ? <Spinner /> : "Save"}
+            </SlButton>
           </div>
         </form>
       </div>
@@ -111,5 +142,4 @@ function Integration(props:ComponentProps) {
   );
 }
 
-
-export default Integration
+export default Integration;

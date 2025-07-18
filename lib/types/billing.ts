@@ -1,6 +1,7 @@
 export interface Plan {
   name: string;
   priceId: string;
+  priceTestId: string;
   active: boolean;
   status: string;
   price: string;
@@ -12,5 +13,5 @@ export interface Plan {
   expiration: string;
   subscriptionPeriod: string;
   subscriptionId: string;
-  daysLeftToExpiration:number
+  daysLeftToExpiration: number;
 }

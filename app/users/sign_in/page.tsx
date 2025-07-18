@@ -69,7 +69,7 @@ function Login() {
         className="w-full border-t-4 border-brand-400 absolute top-0 left-0 right-0 z-50"
       ></div>
       <div className="mx-auto w-full text-center">
-        <Image className="inline-block w-16 mt-8" src={Logo} alt="ShopLine" />
+        <Image className="inline-block w-16 mt-8" src={Logo} alt="Shoporia" />
         <h2 className="text-xl mt-4">Sign-in to your account</h2>
         <h3 className=" text-sm font-medium text-gray-600">
           or <Link href="/users/sign_up">start your 7-day free trial</Link>

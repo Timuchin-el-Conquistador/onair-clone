@@ -7,20 +7,22 @@ import { validateToken } from "./utils/session";
 const routes = [
   /^\/dashboard$/,
   /^\/embed$/,
-  /^\/embed\/([a-zA-Z0-9]+)$/,
-  /^\/([a-zA-Z0-9]+)$/,
+  /^\/embed\/([a-zA-Z0-9\-]+)$/,
+  /^\/([a-zA-Z0-9\-]+)$/,
   /^\/calls$/,
-  /^\/calls\/([a-zA-Z0-9]+)$/,
-  /^\/calls\/([a-zA-Z0-9]+)\/recording$/,
-  /^\/session\/([a-zA-Z0-9]+)\/([a-zA-Z0-9]+)$/,
+  /^\/calls\/([a-zA-Z0-9\-]+)$/,
+  /^\/calls\/([a-zA-Z0-9\-]+)\/recording$/,
+  /^\/calls\/([a-zA-Z0-9\-]+)\/voicemail$/,
+  /^\/session\/([a-zA-Z0-9\-]+)\/([a-zA-Z0-9\-]+)$/,
   /^\/settings$/,
   /^\/integrations$/,
   /^\/integrations\/new$/,
   /^\/integrations\/new\/mobile$/,
+  /^\/integrations\/new\/shopify$/,
   /^\/integrations\/update$/,
-  /^\/integrations\/update\/([a-zA-Z0-9]+)$/,
+  /^\/integrations\/update\/([a-zA-Z0-9\-]+)$/,
   /^\/pages\/new$/,
-  /^\/pages\/edit\/([a-zA-Z0-9]+)$/,
+  /^\/pages\/edit\/([a-zA-Z0-9\-]+)$/,
   /^\/billing$/,
   /^\/billing\/choose_plan$/,
   /^\/users\/sign_out$/,
@@ -38,18 +40,20 @@ const routes = [
 const protectedRoutes = [
   /^\/dashboard$/,
   /^\/embed$/,
-  /^\/embed\/([a-zA-Z0-9]+)$/,
+  /^\/embed\/([a-zA-Z0-9\-]+)$/,
   /^\/calls$/,
-  /^\/calls\/([a-zA-Z0-9]+)$/,
-  /^\/calls\/([a-zA-Z0-9]+)\/recording$/,
+  /^\/calls\/([a-zA-Z0-9\-]+)$/,
+  /^\/calls\/([a-zA-Z0-9\-]+)\/recording$/,
+  /^\/calls\/([a-zA-Z0-9\-]+)\/voicemail$/,
   /^\/settings$/,
   /^\/integrations$/,
   /^\/integrations\/new$/,
   /^\/integrations\/new\/mobile$/,
+  /^\/integrations\/new\/shopify$/,
   /^\/integrations\/update$/,
-  /^\/integrations\/update\/([a-zA-Z0-9]+)$/,
+  /^\/integrations\/update\/([a-zA-Z0-9\-]+)$/,
   /^\/pages\/new$/,
-  /^\/pages\/edit\/([a-zA-Z0-9]+)$/,
+  /^\/pages\/edit\/([a-zA-Z0-9\-]+)$/,
   /^\/billing$/,
   /^\/billing\/choose_plan$/,
   /^\/users\/sign_out$/,
@@ -71,25 +75,27 @@ const publicRoutes = [
 const requireActiveSubscriptionRoutes = [
   /^\/dashboard$/,
   /^\/embed$/,
-  /^\/embed\/([a-zA-Z0-9]+)$/,
+  /^\/embed\/([a-zA-Z0-9\-]+)$/,
   /^\/calls$/,
-  /^\/calls\/([a-zA-Z0-9]+)$/,
-  /^\/calls\/([a-zA-Z0-9]+)\/recording$/,
+  /^\/calls\/([a-zA-Z0-9\-]+)$/,
+  /^\/calls\/([a-zA-Z0-9\-]+)\/recording$/,
+  /^\/calls\/([a-zA-Z0-9\-]+)\/voicemail$/,
   /^\/integrations$/,
   /^\/integrations\/new$/,
   /^\/integrations\/new\/mobile$/,
+  /^\/integrations\/new\/shopify$/,
   /^\/integrations\/update$/,
-  /^\/integrations\/update\/([a-zA-Z0-9]+)$/,
+  /^\/integrations\/update\/([a-zA-Z0-9\-]+)$/,
   /^\/pages\/new$/,
-  /^\/pages\/edit\/([a-zA-Z0-9]+)$/,
+  /^\/pages\/edit\/([a-zA-Z0-9\-]+)$/,
 ];
 
 export default async function middleware(req: NextRequest) {
   // 2. Check if the current route is protected or public
   const path = req.nextUrl.pathname;
-  const token = req.nextUrl.searchParams.get("token");
-
-  if (token) {
+ // const token = req.nextUrl.searchParams.get("token");
+  const shopifyToken = req.nextUrl.searchParams.get("shopify_token");
+  /*if (token) {
     try {
       // Validate and extract user data from the token (replace with your actual token validation logic)
       const userData = await validateToken(token); // Your function to validate the token
@@ -102,6 +108,24 @@ export default async function middleware(req: NextRequest) {
         // Redirect to the dashboard or default authenticated page
         return response;
       }
+    } catch (error) {
+      // Redirect to login on invalid token
+      return NextResponse.redirect(new URL("/users/sign_in", req.nextUrl));
+    }
+  }*/
+  if (shopifyToken) {
+    try {
+      // Validate and extract user data from the token (replace with your actual token validation logic)
+      //const shop = await validateToken(shopifyToken); // Your function to validate the token
+      //    if (shop) {
+      // Encrypt and set the session cookie
+      const response = NextResponse.next();
+      //const session = await encrypt(shop);
+      response.cookies.set("shopify", shopifyToken);
+
+      // Redirect to the dashboard or default authenticated page
+      return response;
+      //     }
     } catch (error) {
       // Redirect to login on invalid token
       return NextResponse.redirect(new URL("/users/sign_in", req.nextUrl));

@@ -7,11 +7,19 @@ import Layout from "@/components/layouts/private";
 async function NewIntegration() {
   return (
     <Layout page="integrations" sidebar={true} notifications={true}>
-      <div id="main" className="p-6">
+      <div id="main" className="p-6 flex gap-4 flex-wrap gap-4">
         <div className="integ-card">
           <img src="/external-logos/mobile.svg" /> <h5>Mobile</h5>{" "}
           <p>Receive a mobile notification upon meetings.</p>{" "}
           <a href="/integrations/new/mobile" className="btn btn-blue">
+            Add Integration
+          </a>
+        </div>{" "}
+
+        <div className="integ-card">
+          <img src="/shopify.png" /> <h5>Shopify store</h5>{" "}
+          <p>Connect your Shopify store for real-time in-store support and VoIP communication.</p>{" "}
+          <a href="/integrations/new/shopify" className="btn btn-blue">
             Add Integration
           </a>
         </div>{" "}

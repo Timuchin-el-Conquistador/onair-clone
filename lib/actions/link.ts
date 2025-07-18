@@ -14,7 +14,7 @@ export async function createUrlAction(
   linkName: string,
   callStrategy: string | null,
   connectedDevices: string[],
-  //  integrations:string[],
+  stores:string[],
   availability: string,
   settings: Settings
 ) {
@@ -30,6 +30,7 @@ export async function createUrlAction(
       linkName,
       callStrategy,
       connectedDevices,
+      stores,
       availability,
       settings,
       userId: session.userId,
@@ -50,6 +51,7 @@ export async function updateUrlAction(
   linkName: string,
   callStrategy: string | null,
   connectedDevices: string[],
+  stores:string[],
   availability: string,
   settings: Settings
 ) {
@@ -66,6 +68,7 @@ export async function updateUrlAction(
       linkName,
       callStrategy,
       connectedDevices,
+      stores,
       availability,
       settings,
       urlId,

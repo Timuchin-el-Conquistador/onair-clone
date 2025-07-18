@@ -65,8 +65,8 @@ function Signup() {
      <div id="stripe-bar" className="w-full border-t-4 border-brand-400 absolute top-0 left-0 right-0 z-50" ></div>
       <div className="authenticate-page p-4 sm:p-0">
         <div className="mx-auto w-full text-center">
-          <Image className="inline-block w-16 mt-8" src={Logo} alt="ShopLine" />
-          <h2 className="text-xl mt-4">Sign-up to ShopLine</h2>
+          <Image className="inline-block w-16 mt-8" src={Logo} alt="Shoporia" />
+          <h2 className="text-xl mt-4">Sign-up to Shoporia</h2>
           <h3 className=" text-sm font-medium text-gray-600">
             7-days free trial, no credit card required
           </h3>

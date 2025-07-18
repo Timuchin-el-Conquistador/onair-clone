@@ -1,11 +1,14 @@
+
 import Edit from ".";
 
 import Layout from "@/components/layouts/private";
+import InternalServerError from "@/components/Presentational/500";
 
 import { retrieveUrl, updateUrlAction } from "@/lib/actions/link";
-import { retrieveDevices } from "@/lib/actions/user";
-
+import { retrieveDevices, retrieveStoreIntegrations } from "@/lib/actions/user";
 async function EditPage(props: { params: { slug: string } }) {
+
+
   const urlResponse = await retrieveUrl(props.params.slug);
   const url =
     urlResponse instanceof Error || urlResponse == null ? null : urlResponse;
@@ -15,8 +18,17 @@ async function EditPage(props: { params: { slug: string } }) {
     devicesResponse instanceof Error || devicesResponse == null
       ? []
       : devicesResponse;
+  const retrieveIntegratedResponse = await retrieveStoreIntegrations();
+  const stores =
+  retrieveIntegratedResponse instanceof Error ||
+  retrieveIntegratedResponse == null
+      ? []
+      : retrieveIntegratedResponse;
 
-  if (url == null) return;
+
+  if (url == null) {
+    return <InternalServerError />;
+  };
   const isProduction = process.env.NODE_ENV == "production";
   return (
     <Layout page="pages" sidebar={true} notifications={true}>
@@ -30,7 +42,6 @@ async function EditPage(props: { params: { slug: string } }) {
           availability: url.availability,
           callStrategy: url.callStrategy,
           connectedDevices: url.connectedDevices,
-          integrations: url.integrations,
           linkName: url.linkName,
           settings: {
             visitorForm: url.settings.visitorForm,
@@ -38,11 +49,11 @@ async function EditPage(props: { params: { slug: string } }) {
             offlineMessage: url.settings.offlineMessage,
             recording: true,
           },
+          stores: url.stores,
         }}
         updateUrlAction={updateUrlAction}
-        hasConnectedDevices={url.connectedDevices.length > 0}
-        hasDevices={devices.length > 0}
         devices={devices}
+        stores={stores}
       />
     </Layout>
   );

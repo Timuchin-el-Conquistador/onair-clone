@@ -5,10 +5,9 @@ import Layout from "@/components/layouts/private";
 import { retrieveCall } from "@/lib/actions/call";
 
 async function DetailsPage(props: { params: { sessionId: string } }) {
+  
   const response = await retrieveCall(props.params.sessionId);
   const call = response instanceof Error || response == null ? null : response;
-
-
 
   if (call == null) return;
 

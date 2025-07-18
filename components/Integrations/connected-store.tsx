@@ -15,12 +15,12 @@ const SlTooltip = dynamic(
 
 
 type ComponentProps = {
-  removeDeviceFromLink:(deviceId:string) => void,
-    device:Integration
+    removeStoreFromLink:(storeId:string) => void,
+    store:Integration
 }
 
 
-function ConnectedDevice(props:ComponentProps){
+function ConnectedStore(props:ComponentProps){
 
 
     return(
@@ -49,15 +49,15 @@ function ConnectedDevice(props:ComponentProps){
           style={{ maxWidth: "200px" }}
         >
           <div className="text-sm font-medium truncate flex items-center">
-            <Image src="/external-logos/mobile.svg" width={25} height={25} alt='device integration' />{" "}
-            <span className="truncate ml-4">{props.device.description}</span>
+            <Image src={props.store.from == 'shopify' ? '/shopify.png' : ''} width={25} height={25} alt='device integration' />{" "}
+            <span className="truncate ml-4">{props.store.name}</span>
           </div>
         </SlTooltip>{" "}
         <button
           type="button"
           aria-label="Close"
           className="ml-auto text-gray-500 rounded-full p-1 hover:bg-gray-50 inline-flex items-center justify-center h-8 w-8"
-          onClick={() => props.removeDeviceFromLink(props.device._id)}
+          onClick={() => props.removeStoreFromLink(props.store._id)}
         >
           <svg
             width="24"
@@ -80,4 +80,4 @@ function ConnectedDevice(props:ComponentProps){
 
 
 
-export default ConnectedDevice
+export default ConnectedStore

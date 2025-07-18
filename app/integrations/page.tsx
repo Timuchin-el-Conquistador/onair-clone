@@ -1,7 +1,7 @@
 
 import Integrations from ".";
 
-import { retrieveIntegrations } from "@/lib/actions/user";
+import {retrieveIntegrationsActions, removeIntegration } from "@/lib/actions/user";
 import { retrieveSession } from "@/lib/session";
 import { type Session } from "@/lib/types/user";
 
@@ -12,12 +12,7 @@ import Layout from "@/components/layouts/private";
 
 
 async function IntegrationsPage() {
-  const response = await retrieveIntegrations();
-  const integrations =
-  response instanceof Error ||
-  response == null
-      ? []
-      : response;
+
 
   const session = await retrieveSession() as Session;
   if (session == null) {
@@ -28,7 +23,8 @@ async function IntegrationsPage() {
   return (
     <Layout page="integrations" sidebar={true} notifications={true}>
       <Integrations
-        integrations={integrations}
+           retrieveIntegrationsActions={retrieveIntegrationsActions}
+           removeIntegration={removeIntegration}
         monthlyIntegrationsCapacity={session.monthlyIntegrationsCapacity as number}
         planName={session.planName}
       />

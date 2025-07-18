@@ -107,7 +107,7 @@ function ConfirmEmail() {
         </div>
 
         <div className="mt-6 text-base text-justify leading-6">
-          You need to confirm your email before using ShopLine. Please check
+          You need to confirm your email before using Shoporia. Please check
           your inbox for confirmation link and further instructions. <br />
           <br />
           If you cannot immediately find the email, please check your SPAM

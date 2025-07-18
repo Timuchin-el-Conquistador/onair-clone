@@ -52,11 +52,6 @@ function ChoosePlan(props: PageProps) {
   }, [props.plans, plans]);
 
 
-  const plan = useMemo(() => {
-    const index = props.plans.findIndex((el) => el.active)
-    return props.plans[index]
-  }, [props.plans, plans]);
-
 
 
 
@@ -126,11 +121,8 @@ function ChoosePlan(props: PageProps) {
             
                 const plan = plans.filter((el) => el.active)[0];
 
-                if(plan){
-
-                }
                 const response = await props.createSubscriptionSessionAction(
-                  plan.priceId
+                  plan.priceTestId
                 );
                 const sessionUrl =
                   response instanceof Error || response == null
@@ -139,7 +131,7 @@ function ChoosePlan(props: PageProps) {
 
               
                 if (sessionUrl) {
-                  window.open(sessionUrl);
+                 window.open(sessionUrl);
                 }
               }}
             >

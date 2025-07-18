@@ -1,14 +1,14 @@
-import { type Device } from "./device";
-import { type User, type Integration } from "./user";
+
+import { type Integration } from "./integration";
 
 export interface Link {
   _id?: string;
   slug: string;
-  connectedDevices: Device[];
+  connectedDevices: Integration[];
+  stores:Integration[],
   callStrategy: string | null;
   availability: string;
   linkName: string;
-  integrations: Integration[];
   settings: Settings;
   owner:{email:string,_id:string,fullName:string}
 }

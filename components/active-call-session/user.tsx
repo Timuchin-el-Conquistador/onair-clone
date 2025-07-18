@@ -284,7 +284,7 @@ function Session(props: ComponentProps) {
       const domain = isProduction
         ? `https://${process.env.NEXT_PUBLIC_PRODUCTION_BACKEND_URL}`
         : `http://${process.env.NEXT_PUBLIC_LOCAL_BACKEND_URL}`;
-      const audioBlob = new Blob(chunks, { type: "audio/mp4" });
+      const audioBlob = new Blob(chunks, { type: "audio/mp3" });
       const form = new FormData();
       form.append("audio-record", audioBlob);
       await axios.post(

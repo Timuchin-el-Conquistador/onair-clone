@@ -69,7 +69,7 @@ function Notifications({
     linkName: string,
     callStrategy: string | null,
     connectedDevices: string[],
-    //integrations: string[],
+    stores: string[],
     availability: string,
     settings: Settings
   ) => Promise<{ status: number; message: string }>;
@@ -105,7 +105,7 @@ function Notifications({
     slug: "",
     availability: "offline",
     linkName: "Call me",
-    // integrations: [],
+    stores:[],
     callStrategy: null,
     connectedDevices: [],
     settings: {
@@ -124,6 +124,7 @@ function Notifications({
       form.link.linkName,
       form.link.callStrategy,
       form.link.connectedDevices.map((el) => el._id),
+      form.link.stores.map((el) => el._id),
       form.link.availability,
       form.link.settings
     );

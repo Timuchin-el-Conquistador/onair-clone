@@ -73,9 +73,9 @@ function Dashboard(props: PageProps) {
           <Card
             slug={link.slug}
             availability={link.availability}
-            integrations={link.integrations}
             linkName={link.linkName}
             connectedDevices={link.connectedDevices}
+            stores={link.stores}
             totalCallDuration={link.totalCallDuration}
             hasConnectedDevice={link.connectedDevices.length > 0}
             removeLink={(slug) => {

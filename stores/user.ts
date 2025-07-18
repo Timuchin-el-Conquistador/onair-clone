@@ -63,20 +63,20 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
       if (user.password != user.confirmPassword) {
         return set((prevState) => ({
           ...prevState,
-          error: new Error("Şifrə və şifrə təsdiqi eyni olmalıdır."),
+          error: new Error("Password and password confirmation must be the same."),
         }));
       }
 
       if (user.password == null) {
         return set((prevState) => ({
           ...prevState,
-          error: new Error("Yeni şifrə yaradılmayıb."),
+          error: new Error("New password has not been provided."),
         }));
       }
       if (user.confirmPassword == null) {
         return set((prevState) => ({
           ...prevState,
-          error: new Error("Şifrə və təsdiq şifrəsi uyğun deyil."),
+          error: new Error("Password and confirmation password do not match."),
         }));
       }
       set((prevState) => ({
@@ -92,6 +92,7 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
           fullName: user.fullName,
           password: user.password,
         });
+        console.log('RERPONSE LOGIN', response)
         // await createSession(response.response._id, response.response.email);
         sessionStorage.setItem("registration-email", user.email);
         set((prevState) => ({

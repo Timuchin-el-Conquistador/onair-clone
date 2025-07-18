@@ -68,7 +68,7 @@ function NoDevice(props: ComponentProps) {
                   Reduce missed calls
                 </h2>{" "}
                 <p className="text-sm mb-1">
-                  Download ShopLine mobile app to stay connected
+                  Download Shoporia mobile app to stay connected
                   wherever you are.
                 </p>
               </div>
