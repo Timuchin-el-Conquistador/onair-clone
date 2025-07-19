@@ -3,7 +3,7 @@ import Recording from ".";
 import Layout from "@/components/layouts/private";
 import { retrieveSubscription } from "@/lib/actions/billing";
 
-import { retrieveAudioRecordUrlAction } from "@/lib/actions/call";
+import { retrieveVoicemail } from "@/lib/actions/call";
 
 async function RecordingPage(props: { params: { sessionId: string } }) {
 
@@ -16,7 +16,7 @@ response instanceof Error || response == null ? null : response;
     <Layout page="calls" sidebar={true} notifications={true}>
       <Recording
         callId={props.params.sessionId}
-        retrieveAudioRecordUrlAction={retrieveAudioRecordUrlAction}
+        retrieveVoicemail={retrieveVoicemail}
         planName={subscription.planName}
       />
     </Layout>

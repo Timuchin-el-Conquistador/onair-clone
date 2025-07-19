@@ -66,3 +66,26 @@ export async function retrieveAudioRecordUrlAction(callId:string) {
 
 
 
+export async function retrieveVoicemail(callId:string) {
+  'use server'
+  try {
+    const session = await verifySession();
+
+    if (!session) return redirect("/users/sign_in");
+    const path = `api/v1/user/${session.email}/calls/${callId}/voicemail`;
+
+    const response: { message: string,voicemailUrl:string } = await fakeBackend.get(
+      path
+    );
+
+    return { status:200, message:response.message,voicemailUrl:response.voicemailUrl };
+  } catch (error) {
+    return { status:400, message: error instanceof Error ? error.message : String(error),voicemailUrl:null  };
+  }
+}
+
+
+
+
+
+

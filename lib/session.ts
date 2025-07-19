@@ -108,6 +108,16 @@ export async function retrieveSession() {
   }
   return session;
 }
+export async function retrieveShopifyStore() {
+  "use server";
+
+  const cookie = (await cookies()).get("shopify");
+  const store = await decrypt(cookie?.value);
+  if (!store?.storeId) {
+    return { storeId: null };
+  }
+  return store;
+}
 export async function deleteSessionAction() {
   "use server";
   // Access cookies and delete the session cookie

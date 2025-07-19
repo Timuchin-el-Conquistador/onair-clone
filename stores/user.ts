@@ -6,7 +6,11 @@ import { verifySession } from "@/lib/dal";
 
 import { Account, type NewUser, type User } from "@/lib/types/user";
 
-import { createSession, updateSession } from "@/lib/session";
+import {
+  createSession,
+  updateSession,
+  retrieveShopifyStore,
+} from "@/lib/session";
 
 export type UserState = {
   loading: boolean;
@@ -63,7 +67,9 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
       if (user.password != user.confirmPassword) {
         return set((prevState) => ({
           ...prevState,
-          error: new Error("Password and password confirmation must be the same."),
+          error: new Error(
+            "Password and password confirmation must be the same."
+          ),
         }));
       }
 
@@ -87,12 +93,15 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
       }));
       try {
         const path = `api/v1/user/signup`;
+
+        const store = await retrieveShopifyStore();
+
         const response: { message: string } = await fakeBackend.post(path, {
           email: user.email,
           fullName: user.fullName,
           password: user.password,
+          storeId: store.storeId,
         });
-        console.log('RERPONSE LOGIN', response)
         // await createSession(response.response._id, response.response.email);
         sessionStorage.setItem("registration-email", user.email);
         set((prevState) => ({

@@ -95,7 +95,7 @@ function Recording(props: PageProps) {
                     <source src={recordUrl} type="audio/mp3" /> Your browser
                     does not support the audio element.
                   </audio>
-                ) : (
+                ) : recordUrl ? (
                   <span>
                     Recording is not available on the Basic Plan. Please{" "}
                     <a href="/billing/choose_plan" className="text-blue-500">
@@ -104,11 +104,11 @@ function Recording(props: PageProps) {
                     </a>{" "}
                     to a higher plan to access this feature.
                   </span>
-                )}
+                ) : null}
               </div>
             </div>
           )}
-          {!loading && !recordUrl && <h1>No Audio Records</h1>}
+    {!loading && !recordUrl && <h1>No Audio Records</h1>}
           {!loading && transcriptionUrl && (
             <div id="transcription" className="mt-6">
               <div className="mt-2 items-center dotted-container text-gray-400">
@@ -116,7 +116,7 @@ function Recording(props: PageProps) {
                   <a download={props.callId + "json"} href={transcriptionUrl}>
                     Download Transcription
                   </a>
-                ) : (
+                ) : recordUrl ?  (
                   <span>
                     Transcription is not available on the Basic Plan. Please{" "}
                     <a href="/billing/choose_plan" className="text-blue-500">
@@ -125,7 +125,7 @@ function Recording(props: PageProps) {
                     </a>{" "}
                     to a higher plan to access this feature.
                   </span>
-                )}
+                ) : null}
               </div>
             </div>
           )}

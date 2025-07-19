@@ -40,7 +40,6 @@ type ComponentProps = {
 };
 
 function IntegratedStores(props: ComponentProps) {
-    console.log(props)
   return (
     <SlDialog
       label="Stores"

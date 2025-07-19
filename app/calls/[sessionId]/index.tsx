@@ -119,11 +119,13 @@ function Details(props: PageProps) {
                 <td>Device</td>
                 <td>
                   {props.caller.country}, {props.caller.countryCode} (
-                  <small>
-                    {props.caller.info.browser},{" "}
-                    {props.caller.info.operatingSystem},{" "}
-                    {props.caller.info.device}
-                  </small>
+                {props.caller?.info && (
+                    <small>
+                      {props.caller.info.browser},{" "}
+                      {props.caller.info.operatingSystem},{" "}
+                      {props.caller.info.device}
+                    </small>
+                  )}
                   )
                 </td>
               </tr>{" "}

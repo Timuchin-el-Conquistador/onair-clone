@@ -40,7 +40,7 @@ export async function retrieveStoreIntegrations() {
 
     if (!session) return redirect("/users/sign_in");
 
-    const path = `api/v1/user/${session.email}/integrations/shopify/stores`;
+    const path = `api/v1/user/${session.email}/integrations/stores`;
     const response: { message: string; stores: Integration[] } =
       await fakeBackend.get(path);
 

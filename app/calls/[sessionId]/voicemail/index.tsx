@@ -12,34 +12,31 @@ import { AudioLoadingSkeletonPulse } from "@/components/Loaders/pulse";
 type PageProps = {
   callId: string;
   planName: string;
-  retrieveAudioRecordUrlAction: (callId: string) => Promise<{
+  retrieveVoicemail: (callId: string) => Promise<{
     status: number;
     message: string;
-    recordUrl: string | null;
-    transcriptionUrl: string | null;
+    voicemailUrl:string|null
   }>;
 };
 
 function Recording(props: PageProps) {
   const [recordUrl, setRecordUrl] = useState<string>();
-  const [transcriptionUrl, setTranscriptionUrl] = useState<string>();
   const [loading, setLoadingState] = useState(false);
   const [errpr, setErrorMessage] = useState(false);
   useEffect(() => {
     async function retrieveCallRecordId(callId: string) {
       setLoadingState(true);
-      const response = await props.retrieveAudioRecordUrlAction(callId);
+      const response = await props.retrieveVoicemail(callId);
 
       if (response.status == 200) {
-        setRecordUrl(response.recordUrl!);
-        setTranscriptionUrl(response.transcriptionUrl!);
+        setRecordUrl(response.voicemailUrl!);
+
       }
       setLoadingState(false);
     }
 
     retrieveCallRecordId(props.callId);
   }, []);
-
   return (
     <div id="session" className="p-6">
       <div className="bg-white p-6">
@@ -95,7 +92,7 @@ function Recording(props: PageProps) {
                     <source src={recordUrl} type="audio/mp3" /> Your browser
                     does not support the audio element.
                   </audio>
-                ) : (
+                ) : recordUrl ? (
                   <span>
                     Voicemail is not available on the Basic Plan. Please{" "}
                     <a href="/billing/choose_plan" className="text-blue-500">
@@ -104,12 +101,13 @@ function Recording(props: PageProps) {
                     </a>{" "}
                     to a higher plan to access this feature.
                   </span>
+                ) : (
+                   null
                 )}
               </div>
             </div>
           )}
           {!loading && !recordUrl && <h1>No Audio Records</h1>}
-
         </div>
       </div>
     </div>
