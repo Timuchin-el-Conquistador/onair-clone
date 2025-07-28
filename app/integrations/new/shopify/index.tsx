@@ -43,7 +43,7 @@ function ShopifyStoreIntegrationPage(props: PageProps) {
     setLoading(true);
     const response = await props.createShopifyIntegrationAction(storeName);
 
-    if (response.status === 400) {
+    if (response.status !== 200) {
       setLoading(false);
       setErrorMessage(response.message);
 
@@ -54,7 +54,11 @@ function ShopifyStoreIntegrationPage(props: PageProps) {
     }
     setLoading(false);
     setSuccessMesssage("Store authentification is succeseful");
- /*   if (response.message == "authentification-required") {
+
+    setTimeout(() => {
+      router.push("/integrations");
+    }, 2000);
+    /*   if (response.message == "authentification-required") {
       setAuthRequiredState(true);
 
       setTimeout(() => {

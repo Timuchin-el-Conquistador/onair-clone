@@ -175,16 +175,16 @@ export async function retrieveAccountInformation() {
   }
 }
 
-export async function createShopifyIntegrationAction(storeDomain: string) {
+export async function createShopifyIntegrationAction(storeName: string) {
   try {
     const session = await verifySession();
 
     if (!session) return redirect("/users/sign_in");
 
-    const path = `api/v1/user/${session.email}/integrations/shopify/store/create`;
+    const path = `api/v1/user/${session.email}/integrations/store/create`;
 
     const response: { message: string; authUrl?: string } =
-      await fakeBackend.post(path, { storeDomain });
+      await fakeBackend.post(path, { storeName });
 
     return {
       status: 200,

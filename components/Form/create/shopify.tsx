@@ -58,10 +58,10 @@ const router = useRouter()
               <div>
                 <p className="mb-6">To update please specify the name below.</p>{" "}
                 <label className="block">
-                  <b>Shopify Store Domain</b>{" "}
+                  <b>Shopify Store Name</b>{" "}
                   <input
                     type="text"
-                    placeholder="shopify store domain"
+                    placeholder="shopify store name"
                     className="w-full sm:text-sm"
                     ref={storeDomainRef}
                   />{" "}

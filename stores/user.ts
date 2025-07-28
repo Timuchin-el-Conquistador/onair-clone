@@ -107,11 +107,12 @@ export const createUserStore = (initState: UserState = defaultInitState) => {
         set((prevState) => ({
           ...prevState,
           loading: false,
-          success: response.message,
+          success: "You can login now",
         }));
 
-        router.push("/users");
+        router.push("/users/sign_in");
       } catch (error) {
+        console.log(error)
         set((prevState) => ({
           ...prevState,
           loading: false,
