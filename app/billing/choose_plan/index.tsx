@@ -34,14 +34,12 @@ const SlIcon = dynamic(
 );
 type PageProps = {
   plans: Plan[];
-  createSubscriptionSessionAction: (
-    planId: string
-  ) => Promise<string | Error>;
+  createSubscriptionSessionAction: (planId: string) => Promise<string | Error>;
 };
 function ChoosePlan(props: PageProps) {
   const [plans, setPlans] = useState(props.plans);
 
-  const [billingPeriod, setBillingPeriod] = useState("monthly");
+  const [billingPeriod, setBillingPeriod] = useState("month");
 
   const isDisabled = useMemo(() => {
     return (
@@ -54,6 +52,7 @@ function ChoosePlan(props: PageProps) {
 
 
 
+  console.log(plans.filter(el => el.subscriptionPeriod == billingPeriod))
 
   return (
     <div className="p-6">
@@ -94,49 +93,47 @@ function ChoosePlan(props: PageProps) {
             <div className="flex w-40 bg-gray-100 rounded-md">
               <button
                 className={`btn text-gray-700 rounded-r-none w-1/2  text-white ${
-                  billingPeriod == "monthly" && "!btn-brand"
+                  billingPeriod == "month" && "!btn-brand"
                 }`}
                 onClick={() => {
-                  setBillingPeriod("monthly");
+                  setBillingPeriod("month");
                 }}
               >
                 Monthly
               </button>{" "}
-              {/*}  <button
+              <button
                 className={`btn text-gray-700 rounded-l-none w-1/2 ${
-                  billingPeriod == "yearly" && "!btn-brand"
+                  billingPeriod == "year" && "!btn-brand"
                 }`}
                 onClick={() => {
-                  setBillingPeriod("yearly");
+                  setBillingPeriod("year");
                 }}
               >
                 Yearly
-              </button>*/}
+              </button>
             </div>
           </div>{" "}
-          {billingPeriod == "monthly" ? (
-            <form
-              onSubmit={async (event) => {
-                event?.preventDefault();
-            
-                const plan = plans.filter((el) => el.active)[0];
+          <form
+          /*  onSubmit={async (event) => {
+              event?.preventDefault();
 
-                const response = await props.createSubscriptionSessionAction(
-                  plan.priceTestId
-                );
-                const sessionUrl =
-                  response instanceof Error || response == null
-                    ? null
-                    : response;
+              const plan = plans.filter((el) => el.active)[0];
 
-              
-                if (sessionUrl) {
-                 window.open(sessionUrl);
-                }
-              }}
-            >
-              {plans.map((plan: Plan) => (
-                <div key={plan.priceId}>
+              const response = await props.createSubscriptionSessionAction(
+                plan.priceTestId
+              );
+              const sessionUrl =
+                response instanceof Error || response == null ? null : response;
+
+              if (sessionUrl) {
+                window.open(sessionUrl);
+              }
+            }}*/
+          >
+            {plans
+              .filter((plan) => plan.subscriptionPeriod == billingPeriod)
+              .map((plan: Plan) => (
+                <div key={`${plan.name}-${plan.subscriptionPeriod}`}>
                   <label className={`plan ${plan.active && "border-blue-700"}`}>
                     <div className="flex md:flex-col justify-between col-span-2">
                       <input
@@ -168,10 +165,20 @@ function ChoosePlan(props: PageProps) {
                       <div className="md:mt-0 -mt-1">
                         <span className="text-2xl font-bold tracking-tight">
                           {plan.price}
+                          {plan.currency}
                           <small className="text-base font-medium">
                             /month
                           </small>{" "}
                         </span>
+
+                        {!!plan.saved && (
+                          <span className="text-2xl font-bold tracking-tight">
+                            Save {" "}
+                            <small className="text-base font-medium">
+                              {plan.saved}{plan.currency}
+                            </small>{" "}
+                          </span>
+                        )}
                       </div>
                     </div>{" "}
                     <div id="plan-limits" className="col-start-4">
@@ -198,7 +205,7 @@ function ChoosePlan(props: PageProps) {
                 </div>
               ))}
 
-              {/*<div className="text-sm -mt-2">
+            {/*<div className="text-sm -mt-2">
               <a href="https://ShopLine.io/pricing" target="_blank">
                 Compare Plans
               </a>
@@ -234,19 +241,19 @@ function ChoosePlan(props: PageProps) {
                 </div>
               </div>
             </div>{" "}*/}
-              <div className="py-4 mt-12 flex items-center justify-center">
-                {" "}
-                <input
-                  type="submit"
-                  value="Subscribe"
-                  className={`inline text-white border border-transparent rounded-md px-4 py-2 cursor-pointer ${
-                    !isDisabled && "bg-blue-500"
-                  }`}
-                  disabled={isDisabled}
-                />
-              </div>
-            </form>
-          ) : (
+            <div className="py-4 mt-12 flex items-center justify-center">
+              {" "}
+              <input
+                type="submit"
+                value="Subscribe"
+                className={`inline text-white border border-transparent rounded-md px-4 py-2 cursor-pointer ${
+                  !isDisabled && "bg-blue-500"
+                }`}
+                disabled={isDisabled}
+              />
+            </div>
+          </form>
+          {/*
             <form>
               <div>
                 <label className="plan">
@@ -548,7 +555,7 @@ function ChoosePlan(props: PageProps) {
                   <div>Fees: $90 /year </div>
                 </div>
               </div>
-            </div>{" "}*/}
+            </div>
               <div className="py-4 mt-12 flex items-center justify-center">
                 {" "}
                 <input
@@ -558,7 +565,7 @@ function ChoosePlan(props: PageProps) {
                 />{" "}
               </div>
             </form>
-          )}
+          )*/}
           <SlDialog
             label="Unable to Subscribe"
             className="with-header"

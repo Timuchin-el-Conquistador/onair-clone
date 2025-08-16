@@ -4,7 +4,9 @@ export interface Plan {
   priceTestId: string;
   active: boolean;
   status: string;
-  price: string;
+  price: number;
+  currency:string,
+  saved:number,
   features: string[];
   links: number;
   integrations: number;
