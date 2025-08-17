@@ -1,4 +1,3 @@
-
 import { Link } from "./links";
 import { User } from "./user";
 
@@ -12,10 +11,10 @@ export interface Integration {
   name: string;
   uuid: string;
   links: Link[];
-  description:string,
+  description: string;
   toObject: () => Integration;
   status: string;
-  from:string,
-  store:string;
+  from: string;
+  store: { domain: string; [key: string]: unknown };
   [key: string]: unknown;
 }

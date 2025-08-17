@@ -94,6 +94,39 @@ function Sidebar({
                     </svg>
                     Calls
                   </a>{" "}
+                  <a
+                    href="/onboarding"
+                    className={`dashboard-button ${
+                      page == "onboarding" && "selected"
+                    }`}
+                  >
+                    <svg
+                      width="24"
+                      height="24"
+                      fill="#9CA3AF"
+                      viewBox="0 0 1920 1920"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="dashboard-sidebar-icon"
+                      style={{ display: "inline-block" }}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                      <g
+                        id="SVGRepo_tracerCarrier"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      ></g>
+                      <g id="SVGRepo_iconCarrier">
+                        {" "}
+                        <path
+                          d="M1920 332v1257H0V332h1920Zm-115 114H115v1032h1690V446Zm-574 683v113H409v-113h822Zm275-226v113H409V903h1097Zm-275-226v113H409V677h822Z"
+                          fillRule="evenodd"
+                        ></path>{" "}
+                      </g>
+                    </svg>
+                    Onboarding
+                  </a>{" "}
                   {/*} <Link
                   href="/stats"
                   className={`dashboard-button ${
@@ -201,7 +234,7 @@ function Sidebar({
             </svg>{" "}
             <span className="text-xs block text-gray-700 mt-1">Calls</span>
           </Link>{" "}
-        {/*}  <Link
+          {/*}  <Link
             href="/stats"
             className="flex flex-col items-center justify-center w-full h-full "
           >
@@ -272,17 +305,15 @@ function Sidebar({
           </div>{" "}
           <div className="flex items-center space-x-2 pb-4">
             <div className="h-10 w-10 flex items-center justify-center rounded-full bg-gray-300 text-gray-700">
-              {fullName.split(' ')[0].split('')[0]}
+              {fullName.split(" ")[0].split("")[0]}
             </div>{" "}
             <div>
-              <p className="text-base font-medium text-gray-900">
-               {fullName}
-              </p>{" "}
+              <p className="text-base font-medium text-gray-900">{fullName}</p>{" "}
               <p className="text-sm text-gray-500">{email}</p>
             </div>
           </div>{" "}
           <nav>
-          <div className="mt-2 divide-y divide-gray-200 overflow-hidden">
+            <div className="mt-2 divide-y divide-gray-200 overflow-hidden">
               {/*}  <Link
                 href="/organizations"
                 className="flex items-center relative py-3 pl-2"
@@ -319,6 +350,51 @@ function Sidebar({
                   </svg>
                 </span>
               </Link>{" "}*/}
+              <Link
+                href="/onboarding"
+                className="flex items-center relative py-3 pl-2"
+              >
+                <svg
+                  fill="#000000"
+                  viewBox="0 0 1920 1920"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-gray-400"
+                  style={{ display: "inline-block" }}
+                  width="24"
+                  height="24"
+                >
+                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+                  <g
+                    id="SVGRepo_tracerCarrier"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></g>
+                  <g id="SVGRepo_iconCarrier">
+                    {" "}
+                    <path
+                      d="M1920 332v1257H0V332h1920Zm-115 114H115v1032h1690V446Zm-574 683v113H409v-113h822Zm275-226v113H409V903h1097Zm-275-226v113H409V677h822Z"
+                      fillRule="evenodd"
+                    ></path>{" "}
+                  </g>
+                </svg>
+                <p className="text-sm text-gray-600 ml-3 ">Onboarding</p>{" "}
+                <span className="absolute right-0 flex">
+                  <svg
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    id=""
+                    className="h-5 w-5 text-gray-400"
+                    style={{ display: "inline-block" }}
+                  >
+                    <use xlinkHref="/feather-sprite.svg#chevron-right"></use>
+                  </svg>
+                </span>
+              </Link>{" "}
               <Link
                 href="/integrations"
                 className="flex items-center relative py-3 pl-2"

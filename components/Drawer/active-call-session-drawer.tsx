@@ -100,9 +100,9 @@ function ActiveCallSessionDrawer(props: ComponentProps) {
                   height="24"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   id=""
                   className="h-3 w-3 !text-green-600 mr-1"
                   style={{ display: "inline-block" }}

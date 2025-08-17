@@ -120,10 +120,10 @@ function Billing(props: PageProps) {
                   <use xlinkHref="/feather-sprite.svg#coffee"></use>
                 </svg>
               </div>{" "}
-              <div className="font-bold text-lg mb-2">{props.planName}</div>{" "}
+             {/*} <div className="font-bold text-lg mb-2">{props.planName}</div>{" "}*/}
               <div className="text-gray-800 mb-2"></div>
             </div>{" "}
-            <div className="col-span-2 px-4 leading-8">
+            {/*<div className="col-span-2 px-4 leading-8">
               {props.subscriptionStatus == "trialing" ? (
                 `You're on a trial plan . Your trial ends after ${props.daysLeftToExpiration} days. Sign up to a paid plan and get full access by clicking on "Subscribe" below.`
               ) : props.subscriptionStatus == "trial_ended" ? (
@@ -143,13 +143,13 @@ function Billing(props: PageProps) {
                   "Subscribe" below.
                 </h2>
               )}
-            </div>{" "}
+            </div>{" "}*/}
             <div className="col-span-3 text-center mt-8">
               <Link
                 href="/billing/choose_plan"
                 className="btn btn-blue text-center mr-4"
               >
-                Subscribe
+                View plans
               </Link>
 
               {props.subscriptionStatus == "active" && (

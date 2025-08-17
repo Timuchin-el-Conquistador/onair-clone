@@ -148,9 +148,9 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/users/sign_in", req.nextUrl));
   }
 
-  const isSubscriptionStatusActive =
-    session?.subscriptionStatus == "active" ||
-    session?.subscriptionStatus == "trialing";
+//  const isSubscriptionStatusActive =
+  //  session?.subscriptionStatus == "active" ||
+  //  session?.subscriptionStatus == "trialing";
   // 5. Redirect to /billing if the user is not authenticated
 
   //check if the current route matches any route requiring subscription
@@ -158,9 +158,9 @@ export default async function middleware(req: NextRequest) {
     (route) => route.test(path)
   );
 
-  if (isRouteRequireActiveSubscription && !isSubscriptionStatusActive) {
-    return NextResponse.redirect(new URL("/billing", req.nextUrl));
-  }
+//  if (isRouteRequireActiveSubscription && !isSubscriptionStatusActive) {
+//    return NextResponse.redirect(new URL("/billing", req.nextUrl));
+//  }
   // 6. Redirect to /dashboard if the user is authenticated
   if (
     isPublicRoute &&
