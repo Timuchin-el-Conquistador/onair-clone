@@ -15,6 +15,6 @@ export interface Integration {
   toObject: () => Integration;
   status: string;
   from: string;
-  store: { domain: string; [key: string]: unknown };
+  store: { storeDomain: string; [key: string]: unknown };
   [key: string]: unknown;
 }
