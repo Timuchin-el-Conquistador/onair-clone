@@ -122,6 +122,30 @@ export async function retrieveIntegrationsActions() {
       };
     }
 }
+
+export async function retrieveStoreIntegrationAction() {
+  try {
+    const session = await verifySession();
+
+    if (!session) return redirect("/users/sign_in");
+
+    const path = `api/v1/user/${session.email}/integrations/store`;
+    const response: { message: string; integration: Integration } =
+      await fakeBackend.get(path);
+
+      return {
+        status: 200,
+        message: response.message,
+        integration: response.integration,
+      };
+    } catch (error: any) {
+      return {
+        status: error.status,
+        message: error instanceof Error ? error.message : String(error),
+        integration: null,
+      };
+    }
+}
 export async function retrieveIntegration(integrationId: string) {
   try {
     const session = await verifySession();

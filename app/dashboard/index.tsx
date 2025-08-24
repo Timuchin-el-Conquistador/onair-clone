@@ -60,7 +60,7 @@ function Dashboard(props: PageProps) {
     (e: React.MouseEvent) => {
       if (linksLength == props.monthlyLinksCapacity) {
         e.preventDefault(); // Stop navigation
-        setMaxLimitReached(true);
+      //  setMaxLimitReached(true);
       }
     },
     [linksLength, props.monthlyLinksCapacity] // Recreates only when shouldRedirect changes

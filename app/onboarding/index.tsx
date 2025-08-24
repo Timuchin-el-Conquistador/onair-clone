@@ -12,9 +12,9 @@ import { type Integration } from "@/lib/types/integration";
 
 
 type PageProps = {
-  retrieveIntegrationsActions: () => Promise<{
+  retrieveStoreIntegrationAction: () => Promise<{
     status: number;
-    integrations: Integration[];
+    integration: Integration | null
     message: string;
   }>;
   removeIntegration: (
@@ -23,7 +23,7 @@ type PageProps = {
 };
 
 function Onboarding(props: PageProps) {
-  const [integrations, setIntegrations] = useState<Integration[]>([]);
+  const [integration, setIntegration] = useState<Integration|null>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setErrorMessage] = useState<string>("");
@@ -31,27 +31,27 @@ function Onboarding(props: PageProps) {
 
 
   useEffect(() => {
-    const fetchLinks = async () => {
+    const fetchIntegartion = async () => {
       setLoading(true);
-      const response = await props.retrieveIntegrationsActions();
+      const response = await props.retrieveStoreIntegrationAction();
       if (response.status !== 200) {
-        setIntegrations([]);
         return;
       }
-      setIntegrations(response.integrations);
+      setIntegration(response.integration);
       setLoading(false);
     };
-    fetchLinks();
-  }, [props.retrieveIntegrationsActions]);
+    fetchIntegartion();
+  }, []);
 
 
 
 
   return (
     <>
-   {integrations.length ? <ShopifyOnboarding
+    {loading && <p>Loading.....</p>}
+   {integration ? <ShopifyOnboarding
       themes={[{ id: "down", name: "Down" }]}
-      store={integrations[0].store.storeDomain.split('.myshopify.com')[0]}
+      store={integration.store.storeDomain.split('.myshopify.com')[0]}
     /> : <p></p>}
     </>
   );

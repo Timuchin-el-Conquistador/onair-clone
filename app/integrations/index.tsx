@@ -65,7 +65,7 @@ function Integrations(props: PageProps) {
     (e: React.MouseEvent) => {
       if (integrationsLength == props.monthlyIntegrationsCapacity) {
         e.preventDefault(); // Stop navigation
-        setMaxLimitReached(true);
+      //  setMaxLimitReached(true);
       }
     },
     [integrationsLength, props.monthlyIntegrationsCapacity] // Recreates only when shouldRedirect changes

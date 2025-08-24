@@ -1,7 +1,7 @@
 import Integrations from ".";
 
 import {
-  retrieveIntegrationsActions,
+  retrieveStoreIntegrationAction,
   removeIntegration
 } from "@/lib/actions/user";
 import { retrieveSession } from "@/lib/session";
@@ -21,7 +21,7 @@ async function OnboardingPage() {
   return (
     <Layout page="onboarding" sidebar={true} notifications={true}>
       <Integrations
-        retrieveIntegrationsActions={retrieveIntegrationsActions}
+        retrieveStoreIntegrationAction={retrieveStoreIntegrationAction}
         removeIntegration={removeIntegration}
       />
     </Layout>

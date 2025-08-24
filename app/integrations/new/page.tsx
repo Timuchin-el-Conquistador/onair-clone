@@ -1,10 +1,15 @@
+import "@/styles/integrations/new-integration.scss";
 
-import '@/styles/integrations/new-integration.scss'
-
+import { retrieveStoreIntegrationAction } from "@/lib/actions/user";
 
 import Layout from "@/components/layouts/private";
 
 async function NewIntegration() {
+  const response = await retrieveStoreIntegrationAction();
+
+  const storeIntegration =
+    response instanceof Error || response == null ? null : response.integration;
+
   return (
     <Layout page="integrations" sidebar={true} notifications={true}>
       <div id="main" className="p-6 flex gap-4 flex-wrap gap-4">
@@ -15,15 +20,19 @@ async function NewIntegration() {
             Add Integration
           </a>
         </div>{" "}
-
-        <div className="integ-card">
-          <img src="/shopify.png" /> <h5>Shopify store</h5>{" "}
-          <p>Connect your Shopify store for real-time in-store support and VoIP communication.</p>{" "}
-          <a href="/integrations/new/shopify" className="btn btn-blue">
-            Add Integration
-          </a>
-        </div>{" "}
-       {/*} <div className="integ-card">
+        {!storeIntegration && (
+          <div className="integ-card">
+            <img src="/shopify.png" /> <h5>Shopify store</h5>{" "}
+            <p>
+              Connect your Shopify store for real-time in-store support and VoIP
+              communication.
+            </p>{" "}
+            <a href="/integrations/new/shopify" className="btn btn-blue">
+              Add Integration
+            </a>
+          </div>
+        )}
+        {/*} <div className="integ-card">
           <img src="/external-logos/google-calendar-icon.svg" />{" "}
           <h5>Google Calendar</h5>{" "}
           <p>Read availability from Google Calendar.</p>{" "}

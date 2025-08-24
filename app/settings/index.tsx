@@ -302,13 +302,13 @@ function Settings(props: PageProps) {
           </div>
         </dl>
       </div>{" "}
-      <h3 className="font-semibold text-lg mb-1 mt-8">Account Stats</h3>{" "}
+    {/*}  <h3 className="font-semibold text-lg mb-1 mt-8">Account Stats</h3>{" "}
       <div className="bg-white p-6">
         <dl style={{ marginTop: "-1rem" }}>
           <div>
             <dt># of Links</dt> <dd>{props.numberOfCreatedLinks}/{props.monthlyLinksCapacity} link</dd>
           </div>{" "}
-          <div>
+        {/*}  <div>
             <dt>Monthly Minutes Capacity</dt>
             <dd>
               {props.monthlyMinutesCapacity}
@@ -351,7 +351,7 @@ function Settings(props: PageProps) {
             </dd>
           </div>
         </dl>
-      </div>{" "}
+      </div>{" "}*/}
       <h3 className="font-semibold text-lg mb-1 mt-8">Notifications</h3>{" "}
       <div className="bg-white p-6">
         <dl style={{ marginTop: "-1rem" }}>

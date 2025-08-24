@@ -7,6 +7,7 @@ import "@/styles/billing/plans.scss";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { type Plan } from "@/lib/types/billing";
+import { Integration } from "@/lib/types/integration";
 
 const SlButton = dynamic(
   () => import("@shoelace-style/shoelace/dist/react/button/index.js"),
@@ -24,16 +25,9 @@ const SlDialog = dynamic(
   }
 );
 
-const SlIcon = dynamic(
-  // Notice how we use the full path to the component. If you only do `import("@shoelace-style/shoelace/dist/react")` you will load the entire component library and not get tree shaking.
-  () => import("@shoelace-style/shoelace/dist/react/icon/index.js"),
-  {
-    //   loading: () => <p>Loading...</p>,
-    ssr: false,
-  }
-);
 type PageProps = {
   plans: Plan[];
+  storeIntegration: Integration | null;
   createSubscriptionSessionAction: (planId: string) => Promise<string | Error>;
 };
 function ChoosePlan(props: PageProps) {
@@ -48,11 +42,6 @@ function ChoosePlan(props: PageProps) {
       plans.findIndex((el) => el.active) == -1
     );
   }, [props.plans, plans]);
-
-
-
-
-  console.log(plans.filter(el => el.subscriptionPeriod == billingPeriod))
 
   return (
     <div className="p-6">
@@ -173,9 +162,10 @@ function ChoosePlan(props: PageProps) {
 
                         {!!plan.saved && (
                           <span className="text-2xl font-bold tracking-tight">
-                            Save {" "}
+                            Save{" "}
                             <small className="text-base font-medium">
-                              {plan.saved}{plan.currency}
+                              {plan.saved}
+                              {plan.currency}
                             </small>{" "}
                           </span>
                         )}
@@ -241,17 +231,22 @@ function ChoosePlan(props: PageProps) {
                 </div>
               </div>
             </div>{" "}*/}
-            <div className="py-4 mt-12 flex items-center justify-center">
-              {" "}
-              <input
-                type="submit"
-                value="Subscribe"
-                className={`inline text-white border border-transparent rounded-md px-4 py-2 cursor-pointer ${
-                  !isDisabled && "bg-blue-500"
-                }`}
-                disabled={isDisabled}
-              />
-            </div>
+            {props.storeIntegration && (
+              <div className="py-4 mt-12 flex items-center justify-center">
+                {" "}
+                <a
+                  href={`https://admin.shopify.com/store/${
+                    props.storeIntegration.store.storeDomain.split(
+                      ".myshopify.com"
+                    )[0]
+                  }/charges/chat-widget-5/pricing_plans`}
+                  target="__blank"
+                  className="inline text-white border border-transparent rounded-md px-4 py-2 cursor-pointerbg bg-blue-500"
+                >
+                  Subscribe
+                </a>
+              </div>
+            )}
           </form>
           {/*
             <form>

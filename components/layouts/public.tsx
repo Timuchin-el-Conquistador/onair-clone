@@ -10,7 +10,7 @@ async function PublicLayout({
   children: React.ReactNode;
   email?: string ;
 }) {
-  if (email) {
+/*  if (email) {
     let response = await retrieveUserAccountStatus(email);
 
     const account =
@@ -19,7 +19,7 @@ async function PublicLayout({
     if (account?.status != "active" && account?.role != 'admin') {
       return <AccountInactive />;
     }
-  }
+  }*/
 
   return <ErrorBoundary>{children}</ErrorBoundary>;
 }
